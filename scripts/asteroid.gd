@@ -61,6 +61,5 @@ func generate_shape():
 		var length_from_center = rng.randi_range(20,40)
 		var new_point = Vector2.UP * length_from_center
 		new_point = new_point.rotated(deg_to_rad(point*degrees_per_point)) 
-		asteroid_coords.append([new_point.x, new_point.y]) 
-	print("Coords: ", asteroid_coords)
+		asteroid_coords.append([new_point.x, new_point.y])
 	
