@@ -1,0 +1,14 @@
+[gd_scene load_steps=3 format=3 uid="uid://bxex7pn5ng26e"]
+
+[ext_resource type="Script" path="res://scripts/player.gd" id="1_yq8jn"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_2hh5d"]
+
+[node name="Player" type="CharacterBody2D"]
+scale = Vector2(0.999994, 0.999994)
+motion_mode = 1
+velocity = Vector2(0, 23700)
+script = ExtResource("1_yq8jn")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("CircleShape2D_2hh5d")

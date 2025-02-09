@@ -1,0 +1,10 @@
+[gd_resource type="Theme" load_steps=3 format=3 uid="uid://dl5d2an56e6ae"]
+
+[ext_resource type="StyleBox" uid="uid://bxe7ef0emnofn" path="res://themes/styleboxes/credits_panel_style_box.tres" id="1_nfm1i"]
+[ext_resource type="FontFile" uid="uid://b42prwa756wip" path="res://fonts/RobotoMono-VariableFont_wght.ttf" id="3_dmiuq"]
+
+[resource]
+default_font = ExtResource("3_dmiuq")
+Label/colors/font_color = Color(0.129136, 0.198456, 0.311316, 1)
+Panel/styles/panel = ExtResource("1_nfm1i")
+PanelContainer/styles/panel = ExtResource("1_nfm1i")
