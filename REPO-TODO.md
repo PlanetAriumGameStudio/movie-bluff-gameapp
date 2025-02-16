@@ -32,7 +32,7 @@ It is meant to be a playable example of a contained scene/game environment.
 
 ### Done ✓
 
-- [x] Basic scene transtion Global
+- [x] Basic scene transition Global
 - [x] Audio bus globals
 - [x] asteroid base game
   - [x] asteroid generation

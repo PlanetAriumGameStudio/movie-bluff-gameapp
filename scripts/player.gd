@@ -19,12 +19,23 @@ var rotation_direction = 0
 var acceleration = 0
 var shoot = false
 
-@onready var _asp : AudioStreamPlayer2D = $AudioStreamPlayer2D
+var _thruster_asp : AudioStreamPlayer2D
+var _laser_asp : AudioStreamPlayer2D
 
 func _ready():
 	velocity = Vector2(0,0)
 	ship = float_array_to_Vector2Array(coords_ship)
 	booster = float_array_to_Vector2Array(coords_booster)
+	
+	_thruster_asp = AudioStreamPlayer2D.new()
+	_thruster_asp.name = 'Thruster_ASP'
+	_thruster_asp.stream = load("res://audio/sound_effects/rocketthrustmaxx-100019.mp3")
+	add_child(_thruster_asp)
+	
+	_laser_asp = AudioStreamPlayer2D.new()
+	_laser_asp.name = 'Laser_ASP'
+	_laser_asp.stream = load("res://audio/sound_effects/retro-laser.mp3")
+	add_child(_laser_asp)
 	
 func float_array_to_Vector2Array(coords : Array) -> PackedVector2Array:
 	# Convert the array of floats into a PackedVector2Array.
@@ -40,6 +51,7 @@ func _process(delta: float) -> void:
 		new_bullet.rotation = rotation
 		var direction = Vector2.RIGHT.rotated(rotation)
 		get_tree().root.add_child(new_bullet)
+		_laser_asp.playing = true
 		shoot = false
 		
 
@@ -70,6 +82,10 @@ func screen_wrap():
 func get_input():
 	rotation_direction = Input.get_axis("left", "right")
 	acceleration = Input.get_axis("down", "up") * THRUST
+	if Input.is_action_just_pressed("up") || Input.is_action_just_pressed("down"):
+		_thruster_asp.playing = true
+	elif Input.is_action_just_released("up") || Input.is_action_just_released("down"):
+		_thruster_asp.playing = false
 	shoot = Input.is_action_just_pressed("ui_accept")
 
 func blow_up():

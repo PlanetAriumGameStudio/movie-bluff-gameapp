@@ -6,6 +6,7 @@ const player:PackedScene = preload("res://scenes/player.tscn")
 var player_score:int
 var player_lives:int
 var player_ref:Player
+var asteroids_music:AudioStreamPlayer
 
 
 @onready var score_label:Label = $GUI/MarginContainer/Score
@@ -13,13 +14,15 @@ var player_ref:Player
 @onready var pause_menu:PanelContainer = $GUI/PauseMenu
 @onready var game_over_menu:PanelContainer = $GUI/GameOverMenu
 @onready var asteroids_manager:AsteroidsManager = $AsteroidsManager
-@onready var asteroids_music:AudioStreamPlayer = $AudioStreamPlayer
 
 func _ready():
 	game_over_menu.visible = false
 	pause_menu.visible = false
+	
+	asteroids_music = AudioStreamPlayer.new()
 	asteroids_music.stream = load("res://audio/music/2021-10-19_-_Funny_Bit_-_FesliyanStudios_-_David_Renda.mp3")
-	asteroids_music.playing = true
+	asteroids_music.autoplay = true
+	add_child(asteroids_music)
 	init_player()
 	
 func _process(delta : float) -> void:

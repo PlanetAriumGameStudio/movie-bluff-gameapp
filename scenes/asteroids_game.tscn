@@ -14,8 +14,6 @@ point_count = 4
 [node name="AsteroidsWorld" type="Node2D"]
 script = ExtResource("1_xrqiq")
 
-[node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="."]
-
 [node name="AsteroidsManager" type="Node2D" parent="."]
 script = ExtResource("2_cwuyy")
 
