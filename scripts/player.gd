@@ -1,4 +1,7 @@
 extends CharacterBody2D
+class_name Player
+
+signal player_exploded
 
 var ship: PackedVector2Array
 var booster: PackedVector2Array
@@ -55,7 +58,6 @@ func _draw():
 	if acceleration > 0:
 		var booster_red: Color = Color("ff8cbf")
 		draw_polygon(booster, [booster_red])
-	
 	draw_polygon(ship, [godot_blue])
 	
 	
@@ -68,7 +70,9 @@ func get_input():
 	acceleration = Input.get_axis("down", "up") * THRUST
 	shoot = Input.is_action_just_pressed("ui_accept")
 
+func blow_up():
+	player_exploded.emit()
 
 func _on_area_2d_area_entered(area: Area2D) -> void:
 	if area.is_in_group("asteroids"):
-		print("game over")
+		blow_up()

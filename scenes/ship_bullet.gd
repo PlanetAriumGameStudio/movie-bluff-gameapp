@@ -9,5 +9,4 @@ func _process(delta: float) -> void:
 
 func check_clean_up():
 	if position.x > Globals.SCREEN_SIZE.x || position.x < 0 || position.y > Globals.SCREEN_SIZE.y || position.y < 0:
-		print("Cleaning bullet")
 		queue_free() 
