@@ -19,6 +19,8 @@ var rotation_direction = 0
 var acceleration = 0
 var shoot = false
 
+@onready var _asp : AudioStreamPlayer2D = $AudioStreamPlayer2D
+
 func _ready():
 	velocity = Vector2(0,0)
 	ship = float_array_to_Vector2Array(coords_ship)

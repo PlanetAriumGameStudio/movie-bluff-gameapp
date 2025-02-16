@@ -24,6 +24,6 @@ func generate_asteroid_at_position(spawn_position : Vector2, size : int):
 	self.add_child(new_asteroid)
 	
 func _on_asteroid_shot(new_position : Vector2, new_size : int): 
-	for i in randi_range(0, Globals.RNG.randi_range(1,2)):
+	for i in randi_range(1, Globals.RNG.randi_range(2,3)):
 		print(i)
 		generate_asteroid_at_position(new_position, new_size)

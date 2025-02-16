@@ -8,7 +8,7 @@ const MAX_SPEED = 150.0
 var _asteroid : PackedVector2Array
 var _asteroid_coords : Array
 var rotation_speed : float
-var rotation_direction : int
+var rotation_direction : float
 var velocity : Vector2
 var size : int
 
@@ -41,7 +41,7 @@ func _process(delta: float) -> void:
 func generate_velocity():
 	# Generate Rotation
 	rotation_speed = Globals.RNG.randf_range(MIN_ROTATION_SPEED, MAX_ROTATION_SPEED) 
-	rotation_direction = 1 
+	rotation_direction = Globals.RNG.randf_range(0,2) - 1.0
 	
 	#Generate Direction and Velocity
 	var new_force = Vector2.UP.rotated(deg_to_rad(Globals.RNG.randi_range(0, 360)))

@@ -1,6 +1,6 @@
 extends Area2D
 
-@export var SPEED: float = 200.0
+@export var SPEED: float = 300.0
 
 func _process(delta: float) -> void:
 	position += Vector2.RIGHT.rotated(rotation) * SPEED * delta

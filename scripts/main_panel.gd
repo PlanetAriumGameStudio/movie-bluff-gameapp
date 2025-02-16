@@ -1,6 +1,6 @@
 extends PanelContainer
 
-const DODGEBALL_WORLD_SCENE = "res://scenes/asteroids_world.tscn"
+const DODGEBALL_WORLD_SCENE = "res://scenes/asteroids_game.tscn"
 const CREDITS_SCENE = "res://scenes/credits_panel.tscn"
 const OPTIONS_SCENE = "res://scenes/options.tscn"
 
