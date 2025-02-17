@@ -15,7 +15,6 @@ var size : int
 @export var MIN_ROTATION_SPEED = 2.0
 @export var MAX_ROTATION_SPEED = 5.0
 
-
 @onready var _collision_poly = $CollisionPolygon2D
 
 func _ready():
@@ -70,7 +69,6 @@ func generate_shape():
 	
 func _on_area_entered(area: Area2D) -> void:
 	if area.is_in_group("player_bullets"):
-		if size > 1:
-			asteroid_shot.emit(self.position, size - 1)
+		asteroid_shot.emit(self.position, size - 1)
 		queue_free()
 		area.queue_free()
