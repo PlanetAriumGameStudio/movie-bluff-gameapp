@@ -39,9 +39,15 @@ text = "Paused"
 layout_mode = 2
 text = "Main Menu"
 
+[node name="OptionsButton" type="Button" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+text = "Options
+"
+
 [node name="ContinueButton" type="Button" parent="MarginContainer/VBoxContainer"]
 layout_mode = 2
 text = "Continue"
 
 [connection signal="pressed" from="MarginContainer/VBoxContainer/MainMenuButton" to="." method="_navigate_to_main_menu"]
+[connection signal="pressed" from="MarginContainer/VBoxContainer/OptionsButton" to="." method="_on_options_button_pressed"]
 [connection signal="pressed" from="MarginContainer/VBoxContainer/ContinueButton" to="." method="_toggle_visibility"]

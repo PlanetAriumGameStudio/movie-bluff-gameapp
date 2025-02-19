@@ -1,4 +1,4 @@
-[gd_resource type="Theme" load_steps=4 format=3 uid="uid://bxakjwkc4gbrj"]
+[gd_resource type="Theme" load_steps=5 format=3 uid="uid://bxakjwkc4gbrj"]
 
 [ext_resource type="StyleBox" uid="uid://dn4irrsg1nw16" path="res://themes/styleboxes/main_panel_style_box.tres" id="1_21j3p"]
 [ext_resource type="FontFile" uid="uid://b42prwa756wip" path="res://fonts/RobotoMono-VariableFont_wght.ttf" id="2_8kf00"]
@@ -18,6 +18,10 @@ corner_detail = 5
 shadow_size = 2
 shadow_offset = Vector2(4, 4)
 
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_jfhrp"]
+bg_color = Color(0.810281, 0.528396, 0.231966, 1)
+border_color = Color(0.99, 0.483615, 0.0693, 1)
+
 [resource]
 default_font = ExtResource("2_8kf00")
 Button/colors/font_color = Color(0.1608, 0.16872, 0.24, 1)
@@ -29,5 +33,6 @@ Button/font_sizes/font_size = 20
 Button/fonts/font = ExtResource("2_8kf00")
 Button/styles/hover = SubResource("StyleBoxFlat_jc703")
 Button/styles/normal = ExtResource("1_21j3p")
+HSlider/styles/grabber_area = SubResource("StyleBoxFlat_jfhrp")
 Label/colors/font_color = Color(0.180801, 0.190312, 0.276622, 1)
 PanelContainer/styles/panel = ExtResource("1_21j3p")

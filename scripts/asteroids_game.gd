@@ -54,6 +54,7 @@ func _init_audio():
 		asteroids_music_player = AudioStreamPlayer.new()
 		asteroids_music_player.stream = ASTEROIDS_MUSIC
 		asteroids_music_player.autoplay = true
+		asteroids_music_player.bus = "Music"
 		add_child(asteroids_music_player)
 	else:
 		asteroids_music_player.seek(0)

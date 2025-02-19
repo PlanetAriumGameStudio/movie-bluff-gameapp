@@ -41,11 +41,13 @@ func _ready():
 	_thruster_asp = AudioStreamPlayer2D.new()
 	_thruster_asp.name = 'Thruster_ASP'
 	_thruster_asp.stream = _thruster_stream
+	_thruster_asp.bus = "SoundEffects"
 	add_child(_thruster_asp)
 	
 	_laser_asp = AudioStreamPlayer2D.new()
 	_laser_asp.name = 'Laser_ASP'
 	_laser_asp.stream = _laser_stream
+	_laser_asp.bus = "SoundEffects"
 	add_child(_laser_asp)
 
 func _process(delta: float) -> void:

@@ -12,3 +12,7 @@ func _toggle_visibility():
 func _navigate_to_main_menu():
 	_toggle_visibility()
 	TransitionManager.change_scene("res://scenes/main_menu.tscn", 1)
+
+func _on_options_button_pressed() -> void:
+	var options_panel = load("res://scenes/options_panel.tscn").instantiate()
+	add_child(options_panel)
