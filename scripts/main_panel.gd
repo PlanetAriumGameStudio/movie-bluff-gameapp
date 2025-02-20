@@ -1,11 +1,11 @@
 extends PanelContainer
 
-const DODGEBALL_WORLD_SCENE = "res://scenes/asteroids_game.tscn"
+const ASTEROIDS_GAME_SCENE = "res://scenes/asteroids_game.tscn"
 const CREDITS_SCENE = "res://scenes/credits_panel.tscn"
 const OPTIONS_SCENE = "res://scenes/options_panel.tscn"
 
 func _on_start_game_button_down() -> void:
-	TransitionManager.change_scene(DODGEBALL_WORLD_SCENE, TransitionManager.TransitionType.ZoomOut)
+	TransitionManager.change_scene(ASTEROIDS_GAME_SCENE, TransitionManager.TransitionType.ZoomOut)
 
 func _on_options_button_down() -> void:
 	var options_panel = load(OPTIONS_SCENE).instantiate()
@@ -19,5 +19,4 @@ func _on_credits_button_down() -> void:
 	var transition_tween = create_tween().set_parallel()
 	transition_tween.set_trans(Tween.TRANS_EXPO)
 	transition_tween.tween_property(credits_panel, "global_position", Vector2(0,0), 1)
-	
 	

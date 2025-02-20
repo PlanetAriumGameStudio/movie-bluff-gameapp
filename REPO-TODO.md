@@ -8,17 +8,16 @@ The template will encompass a basic project structure, some bootstrapped Global
 management singletons, and basic menu system.
 
 - [ ] Make menu system nicer for panel transitions
-- [ ] Update credits
+- [ ] Make dropdown directory selection for "Game Scenes" / Templates (Asteroids should be one of these)
+- [ ] Make secondary "Game Scene"
 
 ### Todo (Asteroid)
 
 Asteroids is an example of a game that could exist within godot framework.
 It is meant to be a playable example of a contained scene/game environment.
 
-- [ ] make nicer looking
 - [ ] add level difficulty / increase with progression
-- [ ] handle player death better
-
+- [ ] bug where player state is stuck in "moving" while respawning
 
 ### In Progress
 
@@ -42,3 +41,7 @@ It is meant to be a playable example of a contained scene/game environment.
   - [x] Add music audio bus volume level control to options page
 - [x] handle score appropriately
 - [x] add level completion state
+- [x] make nicer looking (slightly)
+- [x] handle player death better
+  - [x] added respawn hitbox, will not allow respawn with asteroids actively in area to prevent respawn deaths
+- [x] Update credits (added back button)

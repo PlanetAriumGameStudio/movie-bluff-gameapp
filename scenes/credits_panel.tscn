@@ -1,6 +1,7 @@
-[gd_scene load_steps=2 format=3 uid="uid://bs460myshrpmo"]
+[gd_scene load_steps=3 format=3 uid="uid://bs460myshrpmo"]
 
 [ext_resource type="Theme" uid="uid://dl5d2an56e6ae" path="res://themes/credits_theme.tres" id="1_bd5cs"]
+[ext_resource type="Script" path="res://scripts/credits_panel.gd" id="2_dxlgm"]
 
 [node name="CreditsPanel" type="PanelContainer"]
 anchors_preset = 15
@@ -13,6 +14,7 @@ offset_bottom = -124.0
 grow_horizontal = 2
 grow_vertical = 2
 theme = ExtResource("1_bd5cs")
+script = ExtResource("2_dxlgm")
 
 [node name="MarginContainer" type="MarginContainer" parent="."]
 layout_mode = 2
@@ -31,3 +33,10 @@ layout_mode = 2
 size_flags_horizontal = 4
 theme = ExtResource("1_bd5cs")
 text = "Developers: PKFiyah"
+
+[node name="Button" type="Button" parent="MarginContainer"]
+layout_mode = 2
+size_flags_vertical = 8
+text = "Back"
+
+[connection signal="pressed" from="MarginContainer/Button" to="." method="_on_button_pressed"]

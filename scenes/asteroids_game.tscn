@@ -1,4 +1,4 @@
-[gd_scene load_steps=7 format=3 uid="uid://cn6ktlamgi5d"]
+[gd_scene load_steps=8 format=3 uid="uid://cn6ktlamgi5d"]
 
 [ext_resource type="Script" path="res://scripts/asteroids_game.gd" id="1_xrqiq"]
 [ext_resource type="Script" path="res://scripts/asteroids_manager.gd" id="2_cwuyy"]
@@ -6,14 +6,29 @@
 [ext_resource type="Theme" uid="uid://bxakjwkc4gbrj" path="res://themes/main_menu_theme.tres" id="4_edofo"]
 [ext_resource type="PackedScene" uid="uid://cbqrvb1pn3bv0" path="res://scenes/pause_menu.tscn" id="5_t8x58"]
 
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_qu4ki"]
+size = Vector2(40, 40)
+
 [sub_resource type="Curve2D" id="Curve2D_yt4y8"]
 _data = {
-"points": PackedVector2Array(0, 0, 0, 0, 40, 40, 0, 0, 0, 0, 40, 680, 0, 0, 0, 0, 1240, 680, 0, 0, 0, 0, 1240, 40)
+"points": PackedVector2Array(0, 0, 0, 0, 40, 40, 0, 0, 0, 0, 40, 680, 0, 0, 0, 0, 1240, 680, 0, 0, 0, 0, 1240, 40, 0, 0, 0, 0, 40, 40)
 }
-point_count = 4
+point_count = 5
 
 [node name="AsteroidsWorld" type="Node2D"]
 script = ExtResource("1_xrqiq")
+
+[node name="ColorRect" type="ColorRect" parent="."]
+offset_right = 1282.0
+offset_bottom = 720.0
+color = Color(0.0923971, 0.0923971, 0.0923971, 1)
+
+[node name="SpawnBox" type="Area2D" parent="."]
+position = Vector2(640, 360)
+collision_mask = 2
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="SpawnBox"]
+shape = SubResource("RectangleShape2D_qu4ki")
 
 [node name="AsteroidsManager" type="Node2D" parent="."]
 script = ExtResource("2_cwuyy")
@@ -36,6 +51,11 @@ grow_vertical = 2
 theme_override_constants/margin_left = 40
 theme_override_constants/margin_top = 40
 theme_override_constants/margin_right = 40
+
+[node name="RespawnTimer" type="Label" parent="GUI/MarginContainer"]
+layout_mode = 2
+size_flags_horizontal = 4
+text = "Respawning: 0.0"
 
 [node name="Score" type="Label" parent="GUI/MarginContainer"]
 layout_mode = 2
@@ -94,6 +114,8 @@ text = "Main Menu"
 
 [node name="PauseMenu" parent="GUI" instance=ExtResource("5_t8x58")]
 
+[connection signal="area_entered" from="SpawnBox" to="." method="_on_spawn_box_area_entered"]
+[connection signal="area_exited" from="SpawnBox" to="." method="_on_spawn_box_area_exited"]
 [connection signal="level_cleared" from="AsteroidsManager" to="." method="_on_asteroids_manager_level_cleared"]
 [connection signal="player_scored" from="AsteroidsManager" to="." method="_on_asteroids_manager_player_scored"]
 [connection signal="pressed" from="GUI/GameOverMenu/MarginContainer/TryAgainButton" to="." method="_on_try_again_button_pressed"]

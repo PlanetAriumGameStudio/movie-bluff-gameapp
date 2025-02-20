@@ -1,6 +1,5 @@
-[gd_scene load_steps=3 format=3 uid="uid://dxhman6qab3fm"]
+[gd_scene load_steps=2 format=3 uid="uid://dxhman6qab3fm"]
 
-[ext_resource type="Script" path="res://scripts/main_menu.gd" id="1_l64y1"]
 [ext_resource type="PackedScene" uid="uid://durb02oav410a" path="res://scenes/main_panel.tscn" id="2_7u8v6"]
 
 [node name="MainMenuController" type="Control"]
@@ -12,7 +11,6 @@ grow_horizontal = 2
 grow_vertical = 2
 size_flags_horizontal = 4
 size_flags_vertical = 4
-script = ExtResource("1_l64y1")
 
 [node name="ColorRect" type="ColorRect" parent="."]
 layout_mode = 1
