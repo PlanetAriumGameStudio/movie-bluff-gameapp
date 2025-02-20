@@ -8,6 +8,7 @@ The template will encompass a basic project structure, some bootstrapped Global
 management singletons, and basic menu system.
 
 - [ ] Make menu system nicer for panel transitions
+- [ ] Handle UI focus / non-mouse navigation
 - [ ] Make dropdown directory selection for "Game Scenes" / Templates (Asteroids should be one of these)
 - [ ] Make secondary "Game Scene"
 
