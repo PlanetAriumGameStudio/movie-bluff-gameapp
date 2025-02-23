@@ -5,4 +5,3 @@
 
 [node name="MiniOptionsMenu" instance=ExtResource("1_p4l4t")]
 script = ExtResource("2_s5iuk")
-audio_control_scene = null

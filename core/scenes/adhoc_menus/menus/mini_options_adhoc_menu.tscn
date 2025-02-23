@@ -1,0 +1,10 @@
+[gd_scene load_steps=3 format=3 uid="uid://dbr548gved2lf"]
+
+[ext_resource type="PackedScene" uid="uid://nxcaymswyj1e" path="res://core/scenes/adhoc_menus/adhoc_menu_container.tscn" id="1_jbpp3"]
+[ext_resource type="PackedScene" uid="uid://crn7mx7njbtm5" path="res://core/scenes/menus/options_menu/mini_options_menu.tscn" id="2_1b846"]
+
+[node name="AdhocMenuContainer" instance=ExtResource("1_jbpp3")]
+menu_scene = ExtResource("2_1b846")
+
+[node name="TitleLabel" parent="MenuPanelContainer/MarginContainer/BoxContainer/TitleContainer" index="0"]
+text = "Options"

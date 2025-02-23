@@ -14,7 +14,6 @@ var _player_lives : int
 @onready var score_label : Label = $GUI/MarginContainer/Score
 @onready var lives_label : Label = $GUI/MarginContainer/Lives
 @onready var respawn_timer_label : Label = $GUI/MarginContainer/RespawnTimer
-@onready var pause_menu : PauseMenu = $GUI/PauseMenu
 @onready var game_over_menu : PanelContainer = $GUI/GameOverMenu
 @onready var asteroids_manager : AsteroidsManager = $AsteroidsManager
 
@@ -77,7 +76,7 @@ func _init_audio():
 func _on_main_menu_button_pressed() -> void:
 	if get_tree().paused: 
 		get_tree().paused = not get_tree().paused
-	TransitionManager.change_scene("res://scenes/main_menu.tscn", 1)
+	TransitionManager.change_scene("res://scenes/menus/main_menu/main_menu.tscn", 1)
 	
 func _on_try_again_button_pressed() -> void:
 	_ready()

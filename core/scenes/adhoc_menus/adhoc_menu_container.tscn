@@ -1,0 +1,25 @@
+[gd_scene load_steps=3 format=3 uid="uid://nxcaymswyj1e"]
+
+[ext_resource type="PackedScene" uid="uid://cl7dx667g41nu" path="res://core/scenes/adhoc_menus/adhoc_menu.tscn" id="1_6gbum"]
+[ext_resource type="Script" path="res://core/scenes/adhoc_menus/adhoc_menu_container.gd" id="2_nv8ey"]
+
+[node name="AdhocMenuContainer" instance=ExtResource("1_6gbum")]
+script = ExtResource("2_nv8ey")
+menu_scene = null
+
+[node name="TitleContainer" parent="MenuPanelContainer/MarginContainer/BoxContainer" index="0"]
+visible = false
+
+[node name="DescriptionMargin" parent="MenuPanelContainer/MarginContainer/BoxContainer" index="1"]
+visible = false
+
+[node name="MenuContainer" type="MarginContainer" parent="MenuPanelContainer/MarginContainer/BoxContainer" index="2"]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="MenuButtonsMargin" parent="MenuPanelContainer/MarginContainer/BoxContainer" index="3"]
+theme_override_constants/margin_top = 16
+theme_override_constants/margin_bottom = 16
+
+[node name="CloseButton" parent="MenuPanelContainer/MarginContainer/BoxContainer/MenuButtonsMargin/MenuButtons" index="0"]
+text = "Back"
