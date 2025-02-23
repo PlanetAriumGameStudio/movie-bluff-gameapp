@@ -11,16 +11,16 @@ config_version=5
 [application]
 
 config/name="Hello World Template"
-run/main_scene="res://scenes/main_menu.tscn"
+run/main_scene="res://scenes/menus/main_menu/main_menu.tscn"
 config/features=PackedStringArray("4.3", "GL Compatibility")
 config/icon="res://sprites/icon.svg"
 
 [autoload]
 
+AppConfig="*res://core/scenes/autoloads/app_config.tscn"
 Globals="*res://scripts/globals.gd"
 Utils="*res://scripts/utils.gd"
 TransitionManager="*res://scripts/transition_manager.gd"
-AudioManager="*res://scripts/audio_manager.gd"
 
 [display]
 

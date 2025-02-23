@@ -1,0 +1,7 @@
+[gd_scene load_steps=3 format=3 uid="uid://dyifwsfyoee0"]
+
+[ext_resource type="PackedScene" uid="uid://bas0m3vwkwxn8" path="res://core/scenes/menus/options_menu/video/video_options_menu.tscn" id="1_pwd83"]
+[ext_resource type="Script" path="res://scenes/menus/options_menu/video/video_options_menu.gd" id="2_5icfa"]
+
+[node name="Video" instance=ExtResource("1_pwd83")]
+script = ExtResource("2_5icfa")

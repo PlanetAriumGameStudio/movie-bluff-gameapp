@@ -1,0 +1,19 @@
+[gd_scene load_steps=4 format=3 uid="uid://07neici30ixg"]
+
+[ext_resource type="PackedScene" uid="uid://cp75w7kgr0src" path="res://core/scenes/menus/options_menu/master_options_menu.tscn" id="1_p35m4"]
+[ext_resource type="PackedScene" uid="uid://xdvhnprvbvgc" path="res://core/scenes/menus/options_menu/audio/audio_options_menu.tscn" id="2_jjw1m"]
+[ext_resource type="PackedScene" uid="uid://bas0m3vwkwxn8" path="res://core/scenes/menus/options_menu/video/video_options_menu.tscn" id="3_lbs0u"]
+
+[node name="MasterOptionsMenu" instance=ExtResource("1_p35m4")]
+
+[node name="TabContainer" parent="." index="0"]
+current_tab = 0
+
+[node name="Audio" parent="TabContainer" index="1" instance=ExtResource("2_jjw1m")]
+layout_mode = 2
+metadata/_tab_index = 0
+
+[node name="Video" parent="TabContainer" index="2" instance=ExtResource("3_lbs0u")]
+visible = false
+layout_mode = 2
+metadata/_tab_index = 1

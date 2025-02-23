@@ -2,7 +2,7 @@ extends PanelContainer
 
 const ASTEROIDS_GAME_SCENE = "res://scenes/asteroids_game.tscn"
 const CREDITS_SCENE = "res://scenes/credits_panel.tscn"
-const OPTIONS_SCENE = "res://scenes/options_panel.tscn"
+const OPTIONS_SCENE = "res://scenes/audio_options_menu.tscn"
 
 func _on_start_game_button_down() -> void:
 	TransitionManager.change_scene(ASTEROIDS_GAME_SCENE, TransitionManager.TransitionType.ZoomOut)

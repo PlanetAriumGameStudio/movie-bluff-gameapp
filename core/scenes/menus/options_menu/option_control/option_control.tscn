@@ -1,0 +1,16 @@
+[gd_scene load_steps=2 format=3 uid="uid://d1ojmsaaxapgj"]
+
+[ext_resource type="Script" path="res://core/scenes/menus/options_menu/option_control/option_control.gd" id="1_kttyj"]
+
+[node name="OptionControl" type="HBoxContainer"]
+custom_minimum_size = Vector2(0, 40)
+offset_bottom = 40.0
+size_flags_horizontal = 4
+script = ExtResource("1_kttyj")
+default_value = null
+
+[node name="OptionLabel" type="Label" parent="."]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 0
+text = " :"

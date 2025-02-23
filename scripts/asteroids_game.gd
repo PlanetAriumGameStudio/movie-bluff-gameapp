@@ -1,7 +1,7 @@
 class_name AsteroidsGame
 extends Node2D
 
-const PLAYER_SCENE : PackedScene = preload("res://scenes/player.tscn")
+const PLAYER_SCENE : PackedScene = preload("res://scenes/game_scenes/asteroids/player.tscn")
 const ASTEROIDS_MUSIC : AudioStream = preload("res://audio/music/2021-10-19_-_Funny_Bit_-_FesliyanStudios_-_David_Renda.mp3")
 
 var asteroids_music_player : AudioStreamPlayer

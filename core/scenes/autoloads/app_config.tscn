@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://cxsow8wcy8fk8"]
+
+[ext_resource type="Script" path="res://core/scenes/autoloads/app_config.gd" id="1_ughc5"]
+
+[node name="AppConfig" type="Node"]
+script = ExtResource("1_ughc5")

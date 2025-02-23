@@ -1,0 +1,34 @@
+[gd_scene load_steps=4 format=3 uid="uid://xdvhnprvbvgc"]
+
+[ext_resource type="Script" path="res://core/scenes/menus/options_menu/audio/audio_options_menu.gd" id="1_cw3ct"]
+[ext_resource type="PackedScene" uid="uid://diadf82rojwk3" path="res://core/scenes/menus/options_menu/option_control/slider_option_control.tscn" id="2_pr00j"]
+[ext_resource type="PackedScene" uid="uid://dgel5wjtgckfu" path="res://core/scenes/menus/options_menu/option_control/toggle_option_control.tscn" id="2_wgnb5"]
+
+[node name="Audio" type="MarginContainer"]
+custom_minimum_size = Vector2(305, 0)
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_cw3ct")
+audio_control_scene = ExtResource("2_pr00j")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+custom_minimum_size = Vector2(400, 0)
+layout_mode = 2
+size_flags_horizontal = 4
+
+[node name="AudioControlContainer" type="VBoxContainer" parent="VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="MuteControl" parent="VBoxContainer" instance=ExtResource("2_wgnb5")]
+unique_name_in_owner = true
+layout_mode = 2
+option_name = "Mute"
+option_section = 1
+key = "Mute"
+section = "AudioSettings"
+
+[connection signal="setting_changed" from="VBoxContainer/MuteControl" to="." method="_on_mute_control_setting_changed"]
