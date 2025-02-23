@@ -19,8 +19,12 @@ point_count = 5
 script = ExtResource("1_xrqiq")
 
 [node name="ColorRect" type="ColorRect" parent="."]
-offset_right = 1282.0
-offset_bottom = 720.0
+custom_minimum_size = Vector2(5000, 3000)
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
 color = Color(0.0923971, 0.0923971, 0.0923971, 1)
 
 [node name="SpawnBox" type="Area2D" parent="."]
