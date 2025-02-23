@@ -4,7 +4,7 @@ extends Node2D
 signal player_scored
 signal level_cleared
 
-const asteroid_prefab:PackedScene = preload("res://scenes/asteroid.tscn")
+const asteroid_prefab:PackedScene = preload("res://scenes/game_scenes/asteroids/asteroid.tscn")
 
 @export var init_asteroid_count := 6
 @export var init_asteroid_size := 4
