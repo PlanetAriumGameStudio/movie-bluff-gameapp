@@ -1,7 +1,7 @@
 [gd_scene load_steps=4 format=3 uid="uid://dlj6h3okxnkpq"]
 
 [ext_resource type="PackedScene" uid="uid://cl7dx667g41nu" path="res://core/scenes/adhoc_menus/adhoc_menu.tscn" id="1_cclk2"]
-[ext_resource type="Script" path="res://core/scenes/adhoc_menus/menus/pause_menu.gd" id="1_s64fm"]
+[ext_resource type="Script" uid="uid://g8kkb2kfop2" path="res://core/scenes/adhoc_menus/menus/pause_menu.gd" id="1_s64fm"]
 [ext_resource type="PackedScene" uid="uid://dbr548gved2lf" path="res://core/scenes/adhoc_menus/menus/mini_options_adhoc_menu.tscn" id="3_ryawl"]
 
 [node name="PauseMenu" instance=ExtResource("1_cclk2")]

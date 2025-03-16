@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=3 uid="uid://d1ojmsaaxapgj"]
 
-[ext_resource type="Script" path="res://core/scenes/menus/options_menu/option_control/option_control.gd" id="1_kttyj"]
+[ext_resource type="Script" uid="uid://b1ss44u3jsu3p" path="res://core/scenes/menus/options_menu/option_control/option_control.gd" id="1_kttyj"]
 
 [node name="OptionControl" type="HBoxContainer"]
 custom_minimum_size = Vector2(0, 40)

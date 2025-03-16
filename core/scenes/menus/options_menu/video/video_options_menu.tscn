@@ -1,6 +1,6 @@
 [gd_scene load_steps=3 format=3 uid="uid://bas0m3vwkwxn8"]
 
-[ext_resource type="Script" path="res://core/scenes/menus/options_menu/video/video_options_menu.gd" id="1_he0ak"]
+[ext_resource type="Script" uid="uid://dog50e1hg0l68" path="res://core/scenes/menus/options_menu/video/video_options_menu.gd" id="1_he0ak"]
 [ext_resource type="PackedScene" uid="uid://dgel5wjtgckfu" path="res://core/scenes/menus/options_menu/option_control/toggle_option_control.tscn" id="2_8qllj"]
 
 [node name="Video" type="MarginContainer"]

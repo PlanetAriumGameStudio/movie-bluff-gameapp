@@ -1,7 +1,7 @@
 [gd_scene load_steps=8 format=3 uid="uid://cn6ktlamgi5d"]
 
-[ext_resource type="Script" path="res://scripts/asteroids_game.gd" id="1_xrqiq"]
-[ext_resource type="Script" path="res://scripts/asteroids_manager.gd" id="2_cwuyy"]
+[ext_resource type="Script" uid="uid://0yuhggmxqvu7" path="res://scripts/asteroids_game.gd" id="1_xrqiq"]
+[ext_resource type="Script" uid="uid://d21lefodk2nku" path="res://scripts/asteroids_manager.gd" id="2_cwuyy"]
 [ext_resource type="FontFile" uid="uid://b42prwa756wip" path="res://fonts/RobotoMono-VariableFont_wght.ttf" id="3_tvplo"]
 [ext_resource type="Theme" uid="uid://bxakjwkc4gbrj" path="res://themes/main_menu_theme.tres" id="4_edofo"]
 [ext_resource type="PackedScene" uid="uid://cbqrvb1pn3bv0" path="res://scenes/pause_menu.tscn" id="5_t8x58"]

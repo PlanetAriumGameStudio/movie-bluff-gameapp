@@ -1,7 +1,7 @@
 [gd_scene load_steps=3 format=3 uid="uid://nxcaymswyj1e"]
 
 [ext_resource type="PackedScene" uid="uid://cl7dx667g41nu" path="res://core/scenes/adhoc_menus/adhoc_menu.tscn" id="1_6gbum"]
-[ext_resource type="Script" path="res://core/scenes/adhoc_menus/adhoc_menu_container.gd" id="2_nv8ey"]
+[ext_resource type="Script" uid="uid://cgc47y6jgqjsv" path="res://core/scenes/adhoc_menus/adhoc_menu_container.gd" id="2_nv8ey"]
 
 [node name="AdhocMenuContainer" instance=ExtResource("1_6gbum")]
 script = ExtResource("2_nv8ey")

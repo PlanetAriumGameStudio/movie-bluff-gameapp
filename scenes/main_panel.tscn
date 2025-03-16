@@ -1,7 +1,7 @@
 [gd_scene load_steps=3 format=3 uid="uid://durb02oav410a"]
 
 [ext_resource type="Theme" uid="uid://bxakjwkc4gbrj" path="res://themes/main_menu_theme.tres" id="1_8hqex"]
-[ext_resource type="Script" path="res://scripts/main_panel.gd" id="1_qq1u4"]
+[ext_resource type="Script" uid="uid://dkgoorscdx5l2" path="res://scripts/main_panel.gd" id="1_qq1u4"]
 
 [node name="MainPanel" type="PanelContainer"]
 anchors_preset = 15

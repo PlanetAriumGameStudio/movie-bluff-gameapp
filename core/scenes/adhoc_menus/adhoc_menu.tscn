@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=3 uid="uid://cl7dx667g41nu"]
 
-[ext_resource type="Script" path="res://core/scenes/adhoc_menus/adhoc_menu.gd" id="1_wt1kj"]
+[ext_resource type="Script" uid="uid://bfy4xspyioh1m" path="res://core/scenes/adhoc_menus/adhoc_menu.gd" id="1_wt1kj"]
 
 [node name="AdhocMenu" type="Control"]
 layout_mode = 3
