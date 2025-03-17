@@ -13,6 +13,7 @@ current_tab = 0
 
 [node name="Audio" parent="TabContainer" index="1" instance=ExtResource("3_eb41j")]
 layout_mode = 2
+theme = null
 metadata/_tab_index = 0
 
 [node name="Video" parent="TabContainer" index="2" instance=ExtResource("4_fublx")]

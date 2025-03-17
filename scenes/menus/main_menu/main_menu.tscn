@@ -16,3 +16,6 @@ anchor_right = 0.5
 offset_left = -262.0
 offset_right = 262.0
 vertical = true
+
+[node name="BackButton" parent="FlowControlContainer/FlowControl" index="0"]
+visible = false

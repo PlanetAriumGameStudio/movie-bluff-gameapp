@@ -92,6 +92,7 @@ func _process(delta: float) -> void:
 			new_bullet.global_position = position
 			new_bullet.rotation = rotation
 			var direction = Vector2.RIGHT.rotated(rotation)
+			
 			get_tree().root.add_child(new_bullet)
 			_laser_asp.playing = true
 			_pstate.shoot = false

@@ -18,6 +18,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+color = Color(0.509286, 0.509286, 0.509286, 1)
 
 [node name="MenuPanelContainer" type="PanelContainer" parent="."]
 unique_name_in_owner = true
@@ -31,24 +32,35 @@ grow_vertical = 2
 
 [node name="PanelColor" type="ColorRect" parent="MenuPanelContainer"]
 layout_mode = 2
+color = Color(0.281187, 0.281187, 0.281187, 1)
 
 [node name="MarginContainer" type="MarginContainer" parent="MenuPanelContainer"]
 layout_mode = 2
+theme_override_constants/margin_left = 64
+theme_override_constants/margin_right = 64
 
 [node name="BoxContainer" type="BoxContainer" parent="MenuPanelContainer/MarginContainer"]
 layout_mode = 2
+size_flags_horizontal = 4
+alignment = 1
+vertical = true
 
-[node name="TitleContainer" type="MarginContainer" parent="MenuPanelContainer/MarginContainer/BoxContainer"]
+[node name="TitleMargin" type="MarginContainer" parent="MenuPanelContainer/MarginContainer/BoxContainer"]
 layout_mode = 2
 
-[node name="TitleLabel" type="Label" parent="MenuPanelContainer/MarginContainer/BoxContainer/TitleContainer"]
+[node name="TitleLabel" type="Label" parent="MenuPanelContainer/MarginContainer/BoxContainer/TitleMargin"]
 layout_mode = 2
+text = "Title"
+horizontal_alignment = 1
 
 [node name="DescriptionMargin" type="MarginContainer" parent="MenuPanelContainer/MarginContainer/BoxContainer"]
 layout_mode = 2
 
 [node name="DescriptionLabel" type="RichTextLabel" parent="MenuPanelContainer/MarginContainer/BoxContainer/DescriptionMargin"]
+custom_minimum_size = Vector2(24, 24)
 layout_mode = 2
+bbcode_enabled = true
+text = "Test"
 
 [node name="MenuButtonsMargin" type="MarginContainer" parent="MenuPanelContainer/MarginContainer/BoxContainer"]
 layout_mode = 2
@@ -56,6 +68,8 @@ layout_mode = 2
 [node name="MenuButtons" type="BoxContainer" parent="MenuPanelContainer/MarginContainer/BoxContainer/MenuButtonsMargin"]
 unique_name_in_owner = true
 layout_mode = 2
+alignment = 1
+vertical = true
 
 [node name="CloseButton" type="Button" parent="MenuPanelContainer/MarginContainer/BoxContainer/MenuButtonsMargin/MenuButtons"]
 custom_minimum_size = Vector2(128, 40)

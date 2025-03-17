@@ -1,11 +1,57 @@
-[gd_scene load_steps=4 format=3 uid="uid://byl8k38axxkwq"]
+[gd_scene load_steps=5 format=3 uid="uid://byl8k38axxkwq"]
 
 [ext_resource type="PackedScene" uid="uid://dlj6h3okxnkpq" path="res://core/scenes/adhoc_menus/menus/pause_menu.tscn" id="1_5x57i"]
 [ext_resource type="Script" uid="uid://vyi845pyj0cn" path="res://scenes/menus/adhoc_menus/pause_menu.gd" id="2_5ykyn"]
 [ext_resource type="PackedScene" uid="uid://bju5saiwgpjas" path="res://scenes/menus/options_menu/mini_options_menu.tscn" id="3_lqsrc"]
+[ext_resource type="FontFile" uid="uid://b42prwa756wip" path="res://fonts/RobotoMono-VariableFont_wght.ttf" id="4_ecp35"]
 
 [node name="PauseMenu" instance=ExtResource("1_5x57i")]
 process_mode = 3
 script = ExtResource("2_5ykyn")
 options_packed_scene = ExtResource("3_lqsrc")
 main_menu_scene = "res://scenes/menus/main_menu/main_menu.tscn"
+
+[node name="BackgroundColor" parent="." index="0"]
+color = Color(0.306923, 0.306923, 0.306922, 1)
+
+[node name="MenuPanelContainer" parent="." index="1"]
+custom_minimum_size = Vector2(640, 480)
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -161.0
+offset_top = -102.0
+offset_right = 161.0
+offset_bottom = 102.0
+
+[node name="PanelColor" parent="MenuPanelContainer" index="0"]
+color = Color(0.180005, 0.180005, 0.180005, 1)
+
+[node name="MarginContainer" parent="MenuPanelContainer" index="1"]
+theme_override_constants/margin_left = 32
+theme_override_constants/margin_top = 16
+theme_override_constants/margin_right = 32
+theme_override_constants/margin_bottom = 16
+
+[node name="BoxContainer" parent="MenuPanelContainer/MarginContainer" index="0"]
+size_flags_horizontal = 4
+size_flags_vertical = 4
+alignment = 1
+vertical = true
+
+[node name="TitleLabel" parent="MenuPanelContainer/MarginContainer/BoxContainer/TitleContainer" index="0"]
+horizontal_alignment = 1
+
+[node name="Label" type="Label" parent="MenuPanelContainer/MarginContainer/BoxContainer/DescriptionMargin" index="0"]
+layout_mode = 2
+
+[node name="DescriptionLabel" parent="MenuPanelContainer/MarginContainer/BoxContainer/DescriptionMargin" index="1"]
+theme_override_fonts/normal_font = ExtResource("4_ecp35")
+text = "Test Pause?"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="MenuButtons" parent="MenuPanelContainer/MarginContainer/BoxContainer/MenuButtonsMargin" index="0"]
+vertical = true

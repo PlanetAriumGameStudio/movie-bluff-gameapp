@@ -5,6 +5,3 @@
 
 [node name="AdhocMenuContainer" instance=ExtResource("1_jbpp3")]
 menu_scene = ExtResource("2_1b846")
-
-[node name="TitleLabel" parent="MenuPanelContainer/MarginContainer/BoxContainer/TitleContainer" index="0"]
-text = "Options"

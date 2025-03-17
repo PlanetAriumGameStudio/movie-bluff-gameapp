@@ -1,10 +1,11 @@
-[gd_scene load_steps=8 format=3 uid="uid://cn6ktlamgi5d"]
+[gd_scene load_steps=9 format=3 uid="uid://cn6ktlamgi5d"]
 
-[ext_resource type="Script" uid="uid://0yuhggmxqvu7" path="res://scripts/asteroids_game.gd" id="1_xrqiq"]
-[ext_resource type="Script" uid="uid://d21lefodk2nku" path="res://scripts/asteroids_manager.gd" id="2_cwuyy"]
+[ext_resource type="Script" uid="uid://0yuhggmxqvu7" path="res://scenes/game_scenes/asteroids/asteroids_game.gd" id="1_xrqiq"]
+[ext_resource type="Script" uid="uid://d21lefodk2nku" path="res://scenes/game_scenes/asteroids/asteroids_manager.gd" id="2_cwuyy"]
 [ext_resource type="FontFile" uid="uid://b42prwa756wip" path="res://fonts/RobotoMono-VariableFont_wght.ttf" id="3_tvplo"]
 [ext_resource type="Theme" uid="uid://bxakjwkc4gbrj" path="res://themes/main_menu_theme.tres" id="4_edofo"]
-[ext_resource type="PackedScene" uid="uid://cbqrvb1pn3bv0" path="res://scenes/pause_menu.tscn" id="5_t8x58"]
+[ext_resource type="Script" uid="uid://u3mhfmijlrh2" path="res://scripts/pause_menu_controller.gd" id="6_eerqa"]
+[ext_resource type="PackedScene" uid="uid://byl8k38axxkwq" path="res://scenes/menus/adhoc_menus/pause_menu.tscn" id="7_boj0s"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_qu4ki"]
 size = Vector2(40, 40)
@@ -17,15 +18,6 @@ point_count = 5
 
 [node name="AsteroidsWorld" type="Node2D"]
 script = ExtResource("1_xrqiq")
-
-[node name="ColorRect" type="ColorRect" parent="."]
-custom_minimum_size = Vector2(5000, 3000)
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-color = Color(0.0923971, 0.0923971, 0.0923971, 1)
 
 [node name="SpawnBox" type="Area2D" parent="."]
 position = Vector2(640, 360)
@@ -45,6 +37,10 @@ position = Vector2(40, 40)
 rotation = 1.5708
 
 [node name="GUI" type="CanvasLayer" parent="."]
+
+[node name="PauseMenuController" type="Node" parent="GUI"]
+script = ExtResource("6_eerqa")
+pause_menu_packed = ExtResource("7_boj0s")
 
 [node name="MarginContainer" type="MarginContainer" parent="GUI"]
 anchors_preset = 15
@@ -115,8 +111,6 @@ layout_mode = 2
 size_flags_horizontal = 8
 size_flags_vertical = 8
 text = "Main Menu"
-
-[node name="PauseMenu" parent="GUI" instance=ExtResource("5_t8x58")]
 
 [connection signal="area_entered" from="SpawnBox" to="." method="_on_spawn_box_area_entered"]
 [connection signal="area_exited" from="SpawnBox" to="." method="_on_spawn_box_area_exited"]

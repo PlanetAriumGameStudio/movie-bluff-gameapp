@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=3 uid="uid://bp8i034tdnk40"]
 
-[ext_resource type="Script" uid="uid://bds4w4tojkl78" path="res://scripts/asteroid.gd" id="1_n1yec"]
+[ext_resource type="Script" uid="uid://bds4w4tojkl78" path="res://scenes/game_scenes/asteroids/asteroid.gd" id="1_n1yec"]
 
 [node name="Asteroid" type="Area2D" groups=["asteroids"]]
 collision_layer = 2

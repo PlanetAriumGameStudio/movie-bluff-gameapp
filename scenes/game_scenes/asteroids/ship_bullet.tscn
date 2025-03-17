@@ -1,6 +1,6 @@
 [gd_scene load_steps=3 format=3 uid="uid://b7pmkevhqbxse"]
 
-[ext_resource type="Script" uid="uid://dsxyud1q42vfj" path="res://scripts/ship_bullet.gd" id="1_diwnc"]
+[ext_resource type="Script" uid="uid://dsxyud1q42vfj" path="res://scenes/game_scenes/asteroids/ship_bullet.gd" id="1_diwnc"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_a2xpy"]
 size = Vector2(10, 2)

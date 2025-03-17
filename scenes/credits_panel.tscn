@@ -1,7 +1,7 @@
 [gd_scene load_steps=3 format=3 uid="uid://bs460myshrpmo"]
 
 [ext_resource type="Theme" uid="uid://dl5d2an56e6ae" path="res://themes/credits_theme.tres" id="1_bd5cs"]
-[ext_resource type="Script" uid="uid://c3e4h4tq8mion" path="res://scripts/credits_panel.gd" id="2_dxlgm"]
+[ext_resource type="Script" uid="uid://c3e4h4tq8mion" path="res://scenes/credits_panel.gd" id="2_dxlgm"]
 
 [node name="CreditsPanel" type="PanelContainer"]
 anchors_preset = 15

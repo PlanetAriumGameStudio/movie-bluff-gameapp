@@ -52,10 +52,6 @@ func _ready():
 	_setup_options()
 	_setup_main_menu()
 
-func _on_restart_button_pressed():
-	%ConfirmRestart.popup_centered()
-	popup_open = %ConfirmRestart
-
 func _on_options_button_pressed():
 	open_options_menu()
 
@@ -66,10 +62,6 @@ func _on_main_menu_button_pressed():
 func _on_exit_button_pressed():
 	%ConfirmExit.popup_centered()
 	popup_open = %ConfirmExit
-
-func _on_confirm_restart_confirmed():
-	TransitionManager.reload_current_scene()
-	close()
 
 func _on_confirm_main_menu_confirmed():
 	_load_scene(main_menu_scene)

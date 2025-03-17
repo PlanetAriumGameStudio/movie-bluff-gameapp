@@ -29,7 +29,6 @@ static func get_audio_bus_name(bus_index : int) -> String:
 	return AudioServer.get_bus_name(bus_index)
 
 static func set_audio_from_config():
-	print("Setting audio")
 	for bus_index in AudioServer.bus_count:
 		var bus_name : String = AudioServer.get_bus_name(bus_index)
 		var bus_volume : float = get_bus_volume(bus_index)
