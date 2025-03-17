@@ -11,7 +11,8 @@ management singletons, and basic menu system.
 - [ ] Handle UI focus / non-mouse navigation
 - [ ] Make dropdown directory selection for "Game Scenes" / Templates (Asteroids should be one of these)
 - [ ] Make secondary "Game Scene"
-- [ ] Exit to Desktop Button
+- [ ] Fix mini menu options overlay visuals
+
 
 ### Todo (Asteroid)
 
@@ -20,6 +21,7 @@ It is meant to be a playable example of a contained scene/game environment.
 
 - [ ] add level difficulty / increase with progression
 - [ ] bug where player state is stuck in "moving" while respawning
+- [ ] Make and hook up Credits panel
 
 ### In Progress
 
@@ -27,6 +29,14 @@ It is meant to be a playable example of a contained scene/game environment.
 
 ### Done ✓
 
+March 2025
+- [x] Upgrade to godot 4.4
+- [x] Remove initial non-generalized menus and scripts
+- [x] Replace hard coded paths with UID refs where appropriate
+- [x] Restructure Asteroids into examples folder
+- [x] Exit to Desktop Button
+
+February 2025
 - [x] Basic scene transition Global
 - [x] Audio bus globals
 - [x] asteroid base game

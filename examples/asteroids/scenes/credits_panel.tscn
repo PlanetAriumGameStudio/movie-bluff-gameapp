@@ -1,0 +1,42 @@
+[gd_scene load_steps=3 format=3 uid="uid://bs460myshrpmo"]
+
+[ext_resource type="Theme" path="res://themes/credits_theme.tres" id="1_bd5cs"]
+[ext_resource type="Script" uid="uid://c3e4h4tq8mion" path="res://examples/asteroids/scenes/credits_panel.gd" id="2_dxlgm"]
+
+[node name="CreditsPanel" type="PanelContainer"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 176.0
+offset_top = 124.0
+offset_right = -176.0
+offset_bottom = -124.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = ExtResource("1_bd5cs")
+script = ExtResource("2_dxlgm")
+
+[node name="MarginContainer" type="MarginContainer" parent="."]
+layout_mode = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer"]
+layout_mode = 2
+
+[node name="Title" type="Label" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 4
+theme = ExtResource("1_bd5cs")
+text = "Project: Hello World Template"
+
+[node name="Developers" type="Label" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 4
+theme = ExtResource("1_bd5cs")
+text = "Developers: PKFiyah"
+
+[node name="Button" type="Button" parent="MarginContainer"]
+layout_mode = 2
+size_flags_vertical = 8
+text = "Back"
+
+[connection signal="pressed" from="MarginContainer/Button" to="." method="_on_button_pressed"]

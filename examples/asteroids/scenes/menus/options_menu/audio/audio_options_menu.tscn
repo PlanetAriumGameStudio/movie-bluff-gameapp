@@ -1,0 +1,10 @@
+[gd_scene load_steps=3 format=3 uid="uid://cn3mxixiwkdtx"]
+
+[ext_resource type="PackedScene" uid="uid://xdvhnprvbvgc" path="res://core/scenes/menus/options_menu/audio/audio_options_menu.tscn" id="1_nla5j"]
+[ext_resource type="Script" uid="uid://d3ms4rrvyggxi" path="res://examples/asteroids/scenes/menus/options_menu/audio/audio_options_menu.gd" id="3_yr0t0"]
+
+[node name="Audio" instance=ExtResource("1_nla5j")]
+script = ExtResource("3_yr0t0")
+
+[node name="PanelContainer" type="PanelContainer" parent="." index="0"]
+layout_mode = 2

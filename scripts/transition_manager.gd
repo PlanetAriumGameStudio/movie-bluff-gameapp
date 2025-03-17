@@ -16,7 +16,7 @@ enum TransitionType {
 # Used to generate a still image of whatever is currently being displayed on the screen/viewport
 func setup_sprite():
 	# Create the scene that will hold our transition sprite 
-	var transition_sprite = load("res://scenes/transition_sprite.tscn").instantiate() as Sprite2D
+	var transition_sprite = load("uid://fl84kmwh4b87").instantiate() as Sprite2D
 	var image = get_viewport().get_texture().get_image()
 	var transition_texture = ImageTexture.create_from_image(image)
 	transition_sprite.name = transition_node_name
