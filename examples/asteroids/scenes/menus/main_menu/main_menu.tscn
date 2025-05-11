@@ -9,6 +9,12 @@ script = ExtResource("2_3y4oa")
 game_scene_path = "uid://cn6ktlamgi5d"
 options_packed_scene = ExtResource("3_xnfv3")
 
+[node name="TitleLabel" parent="MenuContainer/TitleMargin/TitleContainer" index="0"]
+text = "Asteroids"
+
+[node name="SubTitleLabel" parent="MenuContainer/SubTitleMargin/SubTitleContainer" index="0"]
+text = "Example Game"
+
 [node name="MenuButtonsBoxContainer" parent="MenuContainer/MenuButtonsMargin/MenuButtonsContainer" index="0"]
 anchors_preset = 13
 anchor_left = 0.5

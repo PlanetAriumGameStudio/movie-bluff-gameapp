@@ -7,9 +7,6 @@
 script = ExtResource("2_nv8ey")
 menu_scene = null
 
-[node name="TitleContainer" parent="MenuPanelContainer/MarginContainer/BoxContainer" index="0"]
-visible = false
-
 [node name="DescriptionMargin" parent="MenuPanelContainer/MarginContainer/BoxContainer" index="1"]
 visible = false
 
