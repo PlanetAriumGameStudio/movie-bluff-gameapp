@@ -1,7 +1,0 @@
-[gd_scene load_steps=3 format=3 uid="uid://bju5saiwgpjas"]
-
-[ext_resource type="PackedScene" uid="uid://crn7mx7njbtm5" path="res://core/scenes/menus/options_menu/mini_options_menu.tscn" id="1_p4l4t"]
-[ext_resource type="Script" uid="uid://bv76byyni7kir" path="res://examples/asteroids/scenes/menus/options_menu/mini_options_menu.gd" id="2_s5iuk"]
-
-[node name="MiniOptionsMenu" instance=ExtResource("1_p4l4t")]
-script = ExtResource("2_s5iuk")
