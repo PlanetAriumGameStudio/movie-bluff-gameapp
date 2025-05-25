@@ -14,7 +14,6 @@ static func _save_config() -> void:
 		push_error("save config failed with error %d" % err)
 		
 static func load_config() -> void:
-	print("load_config")
 	if config_file != null:
 		return
 	config_file = ConfigFile.new()
@@ -33,6 +32,5 @@ static func set_config(section: String, key: String, value) -> void:
 
 static func get_config(section: String, key: String, default = null) -> Variant:
 	load_config()
-	print("Getting Config for %s" % section)
 	return config_file.get_value(section, key, default)
 	
