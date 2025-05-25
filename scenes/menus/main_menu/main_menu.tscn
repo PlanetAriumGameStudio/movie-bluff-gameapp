@@ -1,0 +1,11 @@
+[gd_scene load_steps=3 format=3 uid="uid://cmex6wp7ewj41"]
+
+[ext_resource type="PackedScene" uid="uid://bmtakdh44464q" path="res://core/scenes/menus/main_menu/main_menu.tscn" id="1_kx65a"]
+[ext_resource type="Script" uid="uid://dqhoas3fswheu" path="res://scenes/menus/main_menu/main_menu.gd" id="2_flk2s"]
+
+[node name="MainMenu" instance=ExtResource("1_kx65a")]
+script = ExtResource("2_flk2s")
+game_scene_path = "uid://7qt1dp4hjbjs"
+options_packed_scene = null
+
+[node name="HTTPRequest" type="HTTPRequest" parent="." index="5"]

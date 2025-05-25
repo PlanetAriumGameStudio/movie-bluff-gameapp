@@ -10,8 +10,9 @@ config_version=5
 
 [application]
 
-config/name="Hello World Template"
-run/main_scene="uid://cea14h0xpng5x"
+config/name="Movie Bluff"
+config/version="0.0.1"
+run/main_scene="uid://cmex6wp7ewj41"
 config/features=PackedStringArray("4.4", "GL Compatibility")
 config/icon="res://sprites/icon.svg"
 

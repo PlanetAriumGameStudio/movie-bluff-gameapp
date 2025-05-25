@@ -1,0 +1,150 @@
+[gd_scene load_steps=5 format=3 uid="uid://7qt1dp4hjbjs"]
+
+[ext_resource type="Script" uid="uid://b7t0shptpvpcv" path="res://scenes/game_scenes/daily_buff.gd" id="1_5e3v5"]
+[ext_resource type="PackedScene" uid="uid://dtjpcnacdl0pk" path="res://scenes/game_scenes/movie_person_pair.tscn" id="1_bcfbp"]
+[ext_resource type="Texture2D" uid="uid://cpinmd1043yo2" path="res://sprites/arrow_temp.png" id="3_a0igo"]
+
+[sub_resource type="Theme" id="Theme_a0igo"]
+
+[node name="DailyBuff" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+script = ExtResource("1_5e3v5")
+
+[node name="ScreenContainer" type="MarginContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 5
+theme_override_constants/margin_top = 5
+theme_override_constants/margin_right = 5
+theme_override_constants/margin_bottom = 5
+
+[node name="VBoxContainer" type="VBoxContainer" parent="ScreenContainer"]
+layout_mode = 2
+
+[node name="CurrentPath(TODO)" type="HBoxContainer" parent="ScreenContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="Panel" type="Panel" parent="ScreenContainer/VBoxContainer/CurrentPath(TODO)"]
+custom_minimum_size = Vector2(0, 100)
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="HBoxContainer" type="HBoxContainer" parent="ScreenContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+alignment = 1
+
+[node name="StartingPair" parent="ScreenContainer/VBoxContainer/HBoxContainer" instance=ExtResource("1_bcfbp")]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 1
+
+[node name="MiddleControls" type="Control" parent="ScreenContainer/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="MarginContainer" type="MarginContainer" parent="ScreenContainer/VBoxContainer/HBoxContainer/MiddleControls"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="ScreenContainer/VBoxContainer/HBoxContainer/MiddleControls/MarginContainer"]
+layout_mode = 2
+
+[node name="DirectionArrow" type="TextureRect" parent="ScreenContainer/VBoxContainer/HBoxContainer/MiddleControls/MarginContainer/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+texture = ExtResource("3_a0igo")
+stretch_mode = 3
+flip_h = true
+
+[node name="ChangeDirectionButton" type="Button" parent="ScreenContainer/VBoxContainer/HBoxContainer/MiddleControls/MarginContainer/VBoxContainer"]
+layout_mode = 2
+text = "Change Direction"
+
+[node name="HBoxContainer" type="HBoxContainer" parent="ScreenContainer/VBoxContainer/HBoxContainer/MiddleControls/MarginContainer/VBoxContainer"]
+layout_mode = 2
+alignment = 1
+
+[node name="ChangePersonMargin" type="MarginContainer" parent="ScreenContainer/VBoxContainer/HBoxContainer/MiddleControls/MarginContainer/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme = SubResource("Theme_a0igo")
+theme_override_constants/margin_left = 0
+theme_override_constants/margin_top = 0
+theme_override_constants/margin_right = 20
+theme_override_constants/margin_bottom = 0
+
+[node name="ChangePersonButton" type="Button" parent="ScreenContainer/VBoxContainer/HBoxContainer/MiddleControls/MarginContainer/VBoxContainer/HBoxContainer/ChangePersonMargin"]
+layout_mode = 2
+text = "Change Person"
+
+[node name="ChangeMovieMargin" type="MarginContainer" parent="ScreenContainer/VBoxContainer/HBoxContainer/MiddleControls/MarginContainer/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/margin_left = 20
+
+[node name="ChangeMovieButton" type="Button" parent="ScreenContainer/VBoxContainer/HBoxContainer/MiddleControls/MarginContainer/VBoxContainer/HBoxContainer/ChangeMovieMargin"]
+layout_mode = 2
+text = "Change Movie"
+
+[node name="HBoxContainer2" type="HBoxContainer" parent="ScreenContainer/VBoxContainer/HBoxContainer/MiddleControls/MarginContainer/VBoxContainer"]
+layout_mode = 2
+alignment = 1
+
+[node name="ChangeTypeLabel" type="Label" parent="ScreenContainer/VBoxContainer/HBoxContainer/MiddleControls/MarginContainer/VBoxContainer/HBoxContainer2"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Change Type Placeholder"
+horizontal_alignment = 1
+
+[node name="DirectionLabel" type="Label" parent="ScreenContainer/VBoxContainer/HBoxContainer/MiddleControls/MarginContainer/VBoxContainer/HBoxContainer2"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Direction Placeholder"
+horizontal_alignment = 1
+
+[node name="FinishingPair" parent="ScreenContainer/VBoxContainer/HBoxContainer" instance=ExtResource("1_bcfbp")]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="UserInputMargin" type="MarginContainer" parent="ScreenContainer/VBoxContainer"]
+custom_minimum_size = Vector2(0, 120)
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="VBoxContainer" type="VBoxContainer" parent="ScreenContainer/VBoxContainer/UserInputMargin"]
+layout_mode = 2
+
+[node name="SubmissionInput" type="TextEdit" parent="ScreenContainer/VBoxContainer/UserInputMargin/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 3
+placeholder_text = "Enter Submission Text Here"
+
+[node name="SubmissionButton" type="Button" parent="ScreenContainer/VBoxContainer/UserInputMargin/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Add "
+
+[node name="HTTPRequest" type="HTTPRequest" parent="."]
+
+[connection signal="button_down" from="ScreenContainer/VBoxContainer/HBoxContainer/MiddleControls/MarginContainer/VBoxContainer/ChangeDirectionButton" to="." method="_on_change_direction_button_button_down"]
+[connection signal="button_down" from="ScreenContainer/VBoxContainer/HBoxContainer/MiddleControls/MarginContainer/VBoxContainer/HBoxContainer/ChangePersonMargin/ChangePersonButton" to="." method="_on_change_person_button_button_down"]
+[connection signal="button_down" from="ScreenContainer/VBoxContainer/HBoxContainer/MiddleControls/MarginContainer/VBoxContainer/HBoxContainer/ChangeMovieMargin/ChangeMovieButton" to="." method="_on_change_movie_button_button_down"]
+[connection signal="button_down" from="ScreenContainer/VBoxContainer/UserInputMargin/VBoxContainer/SubmissionButton" to="." method="_on_submission_button_button_down"]

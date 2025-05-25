@@ -1,0 +1,25 @@
+[gd_scene load_steps=2 format=3 uid="uid://gou6m2qym2gd"]
+
+[ext_resource type="Script" uid="uid://kss8hmww5brk" path="res://scenes/game_scenes/daily_path.gd" id="1_inx5p"]
+
+[node name="DailyPath" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_inx5p")
+
+[node name="HBoxContainer" type="HBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+alignment = 1
+
+[node name="Panel" type="Panel" parent="HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3

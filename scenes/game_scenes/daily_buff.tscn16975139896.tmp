@@ -1,0 +1,99 @@
+[gd_scene load_steps=4 format=3 uid="uid://7qt1dp4hjbjs"]
+
+[ext_resource type="Script" uid="uid://b7t0shptpvpcv" path="res://scenes/game_scenes/daily_buff.gd" id="1_5e3v5"]
+[ext_resource type="PackedScene" uid="uid://dtjpcnacdl0pk" path="res://scenes/game_scenes/movie_person_pair.tscn" id="1_bcfbp"]
+[ext_resource type="Texture2D" uid="uid://cpinmd1043yo2" path="res://sprites/arrow_temp.png" id="3_a0igo"]
+
+[node name="DailyBuff" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+script = ExtResource("1_5e3v5")
+
+[node name="ScreenContainer" type="MarginContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 5
+theme_override_constants/margin_top = 5
+theme_override_constants/margin_right = 5
+theme_override_constants/margin_bottom = 5
+
+[node name="VBoxContainer" type="VBoxContainer" parent="ScreenContainer"]
+layout_mode = 2
+
+[node name="HBoxContainer" type="HBoxContainer" parent="ScreenContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+alignment = 1
+
+[node name="StartingPair" parent="ScreenContainer/VBoxContainer/HBoxContainer" instance=ExtResource("1_bcfbp")]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="AddToBeginningButton" type="Button" parent="ScreenContainer/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+text = "AddToStart"
+
+[node name="CurrentPair" parent="ScreenContainer/VBoxContainer/HBoxContainer" instance=ExtResource("1_bcfbp")]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+
+[node name="Buffer" type="Control" parent="ScreenContainer/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="DirectionArrow" type="TextureRect" parent="ScreenContainer/VBoxContainer/HBoxContainer/Buffer"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("3_a0igo")
+expand_mode = 1
+flip_h = true
+
+[node name="AddToEndButton" type="Button" parent="ScreenContainer/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+text = "AddToEnd"
+
+[node name="FinishingPair" parent="ScreenContainer/VBoxContainer/HBoxContainer" instance=ExtResource("1_bcfbp")]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="UserInput" type="MarginContainer" parent="ScreenContainer/VBoxContainer"]
+custom_minimum_size = Vector2(0, 120)
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="VBoxContainer" type="VBoxContainer" parent="ScreenContainer/VBoxContainer/UserInput"]
+layout_mode = 2
+
+[node name="SubmissionInput" type="TextEdit" parent="ScreenContainer/VBoxContainer/UserInput/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 3
+placeholder_text = "Enter Submission Text Here"
+
+[node name="SubmissionButton" type="Button" parent="ScreenContainer/VBoxContainer/UserInput/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Add "
+
+[node name="HTTPRequest" type="HTTPRequest" parent="."]
+
+[connection signal="button_down" from="ScreenContainer/VBoxContainer/UserInput/VBoxContainer/SubmissionButton" to="." method="_on_submission_button_button_down"]

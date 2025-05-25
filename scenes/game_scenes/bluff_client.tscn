@@ -1,0 +1,8 @@
+[gd_scene load_steps=2 format=3 uid="uid://dcm03af80y1rj"]
+
+[ext_resource type="Script" uid="uid://bovida83mwus4" path="res://scripts/bluff_client.gd" id="1_4d5wp"]
+
+[node name="BluffClient" type="Node"]
+script = ExtResource("1_4d5wp")
+
+[node name="HTTPRequest" type="HTTPRequest" parent="."]
