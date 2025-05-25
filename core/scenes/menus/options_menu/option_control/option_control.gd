@@ -29,7 +29,6 @@ const OptionSectionNames : Dictionary = {
 
 @export var option_section : OptionSections :
 	set(value):
-		print(value)
 		var _update_config : bool = OptionSectionNames[option_section] == section and not lock_config_names
 		option_section = value
 		if _update_config:
