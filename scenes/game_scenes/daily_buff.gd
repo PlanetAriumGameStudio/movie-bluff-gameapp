@@ -28,9 +28,6 @@ var current_pairing:Pairing
 # Tracks game completion state. will be updated once per submission.
 var path_complete:bool
 
-var path_from_start: Array[Pairing]
-var path_from_finish: Array[Pairing]
-
 # Call API daily endpoint to populate start and finish pairs
 # TODO incorporate account information later
 func _ready() -> void:
@@ -42,8 +39,8 @@ func init_daily():
 	current_pairing = Pairing.new()
 	current_state = INIT_STATE
 	current_direction = START_TO_FINISH
-	path_from_start = []
-	path_from_finish = []
+	%DailyPath.path_from_start = Array([], TYPE_OBJECT, "Pairing", Pairing)
+	%DailyPath.path_from_finish = Array([], TYPE_OBJECT, "Pairing", Pairing)
 	path_complete = false
 	_update_changing(CHANGE_TYPES.NONE)
 	_update_direction_text()
@@ -59,7 +56,6 @@ func _update_changing(type:CHANGE_TYPES) -> void:
 	last_change = type
 	%ChangeTypeLabel.text = change_labels_dict.get(type)
 	
-
 func _handle_daily_response(result, response_code, headers, body):
 	print("Got Daily Response")
 	var json = JSON.parse_string(body.get_string_from_utf8())
@@ -67,8 +63,7 @@ func _handle_daily_response(result, response_code, headers, body):
 	var finishingPair:Pairing = Pairing.parse_pairing_from_json(json["finishing_pair"])
 	%StartingPair.set_pairing(startingPair)
 	%FinishingPair.set_pairing(finishingPair)
-	path_from_start.push_back(startingPair)
-	path_from_finish.push_front(finishingPair)
+	%DailyPath.init_daily_path(startingPair, finishingPair)
 	print("Initialized")
 
 func _get_credits_for_movie(movie_id:int):
@@ -113,9 +108,9 @@ func _person_has_submission(input):
 
 func _push_pair_to_path(pair:Pairing):
 	if current_direction == START_TO_FINISH:
-		path_from_start.push_back(pair)
+		%DailyPath.push_to_start(pair)
 	else:
-		path_from_finish.push_front(pair)
+		%DailyPath.push_to_finish(pair)
 
 func _on_submission_button_button_down() -> void:
 	if current_direction == START_TO_FINISH:
@@ -153,53 +148,7 @@ func _on_submission_button_button_down() -> void:
 			print("not found")
 	else:
 		print("error in last_change")
-	
-	if _check_path_completeness():
-		print("Game completed successfully!")
-	else:
-		print("Game continuing")
 		
-# Check after each submission to see if win condition met
-func _check_path_completeness() -> bool:
-	var i = 0
-	var curr_pair:Pairing = path_from_start[i]
-	var path_exists = true
-	
-	while(path_exists && i < path_from_start.size()-1):
-		if path_from_start[i].movie_name == path_from_start[i+1].movie_name || path_from_start[i].person_name == path_from_start[i+1].person_name:
-			i += 1
-			continue
-		else:
-			path_exists = false
-	
-	# Specifically check the mid point
-	# TODO Lookahead needed for last check to complete path (On submission, check last submissions cast/crew for early finish)
-	if (path_exists &&
-		(path_from_start.back().movie_name != path_from_finish.front().movie_name &&
-		 path_from_start.back().person_name != path_from_finish.front().person_name)):
-		print(path_from_start.back().movie_name)
-		print(path_from_finish.front().movie_name)
-		print(path_from_start.back().movie_name != path_from_finish.front().movie_name)
-		print(path_from_start.back().person_name)
-		print(path_from_finish.front().person_name)
-		print(path_from_start.back().person_name != path_from_finish.front().person_name)
-		print("Failed the Gap")
-		return false
-	
-	# Confirm path makes it to the end through both Arrays
-	while(path_exists && i < path_from_finish.size()-1):
-		if path_from_finish[i].movie_name == path_from_finish[i+1].movie_name || path_from_finish[i].person_name == path_from_finish[i+1].person_name:
-			i += 1
-			continue
-		else:
-			path_exists = false
-	
-	if path_exists:
-		print("yay")
-	else:
-		print("nay")
-	return path_exists
-
 func _on_change_movie_button_button_down() -> void:
 	_update_changing(CHANGE_TYPES.PERSON)
 

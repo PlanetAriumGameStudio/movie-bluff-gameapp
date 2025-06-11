@@ -1,25 +1,63 @@
-[gd_scene load_steps=2 format=3 uid="uid://gou6m2qym2gd"]
+[gd_scene load_steps=4 format=3 uid="uid://gou6m2qym2gd"]
 
 [ext_resource type="Script" uid="uid://kss8hmww5brk" path="res://scenes/game_scenes/daily_path.gd" id="1_inx5p"]
+[ext_resource type="PackedScene" uid="uid://dtutaeljvhace" path="res://scenes/game_scenes/mini_pair_entry.tscn" id="2_0ctjq"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_sff4p"]
+bg_color = Color(0.619608, 0.164706, 0.168627, 1)
+border_width_left = 8
+border_width_top = 8
+border_width_right = 8
+border_width_bottom = 8
+border_color = Color(0.329412, 0.0431373, 0.054902, 1)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
 
 [node name="DailyPath" type="Control"]
+custom_minimum_size = Vector2(0, 100)
 layout_mode = 3
-anchors_preset = 15
+anchors_preset = 14
+anchor_top = 0.5
 anchor_right = 1.0
-anchor_bottom = 1.0
+anchor_bottom = 0.5
 grow_horizontal = 2
 grow_vertical = 2
+size_flags_vertical = 4
 script = ExtResource("1_inx5p")
+mini_pair_prefab = ExtResource("2_0ctjq")
 
-[node name="HBoxContainer" type="HBoxContainer" parent="."]
+[node name="MarginContainer" type="MarginContainer" parent="."]
 layout_mode = 1
-anchors_preset = 15
+anchors_preset = 14
+anchor_top = 0.5
 anchor_right = 1.0
-anchor_bottom = 1.0
+anchor_bottom = 0.5
+offset_top = -50.0
+offset_bottom = 50.0
 grow_horizontal = 2
 grow_vertical = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 10
+
+[node name="PanelContainer" type="PanelContainer" parent="MarginContainer"]
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_sff4p")
+
+[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer/PanelContainer"]
+layout_mode = 2
 alignment = 1
 
-[node name="Panel" type="Panel" parent="HBoxContainer"]
+[node name="StartPathHBoxContainer" type="HBoxContainer" parent="MarginContainer/PanelContainer/HBoxContainer"]
+unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
+
+[node name="FinishPathHBoxContainer" type="HBoxContainer" parent="MarginContainer/PanelContainer/HBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+alignment = 2

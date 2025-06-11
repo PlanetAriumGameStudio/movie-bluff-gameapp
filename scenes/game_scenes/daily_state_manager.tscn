@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://d4avopwyutdt0"]
+
+[ext_resource type="Script" uid="uid://gpj1sjkqixpq" path="res://scenes/game_scenes/daily_state_manager.gd" id="1_3uoey"]
+
+[node name="DailyStateManager" type="Node"]
+script = ExtResource("1_3uoey")

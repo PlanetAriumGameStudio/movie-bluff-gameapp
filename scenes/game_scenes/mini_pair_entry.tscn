@@ -1,0 +1,61 @@
+[gd_scene load_steps=5 format=3 uid="uid://dtutaeljvhace"]
+
+[ext_resource type="Script" uid="uid://32bn3y0samdf" path="res://scenes/game_scenes/mini_pair_entry.gd" id="1_pidg0"]
+[ext_resource type="Texture2D" uid="uid://b7aa7ybayfpp7" path="res://sprites/testprof_w45.webp" id="2_voypd"]
+[ext_resource type="Texture2D" uid="uid://cw8c6kcom423n" path="res://sprites/test_w45.webp" id="3_7u5ww"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_inx5p"]
+bg_color = Color(1, 0.952941, 0.690196, 1)
+border_width_left = 5
+border_width_top = 5
+border_width_right = 5
+border_width_bottom = 5
+border_color = Color(0.878431, 0.623529, 0.243137, 1)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+shadow_size = 4
+shadow_offset = Vector2(2, 4)
+
+[node name="MiniPair" type="MarginContainer"]
+size_flags_horizontal = 4
+size_flags_vertical = 4
+theme_override_constants/margin_left = 5
+theme_override_constants/margin_top = 5
+theme_override_constants/margin_right = 5
+theme_override_constants/margin_bottom = 5
+script = ExtResource("1_pidg0")
+
+[node name="PanelContainer" type="PanelContainer" parent="."]
+layout_mode = 2
+size_flags_horizontal = 6
+size_flags_vertical = 4
+theme_override_styles/panel = SubResource("StyleBoxFlat_inx5p")
+
+[node name="MiniMarginContainer" type="MarginContainer" parent="PanelContainer"]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+theme_override_constants/margin_left = 5
+theme_override_constants/margin_top = 5
+theme_override_constants/margin_right = 5
+theme_override_constants/margin_bottom = 5
+
+[node name="HBoxContainer" type="HBoxContainer" parent="PanelContainer/MiniMarginContainer"]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+alignment = 1
+
+[node name="MiniMoviePoster" type="TextureRect" parent="PanelContainer/MiniMarginContainer/HBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+texture = ExtResource("3_7u5ww")
+expand_mode = 3
+
+[node name="MiniPersonProfile" type="TextureRect" parent="PanelContainer/MiniMarginContainer/HBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+texture = ExtResource("2_voypd")
+stretch_mode = 2
