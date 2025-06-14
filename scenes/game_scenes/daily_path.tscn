@@ -2,18 +2,7 @@
 
 [ext_resource type="Script" uid="uid://kss8hmww5brk" path="res://scenes/game_scenes/daily_path.gd" id="1_inx5p"]
 [ext_resource type="PackedScene" uid="uid://dtutaeljvhace" path="res://scenes/game_scenes/mini_pair_entry.tscn" id="2_0ctjq"]
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_sff4p"]
-bg_color = Color(0.619608, 0.164706, 0.168627, 1)
-border_width_left = 8
-border_width_top = 8
-border_width_right = 8
-border_width_bottom = 8
-border_color = Color(0.329412, 0.0431373, 0.054902, 1)
-corner_radius_top_left = 10
-corner_radius_top_right = 10
-corner_radius_bottom_right = 10
-corner_radius_bottom_left = 10
+[ext_resource type="StyleBox" uid="uid://68nl5p4gy0ri" path="res://scenes/game_scenes/first_pass_flat_style.tres" id="3_sff4p"]
 
 [node name="DailyPath" type="Control"]
 custom_minimum_size = Vector2(0, 100)
@@ -45,7 +34,7 @@ theme_override_constants/margin_bottom = 10
 
 [node name="PanelContainer" type="PanelContainer" parent="MarginContainer"]
 layout_mode = 2
-theme_override_styles/panel = SubResource("StyleBoxFlat_sff4p")
+theme_override_styles/panel = ExtResource("3_sff4p")
 
 [node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer/PanelContainer"]
 layout_mode = 2

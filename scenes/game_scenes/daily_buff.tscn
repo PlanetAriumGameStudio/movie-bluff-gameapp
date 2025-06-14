@@ -1,9 +1,10 @@
-[gd_scene load_steps=6 format=3 uid="uid://7qt1dp4hjbjs"]
+[gd_scene load_steps=7 format=3 uid="uid://7qt1dp4hjbjs"]
 
 [ext_resource type="Script" uid="uid://b7t0shptpvpcv" path="res://scenes/game_scenes/daily_buff.gd" id="1_5e3v5"]
 [ext_resource type="PackedScene" uid="uid://dtjpcnacdl0pk" path="res://scenes/game_scenes/movie_person_pair.tscn" id="1_bcfbp"]
 [ext_resource type="PackedScene" uid="uid://gou6m2qym2gd" path="res://scenes/game_scenes/daily_path.tscn" id="2_mh4ei"]
 [ext_resource type="Texture2D" uid="uid://cpinmd1043yo2" path="res://sprites/arrow_temp.png" id="3_a0igo"]
+[ext_resource type="StyleBox" uid="uid://68nl5p4gy0ri" path="res://scenes/game_scenes/first_pass_flat_style.tres" id="5_2sjiv"]
 
 [sub_resource type="Theme" id="Theme_a0igo"]
 
@@ -141,8 +142,43 @@ text = "Add "
 
 [node name="HTTPRequest" type="HTTPRequest" parent="."]
 
+[node name="GameCompletionPopupPanel" type="PopupPanel" parent="."]
+unique_name_in_owner = true
+title = "Congratulations"
+initial_position = 5
+size = Vector2i(383, 256)
+borderless = false
+always_on_top = true
+theme_override_styles/panel = ExtResource("5_2sjiv")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="GameCompletionPopupPanel"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 8.0
+offset_top = 8.0
+offset_right = 375.0
+offset_bottom = 248.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 65
+alignment = 2
+
+[node name="GameCompletionLabel" type="Label" parent="GameCompletionPopupPanel/VBoxContainer"]
+layout_mode = 2
+text = "Great Job! You got it in X jumps!
+Want to see how you compare to others?"
+horizontal_alignment = 1
+
+[node name="SubmitButton" type="Button" parent="GameCompletionPopupPanel/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 8
+text = "Submit Path"
+
+[connection signal="game_completed" from="ScreenContainer/ScreenVBoxContainer/DailyPath" to="." method="_on_daily_path_game_completed"]
 [connection signal="button_down" from="ScreenContainer/ScreenVBoxContainer/GameboardHBoxContainer/MiddleControls/MarginContainer/VBoxContainer/ChangeDirectionButton" to="." method="_on_change_direction_button_button_down"]
 [connection signal="button_down" from="ScreenContainer/ScreenVBoxContainer/GameboardHBoxContainer/MiddleControls/MarginContainer/VBoxContainer/HBoxContainer/ChangePersonMargin/ChangePersonButton" to="." method="_on_change_person_button_button_down"]
 [connection signal="button_down" from="ScreenContainer/ScreenVBoxContainer/GameboardHBoxContainer/MiddleControls/MarginContainer/VBoxContainer/HBoxContainer/ChangeMovieMargin/ChangeMovieButton" to="." method="_on_change_movie_button_button_down"]
 [connection signal="button_down" from="ScreenContainer/ScreenVBoxContainer/UserInputMargin/VBoxContainer/SubmissionButton" to="." method="_on_submission_button_button_down"]
 [connection signal="button_down" from="ScreenContainer/ScreenVBoxContainer/UserInputMargin/VBoxContainer/SubmissionButton" to="ScreenContainer/ScreenVBoxContainer/DailyPath" method="_on_submission_button_button_down"]
+[connection signal="button_down" from="GameCompletionPopupPanel/VBoxContainer/SubmitButton" to="." method="_on_submit_button_button_down"]

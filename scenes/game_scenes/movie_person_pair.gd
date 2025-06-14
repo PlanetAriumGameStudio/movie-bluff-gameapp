@@ -9,7 +9,6 @@ func update_movie_pairing(pair:Pairing):
 	current_pairing = pair
 	
 func update_person_pairing(pair:Pairing):
-	print("update pairing")
 	%PersonPairEntry.update_pair(pair.person_name, pair.person_profile_url)
 	current_pairing = pair
 

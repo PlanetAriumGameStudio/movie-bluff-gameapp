@@ -39,8 +39,6 @@ func init_daily():
 	current_pairing = Pairing.new()
 	current_state = INIT_STATE
 	current_direction = START_TO_FINISH
-	%DailyPath.path_from_start = Array([], TYPE_OBJECT, "Pairing", Pairing)
-	%DailyPath.path_from_finish = Array([], TYPE_OBJECT, "Pairing", Pairing)
 	path_complete = false
 	_update_changing(CHANGE_TYPES.NONE)
 	_update_direction_text()
@@ -51,52 +49,77 @@ func init_daily():
 	var err = movie_bluff_api.request(daily_api_format_string % [Globals.BLUFF_API_BASE_ADDRESS, Globals.BLUFF_API_PORT])
 	if err != OK:
 		push_error(err)
+
+func daily_submission():
+	print("Submitting daily...")
+	#TODO: Actual player ID/account hookup
+	var data_to_send = { "player_id": 1, "steps": %DailyPath.get_full_path_json() }
+	var headers = ["Content-Type: application/json"]
+	movie_bluff_api.request_completed.connect(_handle_daily_submission_response, ConnectFlags.CONNECT_ONE_SHOT)
+	var err = movie_bluff_api.request(daily_api_format_string % [Globals.BLUFF_API_BASE_ADDRESS, Globals.BLUFF_API_PORT], headers, HTTPClient.METHOD_POST, JSON.stringify(data_to_send))
+	if err != OK:
+		push_error(err)
+
 		
 func _update_changing(type:CHANGE_TYPES) -> void:
 	last_change = type
 	%ChangeTypeLabel.text = change_labels_dict.get(type)
 	
-func _handle_daily_response(result, response_code, headers, body):
+func _handle_daily_response(result, _response_code, _headers, body):
 	print("Got Daily Response")
-	var json = JSON.parse_string(body.get_string_from_utf8())
-	var startingPair:Pairing = Pairing.parse_pairing_from_json(json["starting_pair"])
-	var finishingPair:Pairing = Pairing.parse_pairing_from_json(json["finishing_pair"])
-	%StartingPair.set_pairing(startingPair)
-	%FinishingPair.set_pairing(finishingPair)
-	%DailyPath.init_daily_path(startingPair, finishingPair)
-	print("Initialized")
+	if result == 0:
+		var json = JSON.parse_string(body.get_string_from_utf8())
+		var startingPair:Pairing = Pairing.parse_pairing_from_json(json["starting_pair"])
+		var finishingPair:Pairing = Pairing.parse_pairing_from_json(json["finishing_pair"])
+		%StartingPair.set_pairing(startingPair)
+		%FinishingPair.set_pairing(finishingPair)
+		%DailyPath.init_daily_path(startingPair, finishingPair)
+		print("Initialized")
+	else:
+		print("Non-Zero Status in Request Response: %d", result)
 
-func _get_credits_for_movie(movie_id:int):
-	movie_bluff_api.request_completed.connect(_handle_credits_for_movie_response, ConnectFlags.CONNECT_ONE_SHOT)
+func _handle_daily_submission_response(result, response_code, headers, body):
+	if result == 0:
+		var json = JSON.parse_string(body.get_string_from_utf8())
+		print("Submissing results")
+		print(json)
+	else:
+		print("Non-Zero Status in Request Response: %d", result)
+
+func _get_credits_for_movie(movie_id: int, pair: Pairing):
+	movie_bluff_api.request_completed.connect(_handle_credits_for_movie_response.bind(pair), ConnectFlags.CONNECT_ONE_SHOT)
 	var err = movie_bluff_api.request(movie_credits_api_format_string % [Globals.BLUFF_API_BASE_ADDRESS, Globals.BLUFF_API_PORT, movie_id])
 	if err != OK:
 		push_error(err)
 
-func _handle_credits_for_movie_response(result, response_code, headers, body):
+func _handle_credits_for_movie_response(result, _response_code, _headers, body, next_pair):
 	print("Got Credits for Movie Response")
-	var json = JSON.parse_string(body.get_string_from_utf8())
-	if current_direction == FINISH_TO_START:
-		current_pairing.movie_credits = json["cast"]
-		%FinishingPair.set_pairing(current_pairing)
+	if result == 0:
+		var json = JSON.parse_string(body.get_string_from_utf8())
+		if current_direction == FINISH_TO_START:
+			next_pair.movie_credits = json["cast"]
+			%FinishingPair.update_movie_pairing(next_pair)
+		else:
+			next_pair.movie_credits = json["cast"]
+			%StartingPair.update_movie_pairing(next_pair)
 	else:
-		current_pairing.movie_credits = json["cast"]
-		%StartingPair.update_movie_pairing(current_pairing)
+		print("Non-Zero Status in Request Response: %d", result)
 
-func _get_credits_for_person(person_id:int):
-	movie_bluff_api.request_completed.connect(_handle_credits_for_person_response, ConnectFlags.CONNECT_ONE_SHOT)
+func _get_credits_for_person(person_id:int, pair: Pairing):
+	movie_bluff_api.request_completed.connect(_handle_credits_for_person_response.bind(pair), ConnectFlags.CONNECT_ONE_SHOT)
 	var err = movie_bluff_api.request(person_credits_api_format_string % [Globals.BLUFF_API_BASE_ADDRESS, Globals.BLUFF_API_PORT, person_id])
 	if err != OK:
 		push_error(err)
 
-func _handle_credits_for_person_response(result, response_code, headers, body):
+func _handle_credits_for_person_response(result, response_code, headers, body, next_pair):
 	print("Got Credits for Person Response")
 	var json = JSON.parse_string(body.get_string_from_utf8())
 	if current_direction == FINISH_TO_START:
-		current_pairing.person_credits = json["cast"]
-		%FinishingPair.set_pairing(current_pairing)
+		next_pair.person_credits = json["cast"]
+		%FinishingPair.update_person_pairing(next_pair)
 	else:
-		current_pairing.person_credits = json["cast"]
-		%StartingPair.update_person_pairing(current_pairing)
+		next_pair.person_credits = json["cast"]
+		%StartingPair.update_person_pairing(next_pair)
 
 func _movie_has_submission(input):
 	# TODO Better search comparisons and fuzzy logic
@@ -120,16 +143,16 @@ func _on_submission_button_button_down() -> void:
 		
 	# Changing Movie
 	if last_change == CHANGE_TYPES.PERSON:
-		print(current_pairing.movie_id)
 		var credit_index = current_pairing.person_credits.find_custom(_movie_has_submission)
 		if credit_index > -1:
 			# Success: Update pairing and get new credits list
-			current_pairing.movie_id = current_pairing.person_credits[credit_index].id
-			current_pairing.movie_name = current_pairing.person_credits[credit_index].title
-			current_pairing.movie_poster_url = current_pairing.person_credits[credit_index].poster_path
-			_get_credits_for_movie(current_pairing.person_credits[credit_index].id)
+			var next_pairing = current_pairing.duplicate()
+			next_pairing.movie_id = current_pairing.person_credits[credit_index].id
+			next_pairing.movie_name = current_pairing.person_credits[credit_index].title
+			next_pairing.movie_poster_url = current_pairing.person_credits[credit_index].poster_path
+			_get_credits_for_movie(current_pairing.person_credits[credit_index].id, next_pairing)
 			_update_changing(CHANGE_TYPES.MOVIE)
-			_push_pair_to_path(current_pairing)
+			_push_pair_to_path(next_pairing)
 			%SubmissionInput.clear()
 		else:
 			print("not found")
@@ -137,12 +160,13 @@ func _on_submission_button_button_down() -> void:
 	elif last_change == CHANGE_TYPES.MOVIE:
 		var credit_index = current_pairing.movie_credits.find_custom(_person_has_submission)
 		if credit_index > -1:
-			current_pairing.person_id = current_pairing.movie_credits[credit_index].id
-			current_pairing.person_name = current_pairing.movie_credits[credit_index].name
-			current_pairing.person_profile_url = current_pairing.movie_credits[credit_index].profile_path
-			_get_credits_for_person(current_pairing.movie_credits[credit_index].id)
+			var next_pairing = current_pairing.duplicate()
+			next_pairing.person_id = current_pairing.movie_credits[credit_index].id
+			next_pairing.person_name = current_pairing.movie_credits[credit_index].name
+			next_pairing.person_profile_url = current_pairing.movie_credits[credit_index].profile_path
+			_get_credits_for_person(current_pairing.movie_credits[credit_index].id, next_pairing)
 			_update_changing(CHANGE_TYPES.PERSON)
-			_push_pair_to_path(current_pairing)
+			_push_pair_to_path(next_pairing)
 			%SubmissionInput.clear()
 		else:
 			print("not found")
@@ -171,3 +195,10 @@ func _on_change_direction_button_button_down() -> void:
 		current_direction = START_TO_FINISH
 	_update_direction_text()
 	_update_direction_arrow()
+
+func _on_submit_button_button_down() -> void:
+	daily_submission()
+
+func _on_daily_path_game_completed() -> void:
+	print("Game complete!")
+	%GameCompletionPopupPanel.popup()

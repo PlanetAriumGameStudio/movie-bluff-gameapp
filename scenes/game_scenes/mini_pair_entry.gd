@@ -9,6 +9,7 @@ func set_pair(pair:Pairing):
 	print(Globals.PERSON_PROFILE_SIZES)
 	print(Globals.MOVIE_POSTER_SIZES)
 	var personReq = HTTPRequest.new()
+	print("Setting Mini Pair Images: [Movie/Person]", pair.movie_poster_url, pair.person_profile_url)
 	add_child(personReq)
 	personReq.request_completed.connect(_update_person.bind(personReq), ConnectFlags.CONNECT_ONE_SHOT)
 	var size = Globals.PERSON_PROFILE_SIZES[0]

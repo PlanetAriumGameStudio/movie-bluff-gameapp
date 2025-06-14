@@ -1,4 +1,4 @@
-extends Resource
+extends Object
 
 class_name Pairing
 
@@ -14,6 +14,42 @@ func new() -> Pairing:
 	person_credits = []
 	
 	return self
+	
+
+# Used to convert into JSON.stringify-able form for network transfer
+func pack() -> Dictionary:
+	var packed_pairing = {
+		"movie_id": movie_id,
+		"movie_credits": [],
+		"person_id": person_id,
+		"person_credits": [] 
+	}
+	
+	for movie_credit in movie_credits:
+		var packed_movie_credit = {
+			"id": int(movie_credit.id)
+		}
+		packed_pairing.movie_credits.append(packed_movie_credit)
+	
+	for person_credit in person_credits:
+		var packed_person_credit = {
+			"id": int(person_credit.id),
+		}
+		packed_pairing.person_credits.append(packed_person_credit)
+	
+	return packed_pairing
+func duplicate() -> Pairing:
+	var new_pairing:Pairing = Pairing.new()
+	new_pairing.movie_id = self.movie_id
+	new_pairing.movie_name = self.movie_name
+	new_pairing.movie_poster_url = self.movie_poster_url
+	new_pairing.movie_credits = self.movie_credits
+	
+	new_pairing.person_id = self.person_id
+	new_pairing.person_name = self.person_name
+	new_pairing.person_profile_url = self.person_profile_url
+	new_pairing.person_credits = self.person_credits
+	return new_pairing
 
 static func parse_pairing_from_json(json:Variant) -> Pairing:
 	var new_pairing:Pairing = Pairing.new()
