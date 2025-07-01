@@ -4,7 +4,7 @@ extends Control
 @onready var movie_bluff_api = $HTTPRequest
 
 # Uses provided API Url:Port from config
-const daily_api_format_string = "%s:%s/daily"
+const daily_api_format_string = "%s:%s/games/daily"
 const movie_credits_api_format_string = "%s:%s/movie/%d/cast"
 const person_credits_api_format_string = "%s:%s/person/%d/credits"
 
@@ -82,7 +82,6 @@ func _handle_daily_submission_response(result, response_code, headers, body):
 	if result == 0:
 		var json = JSON.parse_string(body.get_string_from_utf8())
 		print("Submissing results")
-		print(json)
 	else:
 		print("Non-Zero Status in Request Response: %d", result)
 
