@@ -12,15 +12,16 @@ config_version=5
 
 config/name="Movie Bluff"
 config/version="0.0.1"
-run/main_scene="uid://cmex6wp7ewj41"
+run/main_scene="uid://t4vsadtk0f5h"
 config/features=PackedStringArray("4.4", "GL Compatibility")
 config/icon="res://sprites/icon.svg"
 
 [autoload]
 
 AppConfig="*res://core/scenes/autoloads/app_config.tscn"
-Globals="*res://scripts/globals.gd"
-Utils="*res://scripts/utils.gd"
+Globals="*res://scripts/global_scripts/globals.gd"
+Utils="*res://scripts/global_scripts/utils.gd"
+LoginManager="*res://scripts/global_scripts/login_manager.gd"
 TransitionManager="*res://core/scenes/autoloads/transition_manager.tscn"
 
 [display]

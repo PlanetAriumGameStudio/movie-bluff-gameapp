@@ -60,7 +60,6 @@ func daily_submission():
 	if err != OK:
 		push_error(err)
 
-		
 func _update_changing(type:CHANGE_TYPES) -> void:
 	last_change = type
 	%ChangeTypeLabel.text = change_labels_dict.get(type)

@@ -1,0 +1,112 @@
+[gd_scene load_steps=2 format=3 uid="uid://djhuu1s74bgvi"]
+
+[ext_resource type="Script" uid="uid://dh582itg2ldk" path="res://scenes/login_popup.gd" id="1_q0spg"]
+
+[node name="LoginPopup" type="PanelContainer"]
+custom_minimum_size = Vector2(350, 450)
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -175.0
+offset_top = -225.0
+offset_right = 175.0
+offset_bottom = 225.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+script = ExtResource("1_q0spg")
+main_menu_scene_path = "uid://cmex6wp7ewj41"
+
+[node name="MarginContainer" type="MarginContainer" parent="."]
+layout_mode = 2
+theme_override_constants/margin_left = 15
+theme_override_constants/margin_top = 15
+theme_override_constants/margin_right = 15
+theme_override_constants/margin_bottom = 15
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="TabContainer" type="TabContainer" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+current_tab = 1
+
+[node name="Login" type="Control" parent="MarginContainer/VBoxContainer/TabContainer"]
+visible = false
+layout_mode = 2
+metadata/_tab_index = 0
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer/VBoxContainer/TabContainer/Login"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 10
+
+[node name="LoginEmail" type="LineEdit" parent="MarginContainer/VBoxContainer/TabContainer/Login/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+placeholder_text = "Email"
+
+[node name="LoginPassword" type="LineEdit" parent="MarginContainer/VBoxContainer/TabContainer/Login/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+placeholder_text = "Password"
+secret = true
+
+[node name="LoginButton" type="Button" parent="MarginContainer/VBoxContainer/TabContainer/Login/VBoxContainer"]
+layout_mode = 2
+text = "Login"
+
+[node name="Register" type="Control" parent="MarginContainer/VBoxContainer/TabContainer"]
+layout_mode = 2
+metadata/_tab_index = 1
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer/VBoxContainer/TabContainer/Register"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 10
+
+[node name="RegisterEmail" type="LineEdit" parent="MarginContainer/VBoxContainer/TabContainer/Register/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+placeholder_text = "Email"
+
+[node name="RegisterDisplayName" type="LineEdit" parent="MarginContainer/VBoxContainer/TabContainer/Register/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+placeholder_text = "Display Name"
+
+[node name="RegisterPassword" type="LineEdit" parent="MarginContainer/VBoxContainer/TabContainer/Register/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+placeholder_text = "Password"
+secret = true
+
+[node name="RegisterButton" type="Button" parent="MarginContainer/VBoxContainer/TabContainer/Register/VBoxContainer"]
+layout_mode = 2
+text = "Register"
+
+[node name="GoogleLoginButton" type="Button" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+text = "Login with Google"
+
+[node name="ErrorLabel" type="Label" parent="MarginContainer/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+autowrap_mode = 2
+
+[connection signal="pressed" from="MarginContainer/VBoxContainer/TabContainer/Login/VBoxContainer/LoginButton" to="." method="_on_login_button_pressed"]
+[connection signal="pressed" from="MarginContainer/VBoxContainer/TabContainer/Register/VBoxContainer/RegisterButton" to="." method="_on_register_button_pressed"]
+[connection signal="pressed" from="MarginContainer/VBoxContainer/GoogleLoginButton" to="." method="_on_google_login_button_pressed"]
