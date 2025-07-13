@@ -9,7 +9,7 @@ signal google_login_succeeded(token)
 signal google_login_failed(error_message)
 
 # --- Configuration ---
-const SERVER_BASE_URL = "http://localhost:8080"
+const SERVER_BASE_URL = "http://127.0.0.1:8080"
 const POLLING_INTERVAL_SECONDS = 2.0 # Poll every 2 seconds
 const POLLING_TIMEOUT_SECONDS = 300  # 5 minutes, should match server's state expiration
 
@@ -48,6 +48,10 @@ func _ready():
 	_register_request.name = "RegisterRequest"
 	_google_url_request.name = "GoogleURLRequest"
 	_google_poll_request.name = "GooglePollRequest"
+	_login_request.use_threads = true
+	_register_request.use_threads = true
+	_google_url_request.use_threads = true
+	_google_poll_request.use_threads = true
 	
 	# Connect signals to their handlers.
 	_login_request.request_completed.connect(_on_login_request_completed)
@@ -81,7 +85,7 @@ func get_jwt() -> String:
 # --- Public API ---
 
 func login(email, password):
-	var headers = ["Content-Type: applicaiton/json"]
+	var headers = ["Content-Type: application/json"]
 	var body = JSON.stringify({"email": email, "password": password})
 	var error = _login_request.request(SERVER_BASE_URL + "/auth/login", headers, HTTPClient.METHOD_POST, body)
 	if error != OK:
@@ -105,7 +109,6 @@ func start_google_login():
 	# While not strictly necessary for this endpoint, it's good practice.
 	# TODO: Double check the need for this
 	_google_url_request.max_redirects = 0
-	
 	var error = _google_url_request.request(SERVER_BASE_URL + "/auth/google/url")
 	if error != OK:
 		print("Error initiating login request: %s" % error)
