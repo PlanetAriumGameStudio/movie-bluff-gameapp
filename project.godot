@@ -23,7 +23,8 @@ Globals="*res://scripts/global_scripts/globals.gd"
 Utils="*res://scripts/global_scripts/utils.gd"
 LoginManager="*res://scripts/global_scripts/login_manager.gd"
 TransitionManager="*res://core/scenes/autoloads/transition_manager.tscn"
-BluffClient="*res://scripts/bluff_client.gd"
+BluffClient="*res://scripts/global_scripts/bluff_client.gd"
+ImageUtils="*res://scripts/global_scripts/image_utils.gd"
 
 [display]
 

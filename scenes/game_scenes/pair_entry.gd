@@ -2,37 +2,43 @@ extends Control
 
 class_name PairEntry
 
-const image_format_string = "%s%s%s"
-
-@onready var bluffAPIReq = $HTTPRequest
-
 @export_enum("Movie", "Person") var type:String = "Movie"
 
-func update_pair(label_text:String, image_url:String):
-	print("Updating Pair")
-	# Make request to fetch image
-	bluffAPIReq.request_completed.connect(_update_pairing, ConnectFlags.CONNECT_ONE_SHOT)
-	var size
-	if type == "Movie":
-		size = Globals.MOVIE_POSTER_SIZES[2]
-	else:
-		size = Globals.PERSON_PROFILE_SIZES[2]
-	var err = bluffAPIReq.request(image_format_string % [Globals.IMAGE_BASE_URL, size, image_url])
-	if err != OK:
-		push_error(err)
+func update_pair(label_text:String, image_path:String):
+	print("Updating Pair: ", label_text)
 	
-	#Update label text
+	# Update label text immediately
 	%PairLabel.text = label_text
-
-func _update_pairing(result, response_code, headers, body):
-	%PairImage.texture = _load_image_from_buffer(body)
 	
-func _load_image_from_buffer(body) -> ImageTexture:
-	var image = Image.new()
-	var error = image.load_jpg_from_buffer(body)
-	if error != OK:
-		print(error)
-		# Put generic filler in here
-		return ImageTexture.new()
+	# Construct the full URL using our new utility
+	var full_image_url: String
+	if type == "Movie":
+		full_image_url = ImageUtils.get_movie_poster_url(image_path)
 	else:
-		return ImageTexture.new().create_from_image(image)
+		full_image_url = ImageUtils.get_person_profile_url(image_path)
+
+	if full_image_url.is_empty():
+		printerr("PairEntry: Could not get a valid image URL for path: ", image_path)
+		%PairImage.texture = null # Clear texture on failure
+		return
+
+	# Create a temporary HTTPRequest node to fetch the image
+	var image_requester = HTTPRequest.new()
+	add_child(image_requester) # Must be in the tree to make requests
+	
+	# Make request to fetch image. Bind the requester so we can free it later.
+	image_requester.request_completed.connect(_on_image_request_completed.bind(image_requester), CONNECT_ONE_SHOT)
+	var err = image_requester.request(full_image_url)
+	if err != OK:
+		printerr("PairEntry: Image request failed to start. Error: ", err)
+		image_requester.queue_free() # Clean up on failure
+
+func _on_image_request_completed(result, response_code, _headers, body, requester):
+	if result == HTTPRequest.RESULT_SUCCESS and response_code == 200:
+		%PairImage.texture = ImageUtils.texture_from_jpg_buffer(body)
+	else:
+		printerr("PairEntry: Failed to download image. Result: %s, Code: %s" % [result, response_code])
+		%PairImage.texture = null # Clear texture on failure
+	
+	# Clean up the temporary request node
+	requester.queue_free()

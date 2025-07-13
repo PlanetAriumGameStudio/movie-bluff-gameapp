@@ -46,18 +46,4 @@ func fetch_config(_token = ""): # The token from the signal isn't needed here, b
 
 func _on_config_received(result, response_code, headers, body):
 	var json = JSON.parse_string(body.get_string_from_utf8())
-	print(json)
 	Globals.set_image_base_url(json["images"]["base_url"])
-
-func fetch_image(_token = ""):
-	http_request.request_completed.connect(_on_image_received, CONNECT_ONE_SHOT)
-	make_request("/api/image")
-
-func _on_image_received(result, response_code, headers, body) -> ImageTexture:
-	var image = Image.new()
-	var error = image.load_png_from_buffer(body)
-	if error != OK:
-		print(error)
-		return ImageTexture.new()
-	else:
-		return ImageTexture.new().create_from_image(image)
