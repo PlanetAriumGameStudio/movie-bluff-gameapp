@@ -1,12 +1,8 @@
 extends Control
 
-# TODO Replace this with custom client later
-@onready var movie_bluff_api = $HTTPRequest
-
-# Uses provided API Url:Port from config
-const daily_api_format_string = "%s:%s/games/daily"
-const movie_credits_api_format_string = "%s:%s/movie/%d/cast"
-const person_credits_api_format_string = "%s:%s/person/%d/credits"
+const DAILY_API_ENDPOINT = "/api/games/daily"
+const MOVIE_CREDITS_API_ENDPOINT = "/api/movie/%d/cast"
+const PERSON_CREDITS_API_ENDPOINT = "/api/person/%d/credits"
 
 ### [STATE TRACKING]
 enum {INIT_STATE, PLAYING_STATE, COMPLETION_STATE}
@@ -45,20 +41,15 @@ func init_daily():
 	if !%DirectionArrow.flip_h:
 		_update_direction_arrow()
 	
-	movie_bluff_api.request_completed.connect(_handle_daily_response, ConnectFlags.CONNECT_ONE_SHOT)
-	var err = movie_bluff_api.request(daily_api_format_string % [Globals.BLUFF_API_BASE_ADDRESS, Globals.BLUFF_API_PORT])
-	if err != OK:
-		push_error(err)
+	BluffClient.instance.http_request.request_completed.connect(_handle_daily_response, CONNECT_ONE_SHOT)
+	BluffClient.instance.make_request(DAILY_API_ENDPOINT)
 
 func daily_submission():
 	print("Submitting daily...")
 	#TODO: Actual player ID/account hookup
 	var data_to_send = { "player_id": 1, "steps": %DailyPath.get_full_path_json() }
-	var headers = ["Content-Type: application/json"]
-	movie_bluff_api.request_completed.connect(_handle_daily_submission_response, ConnectFlags.CONNECT_ONE_SHOT)
-	var err = movie_bluff_api.request(daily_api_format_string % [Globals.BLUFF_API_BASE_ADDRESS, Globals.BLUFF_API_PORT], headers, HTTPClient.METHOD_POST, JSON.stringify(data_to_send))
-	if err != OK:
-		push_error(err)
+	BluffClient.instance.http_request.request_completed.connect(_handle_daily_submission_response, CONNECT_ONE_SHOT)
+	BluffClient.instance.make_request(DAILY_API_ENDPOINT, HTTPClient.METHOD_POST, JSON.stringify(data_to_send))
 
 func _update_changing(type:CHANGE_TYPES) -> void:
 	last_change = type
@@ -85,10 +76,8 @@ func _handle_daily_submission_response(result, response_code, headers, body):
 		print("Non-Zero Status in Request Response: %d", result)
 
 func _get_credits_for_movie(movie_id: int, pair: Pairing):
-	movie_bluff_api.request_completed.connect(_handle_credits_for_movie_response.bind(pair), ConnectFlags.CONNECT_ONE_SHOT)
-	var err = movie_bluff_api.request(movie_credits_api_format_string % [Globals.BLUFF_API_BASE_ADDRESS, Globals.BLUFF_API_PORT, movie_id])
-	if err != OK:
-		push_error(err)
+	BluffClient.instance.http_request.request_completed.connect(_handle_credits_for_movie_response.bind(pair), CONNECT_ONE_SHOT)
+	BluffClient.instance.make_request(MOVIE_CREDITS_API_ENDPOINT % movie_id)
 
 func _handle_credits_for_movie_response(result, _response_code, _headers, body, next_pair):
 	print("Got Credits for Movie Response")
@@ -104,20 +93,21 @@ func _handle_credits_for_movie_response(result, _response_code, _headers, body, 
 		print("Non-Zero Status in Request Response: %d", result)
 
 func _get_credits_for_person(person_id:int, pair: Pairing):
-	movie_bluff_api.request_completed.connect(_handle_credits_for_person_response.bind(pair), ConnectFlags.CONNECT_ONE_SHOT)
-	var err = movie_bluff_api.request(person_credits_api_format_string % [Globals.BLUFF_API_BASE_ADDRESS, Globals.BLUFF_API_PORT, person_id])
-	if err != OK:
-		push_error(err)
+	BluffClient.instance.http_request.request_completed.connect(_handle_credits_for_person_response.bind(pair), CONNECT_ONE_SHOT)
+	BluffClient.instance.make_request(PERSON_CREDITS_API_ENDPOINT % person_id)
 
-func _handle_credits_for_person_response(result, response_code, headers, body, next_pair):
+func _handle_credits_for_person_response(result, _response_code, _headers, body, next_pair):
 	print("Got Credits for Person Response")
-	var json = JSON.parse_string(body.get_string_from_utf8())
-	if current_direction == FINISH_TO_START:
-		next_pair.person_credits = json["cast"]
-		%FinishingPair.update_person_pairing(next_pair)
+	if result == 0:
+		var json = JSON.parse_string(body.get_string_from_utf8())
+		if current_direction == FINISH_TO_START:
+			next_pair.person_credits = json["cast"]
+			%FinishingPair.update_person_pairing(next_pair)
+		else:
+			next_pair.person_credits = json["cast"]
+			%StartingPair.update_person_pairing(next_pair)
 	else:
-		next_pair.person_credits = json["cast"]
-		%StartingPair.update_person_pairing(next_pair)
+		print("Non-Zero Status in Request Response: %d", result)
 
 func _movie_has_submission(input):
 	# TODO Better search comparisons and fuzzy logic
