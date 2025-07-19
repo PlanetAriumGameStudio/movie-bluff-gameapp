@@ -13,6 +13,10 @@ const SERVER_BASE_URL = "http://127.0.0.1:8080"
 const POLLING_INTERVAL_SECONDS = 2.0 # Poll every 2 seconds
 const POLLING_TIMEOUT_SECONDS = 300  # 5 minutes, should match server's state expiration
 
+# --- State Management ---
+enum AuthStatus { NOT_LOGGED_IN, VERIFYING, LOGGED_IN }
+var auth_status = AuthStatus.NOT_LOGGED_IN
+
 # --- Internal State ---
 var _jwt_token: String = ""
 var _google_login_state: String = ""
@@ -23,6 +27,7 @@ var _login_request: HTTPRequest
 var _register_request: HTTPRequest
 var _google_url_request: HTTPRequest
 var _google_poll_request: HTTPRequest
+var _verify_token_request: HTTPRequest
 
 var _polling_timer: Timer
 var _timeout_timer: Timer
@@ -39,25 +44,30 @@ func _ready():
 	_register_request = HTTPRequest.new()
 	_google_url_request = HTTPRequest.new()
 	_google_poll_request = HTTPRequest.new()
+	_verify_token_request = HTTPRequest.new()
 	add_child(_login_request)
 	add_child(_register_request)
 	add_child(_google_url_request)
 	add_child(_google_poll_request)
+	add_child(_verify_token_request)
 
 	_login_request.name = "LoginRequest"
 	_register_request.name = "RegisterRequest"
 	_google_url_request.name = "GoogleURLRequest"
 	_google_poll_request.name = "GooglePollRequest"
+	_verify_token_request.name = "VerifyTokenRequest"
 	_login_request.use_threads = true
 	_register_request.use_threads = true
 	_google_url_request.use_threads = true
 	_google_poll_request.use_threads = true
+	_verify_token_request.use_threads = true
 	
 	# Connect signals to their handlers.
 	_login_request.request_completed.connect(_on_login_request_completed)
 	_register_request.request_completed.connect(_on_register_request_completed)
 	_google_url_request.request_completed.connect(_on_google_url_request_completed)
 	_google_poll_request.request_completed.connect(_on_google_poll_request_completed)
+	_verify_token_request.request_completed.connect(_on_verify_token_request_completed)
 	
 	# Init timers
 	_polling_timer = Timer.new()
@@ -77,7 +87,7 @@ func _ready():
 	load_token()
 	
 func is_logged_in() -> bool:
-	return not _jwt_token.is_empty()
+	return auth_status == AuthStatus.LOGGED_IN
 
 func get_jwt() -> String:
 	return _jwt_token
@@ -128,6 +138,7 @@ func _on_login_request_completed(result, response_code, headers, body):
 	var response = JSON.parse_string(response_body_text)
 	if response_code == 200 and response and response.has("token"):
 		_jwt_token = response["token"]
+		auth_status = AuthStatus.LOGGED_IN
 		emit_signal("login_succeeded", _jwt_token)
 	else:
 		var error_message = "Invalid email or password."
@@ -140,6 +151,7 @@ func _on_register_request_completed(result, response_code, headers, body):
 	var response = JSON.parse_string(response_body_text)
 	if response_code == 201 and response and response.has("token"):
 		_jwt_token = response["token"]
+		auth_status = AuthStatus.LOGGED_IN
 		emit_signal("registration_succeeded", _jwt_token)
 	else:
 		var error_message = "Registration failed."
@@ -190,6 +202,7 @@ func _on_google_poll_request_completed(result, response_code, headers, body):
 			if json_result and json_result.has("token"):
 				print("Received session token.")
 				_jwt_token = json_result["token"]
+				auth_status = AuthStatus.LOGGED_IN
 				save_token()
 				emit_signal("google_login_succeeded", _jwt_token)
 			else:
@@ -212,23 +225,43 @@ func save_token():
 		file.store_var(_jwt_token)
 		prints("Token saved securely.")
 
+func _clear_saved_token():
+	if FileAccess.file_exists(TOKEN_SAVE_PATH):
+		DirAccess.remove_absolute(TOKEN_SAVE_PATH)
+		prints("Cleared invalid token from disk.")
+
 func load_token():
 	if not FileAccess.file_exists(TOKEN_SAVE_PATH):
+		auth_status = AuthStatus.NOT_LOGGED_IN
 		return
 
 	var file = FileAccess.open_encrypted_with_pass(TOKEN_SAVE_PATH, FileAccess.READ, ENCRYPTION_KEY)
 	if file:
 		_jwt_token = file.get_var()
-		if is_logged_in():
-			prints("Session token loaded from disk.")
-			# You might want to verify the token is still valid with the server here
-			# by making a call to a protected endpoint like /api/me.
-			emit_signal("google_login_succeeded", _jwt_token)
+		if not _jwt_token.is_empty():
+			prints("Session token loaded from disk. Verifying with server...")
+			auth_status = AuthStatus.VERIFYING
+			# Verify the token is still valid with the server by making a call
+			# to a protected endpoint like /api/me.
+			var headers = get_auth_header()
+			_verify_token_request.request(SERVER_BASE_URL + "/api/me", headers, HTTPClient.METHOD_GET)
+		else:
+			auth_status = AuthStatus.NOT_LOGGED_IN
+
+func _on_verify_token_request_completed(result, response_code, headers, body):
+	if result == HTTPRequest.RESULT_SUCCESS and response_code == 200:
+		prints("Token verification successful.")
+		auth_status = AuthStatus.LOGGED_IN
+		emit_signal("login_succeeded", _jwt_token)
+	else:
+		prints("Token verification failed. Response code: %s" % response_code)
+		logout() # Clear token, status, and file
+		emit_signal("login_failed", "Your session has expired. Please log in again.")
 
 func logout():
 	_jwt_token = ""
-	if FileAccess.file_exists(TOKEN_SAVE_PATH):
-		DirAccess.remove_absolute(TOKEN_SAVE_PATH)
+	auth_status = AuthStatus.NOT_LOGGED_IN
+	_clear_saved_token()
 	prints("Logged out and session cleared.")
 	
 # --- Making Authenticated Requests ---
