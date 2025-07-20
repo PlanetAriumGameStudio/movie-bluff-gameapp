@@ -1,7 +1,7 @@
 [gd_scene load_steps=3 format=3 uid="uid://t4vsadtk0f5h"]
 
-[ext_resource type="Script" uid="uid://dlam3srllcues" path="res://scenes/splash_screen.gd" id="1_n4g2v"]
-[ext_resource type="PackedScene" uid="uid://djhuu1s74bgvi" path="res://scenes/login_popup.tscn" id="2_hsxvm"]
+[ext_resource type="Script" uid="uid://dlam3srllcues" path="res://scripts/menus/splash_screen.gd" id="1_n4g2v"]
+[ext_resource type="PackedScene" uid="uid://djhuu1s74bgvi" path="res://scenes/menus/login_popup.tscn" id="2_hsxvm"]
 
 [node name="SplashScreen" type="Control"]
 layout_mode = 3

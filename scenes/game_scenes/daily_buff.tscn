@@ -1,14 +1,23 @@
-[gd_scene load_steps=7 format=3 uid="uid://7qt1dp4hjbjs"]
+[gd_scene load_steps=6 format=3 uid="uid://7qt1dp4hjbjs"]
 
-[ext_resource type="Script" uid="uid://b7t0shptpvpcv" path="res://scenes/game_scenes/daily_buff.gd" id="1_5e3v5"]
+[ext_resource type="Script" uid="uid://b7t0shptpvpcv" path="res://scripts/game_scenes/daily_buff.gd" id="1_5e3v5"]
 [ext_resource type="PackedScene" uid="uid://dtjpcnacdl0pk" path="res://scenes/game_scenes/movie_person_pair.tscn" id="1_bcfbp"]
 [ext_resource type="PackedScene" uid="uid://gou6m2qym2gd" path="res://scenes/game_scenes/daily_path.tscn" id="2_mh4ei"]
-[ext_resource type="StyleBox" uid="uid://68nl5p4gy0ri" path="res://scenes/game_scenes/first_pass_flat_style.tres" id="5_2sjiv"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_2sjiv"]
 bg_color = Color(0.85, 0.0935, 0.106108, 1)
 
-[sub_resource type="Theme" id="Theme_a0igo"]
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_a0igo"]
+bg_color = Color(0.619608, 0.164706, 0.168627, 1)
+border_width_left = 8
+border_width_top = 8
+border_width_right = 8
+border_width_bottom = 8
+border_color = Color(0.329412, 0.0431373, 0.054902, 1)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
 
 [node name="DailyBuff" type="Control"]
 layout_mode = 3
@@ -90,41 +99,10 @@ layout_mode = 2
 layout_mode = 2
 text = "Change Direction"
 
-[node name="HBoxContainer" type="HBoxContainer" parent="PanelContainer/ScreenContainer/ScreenVBoxContainer/UserInputMargin/VBoxContainer/MiddleControls/MarginContainer/VBoxContainer"]
-layout_mode = 2
-alignment = 1
-
-[node name="ChangePersonMargin" type="MarginContainer" parent="PanelContainer/ScreenContainer/ScreenVBoxContainer/UserInputMargin/VBoxContainer/MiddleControls/MarginContainer/VBoxContainer/HBoxContainer"]
-layout_mode = 2
-size_flags_horizontal = 3
-theme = SubResource("Theme_a0igo")
-theme_override_constants/margin_left = 0
-theme_override_constants/margin_top = 0
-theme_override_constants/margin_right = 20
-theme_override_constants/margin_bottom = 0
-
-[node name="ChangePersonButton" type="Button" parent="PanelContainer/ScreenContainer/ScreenVBoxContainer/UserInputMargin/VBoxContainer/MiddleControls/MarginContainer/VBoxContainer/HBoxContainer/ChangePersonMargin"]
-layout_mode = 2
-text = "Change Person"
-
-[node name="ChangeMovieMargin" type="MarginContainer" parent="PanelContainer/ScreenContainer/ScreenVBoxContainer/UserInputMargin/VBoxContainer/MiddleControls/MarginContainer/VBoxContainer/HBoxContainer"]
-layout_mode = 2
-size_flags_horizontal = 3
-theme_override_constants/margin_left = 20
-
-[node name="ChangeMovieButton" type="Button" parent="PanelContainer/ScreenContainer/ScreenVBoxContainer/UserInputMargin/VBoxContainer/MiddleControls/MarginContainer/VBoxContainer/HBoxContainer/ChangeMovieMargin"]
-layout_mode = 2
-text = "Change Movie"
-
-[node name="HBoxContainer2" type="HBoxContainer" parent="PanelContainer/ScreenContainer/ScreenVBoxContainer/UserInputMargin/VBoxContainer/MiddleControls/MarginContainer/VBoxContainer"]
-layout_mode = 2
-alignment = 1
-
-[node name="DirectionLabel" type="Label" parent="PanelContainer/ScreenContainer/ScreenVBoxContainer/UserInputMargin/VBoxContainer/MiddleControls/MarginContainer/VBoxContainer/HBoxContainer2"]
+[node name="ChangeTypeToggleButton" type="Button" parent="PanelContainer/ScreenContainer/ScreenVBoxContainer/UserInputMargin/VBoxContainer/MiddleControls/MarginContainer/VBoxContainer"]
 unique_name_in_owner = true
 layout_mode = 2
-text = "Direction Placeholder"
-horizontal_alignment = 1
+text = "Toggle Change Type"
 
 [node name="VBoxContainer" type="VBoxContainer" parent="PanelContainer/ScreenContainer/ScreenVBoxContainer/UserInputMargin/VBoxContainer"]
 custom_minimum_size = Vector2(400, 0)
@@ -152,7 +130,7 @@ initial_position = 5
 size = Vector2i(383, 256)
 borderless = false
 always_on_top = true
-theme_override_styles/panel = ExtResource("5_2sjiv")
+theme_override_styles/panel = SubResource("StyleBoxFlat_a0igo")
 
 [node name="VBoxContainer" type="VBoxContainer" parent="GameCompletionPopupPanel"]
 anchors_preset = 15
@@ -180,8 +158,7 @@ text = "Submit Path"
 
 [connection signal="game_completed" from="PanelContainer/ScreenContainer/ScreenVBoxContainer/DailyPath" to="." method="_on_daily_path_game_completed"]
 [connection signal="button_down" from="PanelContainer/ScreenContainer/ScreenVBoxContainer/UserInputMargin/VBoxContainer/MiddleControls/MarginContainer/VBoxContainer/ChangeDirectionButton" to="." method="_on_change_direction_button_button_down"]
-[connection signal="button_down" from="PanelContainer/ScreenContainer/ScreenVBoxContainer/UserInputMargin/VBoxContainer/MiddleControls/MarginContainer/VBoxContainer/HBoxContainer/ChangePersonMargin/ChangePersonButton" to="." method="_on_change_person_button_button_down"]
-[connection signal="button_down" from="PanelContainer/ScreenContainer/ScreenVBoxContainer/UserInputMargin/VBoxContainer/MiddleControls/MarginContainer/VBoxContainer/HBoxContainer/ChangeMovieMargin/ChangeMovieButton" to="." method="_on_change_movie_button_button_down"]
+[connection signal="button_down" from="PanelContainer/ScreenContainer/ScreenVBoxContainer/UserInputMargin/VBoxContainer/MiddleControls/MarginContainer/VBoxContainer/ChangeTypeToggleButton" to="." method="_on_change_type_toggle_button_button_down"]
 [connection signal="button_down" from="PanelContainer/ScreenContainer/ScreenVBoxContainer/UserInputMargin/VBoxContainer/VBoxContainer/SubmissionButton" to="." method="_on_submission_button_button_down"]
 [connection signal="button_down" from="PanelContainer/ScreenContainer/ScreenVBoxContainer/UserInputMargin/VBoxContainer/VBoxContainer/SubmissionButton" to="PanelContainer/ScreenContainer/ScreenVBoxContainer/DailyPath" method="_on_submission_button_button_down"]
 [connection signal="button_down" from="GameCompletionPopupPanel/VBoxContainer/SubmitButton" to="." method="_on_submit_button_button_down"]

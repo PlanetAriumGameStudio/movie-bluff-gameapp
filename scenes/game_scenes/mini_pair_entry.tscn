@@ -1,6 +1,6 @@
 [gd_scene load_steps=5 format=3 uid="uid://dtutaeljvhace"]
 
-[ext_resource type="Script" uid="uid://32bn3y0samdf" path="res://scenes/game_scenes/mini_pair_entry.gd" id="1_pidg0"]
+[ext_resource type="Script" uid="uid://32bn3y0samdf" path="res://scripts/game_scenes/mini_pair_entry.gd" id="1_pidg0"]
 [ext_resource type="Texture2D" uid="uid://b7aa7ybayfpp7" path="res://sprites/testprof_w45.webp" id="2_voypd"]
 [ext_resource type="Texture2D" uid="uid://cw8c6kcom423n" path="res://sprites/test_w45.webp" id="3_7u5ww"]
 

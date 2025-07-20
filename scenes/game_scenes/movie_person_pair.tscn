@@ -1,6 +1,6 @@
 [gd_scene load_steps=4 format=3 uid="uid://dtjpcnacdl0pk"]
 
-[ext_resource type="Script" uid="uid://bpcahprru7lnj" path="res://scenes/game_scenes/movie_person_pair.gd" id="1_ebygj"]
+[ext_resource type="Script" uid="uid://bpcahprru7lnj" path="res://scripts/game_scenes/movie_person_pair.gd" id="1_ebygj"]
 [ext_resource type="PackedScene" uid="uid://cewg41etai1yf" path="res://scenes/game_scenes/pair_entry.tscn" id="2_pro1x"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_iojk4"]

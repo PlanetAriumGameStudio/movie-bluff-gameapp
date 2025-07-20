@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=3 uid="uid://djhuu1s74bgvi"]
 
-[ext_resource type="Script" uid="uid://dh582itg2ldk" path="res://scenes/login_popup.gd" id="1_q0spg"]
+[ext_resource type="Script" uid="uid://dh582itg2ldk" path="res://scripts/menus/login_popup.gd" id="1_q0spg"]
 
 [node name="LoginPopup" type="PanelContainer"]
 custom_minimum_size = Vector2(350, 450)

@@ -56,8 +56,10 @@ func _enter_init():
 	current_pairing = Pairing.new()
 	current_direction = START_TO_FINISH
 	path_complete = false
-	_update_changing(CHANGE_TYPES.NONE)
-	_update_direction_text()
+	# Set initial UI state to match game state
+	%GameboardHBoxContainer.split_offset = 200
+	_update_changing(CHANGE_TYPES.PERSON) # Default to changing the Movie
+	_update_toggle_button_text()
 
 	# Make the initial API call
 	BluffClient.instance.http_request.request_completed.connect(_handle_daily_response, CONNECT_ONE_SHOT)
@@ -87,6 +89,7 @@ func daily_submission():
 
 func _update_changing(type: CHANGE_TYPES) -> void:
 	last_change = type
+	_update_toggle_button_text()
 	var highlight_type: MoviePersonPair.Highlight
 	match type:
 		CHANGE_TYPES.MOVIE:
@@ -97,8 +100,16 @@ func _update_changing(type: CHANGE_TYPES) -> void:
 			highlight_type = MoviePersonPair.Highlight.MOVIE
 		_: # This covers CHANGE_TYPES.NONE
 			highlight_type = MoviePersonPair.Highlight.NONE
-	%StartingPair.set_highlight(highlight_type)
-	%FinishingPair.set_highlight(highlight_type)
+	
+	# Always clear both highlights first to ensure a clean state.
+	%StartingPair.set_highlight(MoviePersonPair.Highlight.NONE)
+	%FinishingPair.set_highlight(MoviePersonPair.Highlight.NONE)
+
+	# Then, apply the highlight only to the active pair.
+	if current_direction == START_TO_FINISH:
+		%StartingPair.set_highlight(highlight_type)
+	else:
+		%FinishingPair.set_highlight(highlight_type)
 	
 func _handle_daily_response(result, _response_code, _headers, body):
 	print("Got Daily Response")
@@ -169,74 +180,76 @@ func _push_pair_to_path(pair:Pairing):
 	else:
 		%DailyPath.push_to_finish(pair)
 
+func _process_movie_change_submission():
+	var credit_index = current_pairing.person_credits.find_custom(_movie_has_submission)
+	if credit_index > -1:
+		# Success: Update pairing and get new credits list
+		var next_pairing = current_pairing.duplicate()
+		var credit = current_pairing.person_credits[credit_index]
+		next_pairing.movie_id = credit.id
+		next_pairing.movie_name = credit.title
+		next_pairing.movie_poster_url = credit.poster_path
+		_get_credits_for_movie(credit.id, next_pairing)
+		_update_changing(CHANGE_TYPES.MOVIE)
+		_push_pair_to_path(next_pairing)
+		%SubmissionInput.clear()
+	else:
+		print("Submission Error: Movie not found in person's credits.")
+
+func _process_person_change_submission():
+	var credit_index = current_pairing.movie_credits.find_custom(_person_has_submission)
+	if credit_index > -1:
+		var next_pairing = current_pairing.duplicate()
+		var credit = current_pairing.movie_credits[credit_index]
+		next_pairing.person_id = credit.id
+		next_pairing.person_name = credit.name
+		next_pairing.person_profile_url = credit.profile_path
+		_get_credits_for_person(credit.id, next_pairing)
+		_update_changing(CHANGE_TYPES.PERSON)
+		_push_pair_to_path(next_pairing)
+		%SubmissionInput.clear()
+	else:
+		print("Submission Error: Person not found in movie's credits.")
+
 func _on_submission_button_button_down() -> void:
 	if current_state != State.PLAYING:
 		return
-
-	if current_direction == START_TO_FINISH:
-		current_pairing = %StartingPair.get_pair()
-	else:
-		current_pairing = %FinishingPair.get_pair()
+	current_pairing = %StartingPair.get_pair() if current_direction == START_TO_FINISH else %FinishingPair.get_pair()
+	match last_change:
+		CHANGE_TYPES.PERSON: # User is submitting a movie to change from a person
+			_process_movie_change_submission()
+		CHANGE_TYPES.MOVIE: # User is submitting a person to change from a movie
+			_process_person_change_submission()
+		_:
+			print("Submission Error: No change type selected.")
 		
-	# Changing Movie
+func _on_change_type_toggle_button_button_down() -> void:
 	if last_change == CHANGE_TYPES.PERSON:
-		var credit_index = current_pairing.person_credits.find_custom(_movie_has_submission)
-		if credit_index > -1:
-			# Success: Update pairing and get new credits list
-			var next_pairing = current_pairing.duplicate()
-			next_pairing.movie_id = current_pairing.person_credits[credit_index].id
-			next_pairing.movie_name = current_pairing.person_credits[credit_index].title
-			next_pairing.movie_poster_url = current_pairing.person_credits[credit_index].poster_path
-			_get_credits_for_movie(current_pairing.person_credits[credit_index].id, next_pairing)
-			_update_changing(CHANGE_TYPES.MOVIE)
-			_push_pair_to_path(next_pairing)
-			%SubmissionInput.clear()
-		else:
-			print("not found")
-	# Changing Person
-	elif last_change == CHANGE_TYPES.MOVIE:
-		var credit_index = current_pairing.movie_credits.find_custom(_person_has_submission)
-		if credit_index > -1:
-			var next_pairing = current_pairing.duplicate()
-			next_pairing.person_id = current_pairing.movie_credits[credit_index].id
-			next_pairing.person_name = current_pairing.movie_credits[credit_index].name
-			next_pairing.person_profile_url = current_pairing.movie_credits[credit_index].profile_path
-			_get_credits_for_person(current_pairing.movie_credits[credit_index].id, next_pairing)
-			_update_changing(CHANGE_TYPES.PERSON)
-			_push_pair_to_path(next_pairing)
-			%SubmissionInput.clear()
-		else:
-			print("not found")
+		_update_changing(CHANGE_TYPES.MOVIE)
 	else:
-		print("error in last_change")
-		
-func _on_change_movie_button_button_down() -> void:
-	if current_state != State.PLAYING:
-		return
-	_update_changing(CHANGE_TYPES.PERSON)
+		_update_changing(CHANGE_TYPES.PERSON)
 
-func _on_change_person_button_button_down() -> void:
-	if current_state != State.PLAYING:
-		return
-	_update_changing(CHANGE_TYPES.MOVIE)
-	
-func _update_direction_text() -> void:
-	if current_direction == START_TO_FINISH:
-		%DirectionLabel.text = "Direction: Forewards"
-	else: 
-		%DirectionLabel.text = "Direction: Backwards"
+func _update_toggle_button_text():
+	%ChangeTypeToggleButton.text = "Change to Person" if last_change == CHANGE_TYPES.PERSON else "Change to Movie"
 
 func _on_change_direction_button_button_down() -> void:
 	if current_state != State.PLAYING:
 		return
-
+	
+	var target_offset: int
 	if current_direction == START_TO_FINISH:
 		current_direction = FINISH_TO_START
-		%GameboardHBoxContainer.split_offset = -200
+		target_offset = -200
 	else: 
 		current_direction = START_TO_FINISH
-		%GameboardHBoxContainer.split_offset = 200
-	_update_direction_text()
+		target_offset = 200
+	
+	var tween = create_tween()
+	tween.set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_IN_OUT)
+	tween.tween_property(%GameboardHBoxContainer, "split_offset", target_offset, 0.4)
+	
+	# Re-evaluate and apply highlights for the new direction.
+	_update_changing(last_change)
 
 func _on_submit_button_button_down() -> void:
 	daily_submission()
