@@ -5,19 +5,14 @@ const MOVIE_CREDITS_API_ENDPOINT = "/api/movie/%d/cast"
 const PERSON_CREDITS_API_ENDPOINT = "/api/person/%d/credits"
 
 ### [STATE TRACKING]
-enum {INIT_STATE, PLAYING_STATE, COMPLETION_STATE}
-var current_state = INIT_STATE
+enum State {INIT, PLAYING, COMPLETED}
+var current_state: State
 
 enum {START_TO_FINISH, FINISH_TO_START}
 var current_direction = START_TO_FINISH
 
 enum CHANGE_TYPES {NONE, MOVIE, PERSON}
 var last_change:CHANGE_TYPES
-var change_labels_dict = {
-	CHANGE_TYPES.NONE: "Select Next Change",
-	CHANGE_TYPES.MOVIE: "Changing: Person",
-	CHANGE_TYPES.PERSON: "Changing: Movie",
-}
 
 var current_pairing:Pairing
 
@@ -27,22 +22,61 @@ var path_complete:bool
 # Call API daily endpoint to populate start and finish pairs
 # TODO incorporate account information later
 func _ready() -> void:
-	init_daily()
-	
-# Will initialize state and all components to prepare for a fresh daily attempt
-func init_daily():
-	print("Initializing")
+	print("Ready")
+	set_state(State.INIT)
+
+# --- State Machine ---
+
+func set_state(new_state: State) -> void:
+	if current_state == new_state and current_state != State.INIT:
+		return
+
+	# Exit logic for the current state
+	match current_state:
+		State.PLAYING:
+			_exit_playing()
+		State.COMPLETED:
+			_exit_completed()
+	current_state = new_state
+
+	# Enter logic for the new state
+	match current_state:
+		State.INIT:
+			_enter_init()
+		State.PLAYING:
+			_enter_playing()
+		State.COMPLETED:
+			_enter_completed()
+
+# --- State Enter/Exit Logic ---
+
+func _enter_init():
+	print("Entering INIT state")
+	# Reset all game variables to their defaults
 	current_pairing = Pairing.new()
-	current_state = INIT_STATE
 	current_direction = START_TO_FINISH
 	path_complete = false
 	_update_changing(CHANGE_TYPES.NONE)
 	_update_direction_text()
-	if !%DirectionArrow.flip_h:
-		_update_direction_arrow()
-	
+
+	# Make the initial API call
 	BluffClient.instance.http_request.request_completed.connect(_handle_daily_response, CONNECT_ONE_SHOT)
 	BluffClient.instance.make_request(DAILY_API_ENDPOINT)
+
+func _enter_playing():
+	print("Entering PLAYING state")
+	# TODO: Enable UI elements for gameplay
+
+func _exit_playing():
+	print("Exiting PLAYING state")
+	# TODO: Disable UI to prevent input during state transitions or in other states
+
+func _enter_completed():
+	print("Entering COMPLETED state")
+	%GameCompletionPopupPanel.popup()
+
+func _exit_completed():
+	print("Exiting COMPLETED state")
 
 func daily_submission():
 	print("Submitting daily...")
@@ -51,9 +85,20 @@ func daily_submission():
 	BluffClient.instance.http_request.request_completed.connect(_handle_daily_submission_response, CONNECT_ONE_SHOT)
 	BluffClient.instance.make_request(DAILY_API_ENDPOINT, HTTPClient.METHOD_POST, JSON.stringify(data_to_send))
 
-func _update_changing(type:CHANGE_TYPES) -> void:
+func _update_changing(type: CHANGE_TYPES) -> void:
 	last_change = type
-	%ChangeTypeLabel.text = change_labels_dict.get(type)
+	var highlight_type: MoviePersonPair.Highlight
+	match type:
+		CHANGE_TYPES.MOVIE:
+			# When changing the movie, the person is the source. Highlight the person.
+			highlight_type = MoviePersonPair.Highlight.PERSON
+		CHANGE_TYPES.PERSON:
+			# When changing the person, the movie is the source. Highlight the movie.
+			highlight_type = MoviePersonPair.Highlight.MOVIE
+		_: # This covers CHANGE_TYPES.NONE
+			highlight_type = MoviePersonPair.Highlight.NONE
+	%StartingPair.set_highlight(highlight_type)
+	%FinishingPair.set_highlight(highlight_type)
 	
 func _handle_daily_response(result, _response_code, _headers, body):
 	print("Got Daily Response")
@@ -64,7 +109,8 @@ func _handle_daily_response(result, _response_code, _headers, body):
 		%StartingPair.set_pairing(startingPair)
 		%FinishingPair.set_pairing(finishingPair)
 		%DailyPath.init_daily_path(startingPair, finishingPair)
-		print("Initialized")
+		print("Initialized, transitioning to PLAYING state")
+		set_state(State.PLAYING)
 	else:
 		print("Non-Zero Status in Request Response: %d", result)
 
@@ -124,6 +170,9 @@ func _push_pair_to_path(pair:Pairing):
 		%DailyPath.push_to_finish(pair)
 
 func _on_submission_button_button_down() -> void:
+	if current_state != State.PLAYING:
+		return
+
 	if current_direction == START_TO_FINISH:
 		current_pairing = %StartingPair.get_pair()
 	else:
@@ -162,9 +211,13 @@ func _on_submission_button_button_down() -> void:
 		print("error in last_change")
 		
 func _on_change_movie_button_button_down() -> void:
+	if current_state != State.PLAYING:
+		return
 	_update_changing(CHANGE_TYPES.PERSON)
 
 func _on_change_person_button_button_down() -> void:
+	if current_state != State.PLAYING:
+		return
 	_update_changing(CHANGE_TYPES.MOVIE)
 	
 func _update_direction_text() -> void:
@@ -173,20 +226,22 @@ func _update_direction_text() -> void:
 	else: 
 		%DirectionLabel.text = "Direction: Backwards"
 
-func _update_direction_arrow() -> void:
-	%DirectionArrow.flip_h = !%DirectionArrow.flip_h
-
 func _on_change_direction_button_button_down() -> void:
+	if current_state != State.PLAYING:
+		return
+
 	if current_direction == START_TO_FINISH:
 		current_direction = FINISH_TO_START
+		%GameboardHBoxContainer.split_offset = -200
 	else: 
 		current_direction = START_TO_FINISH
+		%GameboardHBoxContainer.split_offset = 200
 	_update_direction_text()
-	_update_direction_arrow()
 
 func _on_submit_button_button_down() -> void:
 	daily_submission()
 
 func _on_daily_path_game_completed() -> void:
 	print("Game complete!")
-	%GameCompletionPopupPanel.popup()
+	if current_state == State.PLAYING:
+		set_state(State.COMPLETED)

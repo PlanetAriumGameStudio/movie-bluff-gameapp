@@ -42,3 +42,44 @@ func _on_image_request_completed(result, response_code, _headers, body, requeste
 	
 	# Clean up the temporary request node
 	requester.queue_free()
+
+func set_highlight_active(is_active: bool):
+	var panel: PanelContainer = %PairImageMargin
+	var stylebox_override: StyleBoxFlat
+
+	# Check if an override already exists. If so, we can safely get it.
+	if panel.has_theme_stylebox_override("panel"):
+		stylebox_override = panel.get_theme_stylebox("panel")
+	else:
+		# If no override exists, create one by duplicating the base theme stylebox.
+		# This ensures each instance has a unique style to modify.
+		var base_stylebox = panel.get_theme_stylebox("panel")
+		if not base_stylebox is StyleBoxFlat:
+			push_warning("PairImageMargin's panel stylebox is not a StyleBoxFlat.")
+			return
+		stylebox_override = base_stylebox.duplicate()
+		panel.add_theme_stylebox_override("panel", stylebox_override)
+
+	if is_active:
+		var border_width = 4
+		stylebox_override.border_width_left = border_width
+		stylebox_override.border_width_top = border_width
+		stylebox_override.border_width_right = border_width
+		stylebox_override.border_width_bottom = border_width
+		stylebox_override.border_color = Color("ffd400") # Golden yellow
+		# This is the crucial part: add padding so the border is visible around the content.
+		stylebox_override.content_margin_left = border_width
+		stylebox_override.content_margin_top = border_width
+		stylebox_override.content_margin_right = border_width
+		stylebox_override.content_margin_bottom = border_width
+	else:
+		# Set border width to 0 to hide it.
+		stylebox_override.border_width_left = 0
+		stylebox_override.border_width_top = 0
+		stylebox_override.border_width_right = 0
+		stylebox_override.border_width_bottom = 0
+		# Also reset the content margin so the layout returns to normal.
+		stylebox_override.content_margin_left = 0
+		stylebox_override.content_margin_top = 0
+		stylebox_override.content_margin_right = 0
+		stylebox_override.content_margin_bottom = 0
