@@ -60,6 +60,7 @@ func _enter_init():
 	%GameboardHBoxContainer.split_offset = 200
 	_update_changing(CHANGE_TYPES.PERSON) # Default to changing the Movie
 	_update_toggle_button_text()
+	%SubmissionInput.grab_focus()
 
 	# Make the initial API call
 	BluffClient.instance.http_request.request_completed.connect(_handle_daily_response, CONNECT_ONE_SHOT)
@@ -193,6 +194,7 @@ func _process_movie_change_submission():
 		_update_changing(CHANGE_TYPES.MOVIE)
 		_push_pair_to_path(next_pairing)
 		%SubmissionInput.clear()
+		%SubmissionInput.grab_focus()
 	else:
 		print("Submission Error: Movie not found in person's credits.")
 
@@ -208,6 +210,7 @@ func _process_person_change_submission():
 		_update_changing(CHANGE_TYPES.PERSON)
 		_push_pair_to_path(next_pairing)
 		%SubmissionInput.clear()
+		%SubmissionInput.grab_focus()
 	else:
 		print("Submission Error: Person not found in movie's credits.")
 
@@ -222,12 +225,20 @@ func _on_submission_button_button_down() -> void:
 			_process_person_change_submission()
 		_:
 			print("Submission Error: No change type selected.")
-		
+
+func _on_submission_input_text_submitted(_new_text: String):
+	# Trigger the same logic as clicking the submission button.
+	_on_submission_button_button_down()
+	
 func _on_change_type_toggle_button_button_down() -> void:
+	if current_state != State.PLAYING:
+		return
+		
 	if last_change == CHANGE_TYPES.PERSON:
 		_update_changing(CHANGE_TYPES.MOVIE)
 	else:
 		_update_changing(CHANGE_TYPES.PERSON)
+	%SubmissionInput.grab_focus()
 
 func _update_toggle_button_text():
 	%ChangeTypeToggleButton.text = "Change to Person" if last_change == CHANGE_TYPES.PERSON else "Change to Movie"
@@ -250,6 +261,7 @@ func _on_change_direction_button_button_down() -> void:
 	
 	# Re-evaluate and apply highlights for the new direction.
 	_update_changing(last_change)
+	%SubmissionInput.grab_focus()
 
 func _on_submit_button_button_down() -> void:
 	daily_submission()

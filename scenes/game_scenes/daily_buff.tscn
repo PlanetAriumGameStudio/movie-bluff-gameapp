@@ -59,7 +59,8 @@ unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
-drag_area_highlight_in_editor = true
+dragging_enabled = false
+dragger_visibility = 1
 
 [node name="StartingPair" parent="PanelContainer/ScreenContainer/ScreenVBoxContainer/GameboardHBoxContainer" instance=ExtResource("1_bcfbp")]
 unique_name_in_owner = true
@@ -109,12 +110,12 @@ custom_minimum_size = Vector2(400, 0)
 layout_mode = 2
 size_flags_vertical = 8
 
-[node name="SubmissionInput" type="TextEdit" parent="PanelContainer/ScreenContainer/ScreenVBoxContainer/UserInputMargin/VBoxContainer/VBoxContainer"]
+[node name="SubmissionInput" type="LineEdit" parent="PanelContainer/ScreenContainer/ScreenVBoxContainer/UserInputMargin/VBoxContainer/VBoxContainer"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 40)
 layout_mode = 2
-size_flags_vertical = 6
 placeholder_text = "Enter Next Step Here"
+keep_editing_on_text_submit = true
 
 [node name="SubmissionButton" type="Button" parent="PanelContainer/ScreenContainer/ScreenVBoxContainer/UserInputMargin/VBoxContainer/VBoxContainer"]
 unique_name_in_owner = true
@@ -159,6 +160,7 @@ text = "Submit Path"
 [connection signal="game_completed" from="PanelContainer/ScreenContainer/ScreenVBoxContainer/DailyPath" to="." method="_on_daily_path_game_completed"]
 [connection signal="button_down" from="PanelContainer/ScreenContainer/ScreenVBoxContainer/UserInputMargin/VBoxContainer/MiddleControls/MarginContainer/VBoxContainer/ChangeDirectionButton" to="." method="_on_change_direction_button_button_down"]
 [connection signal="button_down" from="PanelContainer/ScreenContainer/ScreenVBoxContainer/UserInputMargin/VBoxContainer/MiddleControls/MarginContainer/VBoxContainer/ChangeTypeToggleButton" to="." method="_on_change_type_toggle_button_button_down"]
+[connection signal="text_submitted" from="PanelContainer/ScreenContainer/ScreenVBoxContainer/UserInputMargin/VBoxContainer/VBoxContainer/SubmissionInput" to="." method="_on_submission_input_text_submitted"]
 [connection signal="button_down" from="PanelContainer/ScreenContainer/ScreenVBoxContainer/UserInputMargin/VBoxContainer/VBoxContainer/SubmissionButton" to="." method="_on_submission_button_button_down"]
 [connection signal="button_down" from="PanelContainer/ScreenContainer/ScreenVBoxContainer/UserInputMargin/VBoxContainer/VBoxContainer/SubmissionButton" to="PanelContainer/ScreenContainer/ScreenVBoxContainer/DailyPath" method="_on_submission_button_button_down"]
 [connection signal="button_down" from="GameCompletionPopupPanel/VBoxContainer/SubmitButton" to="." method="_on_submit_button_button_down"]
