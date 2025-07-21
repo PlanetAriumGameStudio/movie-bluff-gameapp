@@ -9,7 +9,7 @@ signal google_login_succeeded(token)
 signal google_login_failed(error_message)
 
 # --- Configuration ---
-const SERVER_BASE_URL = "http://127.0.0.1:8080"
+const SERVER_BASE_URL = "http://127.0.0.1:8080/api"
 const POLLING_INTERVAL_SECONDS = 2.0 # Poll every 2 seconds
 const POLLING_TIMEOUT_SECONDS = 300  # 5 minutes, should match server's state expiration
 
@@ -129,7 +129,9 @@ func _poll_for_status():
 		return
 
 	print("Polling for status with state: %s" % _google_login_state)
-	var url = "%s/auth/status/%s" % [SERVER_BASE_URL, _google_login_state]
+	var url = "%s/auth/poll/%s" % [SERVER_BASE_URL, _google_login_state]
+	print(SERVER_BASE_URL)
+	print(url)
 	_google_poll_request.request(url)
 
 # --- Signal Handlers for HTTPRequest ---
@@ -244,7 +246,7 @@ func load_token():
 			# Verify the token is still valid with the server by making a call
 			# to a protected endpoint like /api/me.
 			var headers = get_auth_header()
-			_verify_token_request.request(SERVER_BASE_URL + "/api/me", headers, HTTPClient.METHOD_GET)
+			_verify_token_request.request(SERVER_BASE_URL + "/me", headers, HTTPClient.METHOD_GET)
 		else:
 			auth_status = AuthStatus.NOT_LOGGED_IN
 

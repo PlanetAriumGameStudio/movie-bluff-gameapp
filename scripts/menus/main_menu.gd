@@ -2,7 +2,7 @@ extends MainMenu
 
 @onready var httpReq:HTTPRequest = $HTTPRequest
 
-const config_api_format_string = "%s:%s/public/config"
+const config_api_format_string = "%s:%s/api/config"
 var session_token: String = ""
 
 func _ready():

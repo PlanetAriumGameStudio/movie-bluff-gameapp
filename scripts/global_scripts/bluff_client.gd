@@ -42,8 +42,9 @@ func make_request(endpoint: String, method: int = HTTPClient.METHOD_GET, body: S
 
 func fetch_config(_token = ""): # The token from the signal isn't needed here, but we accept it.
 	http_request.request_completed.connect(_on_config_received, CONNECT_ONE_SHOT)
-	make_request("/public/config") # IMPORTANT: Change this to your actual config endpoint!
+	make_request("/api/config") # IMPORTANT: Change this to your actual config endpoint!
 
 func _on_config_received(result, response_code, headers, body):
 	var json = JSON.parse_string(body.get_string_from_utf8())
+	print(json)
 	Globals.set_image_base_url(json["images"]["base_url"])
