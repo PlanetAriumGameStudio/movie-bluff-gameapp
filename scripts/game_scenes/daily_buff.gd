@@ -1,6 +1,7 @@
 extends Control
 
-const DAILY_API_ENDPOINT = "/api/games/daily"
+const DAILY_GAME_ENDPOINT = "/api/games/daily" # GET for setup, POST for submission
+const DAILY_STATUS_ENDPOINT = "/api/games/daily/status" # GET for checking submission status
 const MOVIE_CREDITS_API_ENDPOINT = "/api/movie/%d/cast"
 const PERSON_CREDITS_API_ENDPOINT = "/api/person/%d/credits"
 
@@ -62,9 +63,9 @@ func _enter_init():
 	_update_toggle_button_text()
 	%SubmissionInput.grab_focus()
 
-	# Make the initial API call
-	BluffClient.instance.http_request.request_completed.connect(_handle_daily_response, CONNECT_ONE_SHOT)
-	BluffClient.instance.make_request(DAILY_API_ENDPOINT)
+	# Make the initial API call to check status
+	BluffClient.instance.http_request.request_completed.connect(_handle_daily_status_response, CONNECT_ONE_SHOT)
+	BluffClient.instance.make_request(DAILY_STATUS_ENDPOINT)
 
 func _enter_playing():
 	print("Entering PLAYING state")
@@ -86,7 +87,7 @@ func daily_submission():
 	#TODO: Actual player ID/account hookup
 	var data_to_send = { "player_id": 1, "steps": %DailyPath.get_full_path_json() }
 	BluffClient.instance.http_request.request_completed.connect(_handle_daily_submission_response, CONNECT_ONE_SHOT)
-	BluffClient.instance.make_request(DAILY_API_ENDPOINT, HTTPClient.METHOD_POST, JSON.stringify(data_to_send))
+	BluffClient.instance.make_request(DAILY_GAME_ENDPOINT, HTTPClient.METHOD_POST, JSON.stringify(data_to_send))
 
 func _update_changing(type: CHANGE_TYPES) -> void:
 	last_change = type
@@ -114,17 +115,83 @@ func _update_changing(type: CHANGE_TYPES) -> void:
 	
 func _handle_daily_response(result, _response_code, _headers, body):
 	print("Got Daily Response")
-	if result == 0:
-		var json = JSON.parse_string(body.get_string_from_utf8())
-		var startingPair:Pairing = Pairing.parse_pairing_from_json(json["starting_pair"])
-		var finishingPair:Pairing = Pairing.parse_pairing_from_json(json["finishing_pair"])
-		%StartingPair.set_pairing(startingPair)
-		%FinishingPair.set_pairing(finishingPair)
-		%DailyPath.init_daily_path(startingPair, finishingPair)
-		print("Initialized, transitioning to PLAYING state")
-		set_state(State.PLAYING)
-	else:
+	if result != OK:
 		print("Non-Zero Status in Request Response: %d", result)
+		# TODO: Show an error popup to the user
+		return
+	
+	var json_result = JSON.parse_string(body.get_string_from_utf8())
+	if json_result == null:
+		print("Failed to parse daily status JSON.")
+		# TODO: Show an error message to the user
+		return
+
+	# User has not submitted, set up the game board.
+	var startingPair:Pairing = Pairing.parse_pairing_from_json(json_result["starting_pair"])
+	var finishingPair:Pairing = Pairing.parse_pairing_from_json(json_result["finishing_pair"])
+	%StartingPair.set_pairing(startingPair)
+	%FinishingPair.set_pairing(finishingPair)
+	%DailyPath.init_daily_path(startingPair, finishingPair)
+	print("Initialized, transitioning to PLAYING state")
+	set_state(State.PLAYING)
+
+func _handle_daily_status_response(result, _response_code, _headers, body):
+	print("Got Daily Status Response")
+	if result != OK:
+		print("Non-Zero Status in Request Response: %d", result)
+		# TODO: Show an error popup to the user
+		return
+	
+	var json_result = JSON.parse_string(body.get_string_from_utf8())
+	if json_result == null:
+		print("Failed to parse daily status JSON.")
+		# TODO: Show an error message to the user
+		return
+		
+	if json_result.get("submitted", false): # Default to false if not found
+		print("Already submitted for today. Fetching results.")
+		# User has already submitted, make the call to get the results.
+		BluffClient.instance.http_request.request_completed.connect(_handle_daily_results_response, CONNECT_ONE_SHOT)
+		BluffClient.instance.make_request(DAILY_GAME_ENDPOINT)
+	else:
+		print("Not submitted yet. Fetching game setup.")
+		# User has not submitted, make the call to get the game setup data.
+		BluffClient.instance.http_request.request_completed.connect(_handle_daily_response, CONNECT_ONE_SHOT)
+		BluffClient.instance.make_request(DAILY_GAME_ENDPOINT)
+
+func _handle_daily_results_response(result, _response_code, _headers, body):
+	print("Got Daily Results Response")
+	if result != OK:
+		print("Non-Zero Status in Request Response: %d", result)
+		# TODO: Show an error popup to the user
+		return
+	
+	var json_result = JSON.parse_string(body.get_string_from_utf8())
+	if json_result == null:
+		print("Failed to parse daily results JSON.")
+		# TODO: Show an error message to the user
+		return
+
+	var results = json_result.get("results", [])
+	_show_daily_results(results)
+
+func _show_daily_results(results: Array) -> void:
+	# Hide the main game UI elements
+	%GameboardHBoxContainer.hide()
+	%UserInputMargin.hide()
+	
+	# Repurpose the completion popup to show results
+	%GameCompletionPopupPanel.title = "Daily Results"
+	%DailySubmissionButton.hide() # Hide the submission button
+	
+	# TODO: Replace this with the bar chart visualization
+	var results_text = "You've already completed the daily for today!\n\n"
+	results_text += "Here's how everyone did:\n"
+	for item in results:
+		results_text += "  %s steps: %s players\n" % [item.steps, item.count]
+	
+	%GameCompletionLabel.text = results_text
+	%GameCompletionPopupPanel.popup_centered()
 
 func _handle_daily_submission_response(result, response_code, headers, body):
 	if result == 0:
@@ -270,3 +337,9 @@ func _on_daily_path_game_completed() -> void:
 	print("Game complete!")
 	if current_state == State.PLAYING:
 		set_state(State.COMPLETED)
+
+
+func _on_back_button_pressed() -> void:
+	# Based on your REPO-TODO, you have a scene transition global.
+	# You may need to adjust the path to your main menu scene file.
+	TransitionManager.change_scene("res://scenes/menus/main_menu/main_menu.tscn", 1)

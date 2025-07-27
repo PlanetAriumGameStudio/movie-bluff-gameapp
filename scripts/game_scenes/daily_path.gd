@@ -61,6 +61,7 @@ func get_full_path_json() -> Array:
 
 # Check after each submission to see if win condition met
 func _check_path_completeness() -> bool:
+	print("checking path completeness")
 	var i = 0
 	var curr_pair:Pairing = _path_from_start[i]
 	var path_exists = true
@@ -95,6 +96,13 @@ func _check_path_completeness() -> bool:
 	return path_exists
 
 func _on_submission_button_button_down() -> void:
+	if _check_path_completeness():
+		game_completed.emit()
+	else:
+		print("Nay")
+
+
+func _on_submission_input_text_submitted(new_text: String) -> void:
 	if _check_path_completeness():
 		game_completed.emit()
 	else:
