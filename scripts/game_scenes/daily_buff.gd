@@ -1,10 +1,5 @@
 extends Control
 
-const DAILY_GAME_ENDPOINT = "/api/games/daily" # GET for setup, POST for submission
-const DAILY_STATUS_ENDPOINT = "/api/games/daily/status" # GET for checking submission status
-const MOVIE_CREDITS_API_ENDPOINT = "/api/movie/%d/cast"
-const PERSON_CREDITS_API_ENDPOINT = "/api/person/%d/credits"
-
 ### [STATE TRACKING]
 enum State {INIT, PLAYING, COMPLETED}
 var current_state: State
@@ -19,6 +14,9 @@ var current_pairing:Pairing
 
 # Tracks game completion state. will be updated once per submission.
 var path_complete:bool
+
+@onready var api_client = %DailyBuffAPI
+@onready var bar_chart = %BarChart
 
 # Call API daily endpoint to populate start and finish pairs
 # TODO incorporate account information later
@@ -63,9 +61,16 @@ func _enter_init():
 	_update_toggle_button_text()
 	%SubmissionInput.grab_focus()
 
-	# Make the initial API call to check status
-	BluffClient.instance.http_request.request_completed.connect(_handle_daily_status_response, CONNECT_ONE_SHOT)
-	BluffClient.instance.make_request(DAILY_STATUS_ENDPOINT)
+	# Connect to all signals from our API client
+	api_client.status_received.connect(_on_api_status_received)
+	api_client.game_setup_received.connect(_on_api_game_setup_received)
+	api_client.submission_succeeded.connect(_on_api_submission_succeeded)
+	api_client.credits_for_movie_received.connect(_on_api_credits_for_movie_received)
+	api_client.credits_for_person_received.connect(_on_api_credits_for_person_received)
+	api_client.request_failed.connect(_on_api_request_failed)
+
+	print("Fetch Status")
+	api_client.fetch_status()
 
 func _enter_playing():
 	print("Entering PLAYING state")
@@ -85,9 +90,8 @@ func _exit_completed():
 func daily_submission():
 	print("Submitting daily...")
 	#TODO: Actual player ID/account hookup
-	var data_to_send = { "player_id": 1, "steps": %DailyPath.get_full_path_json() }
-	BluffClient.instance.http_request.request_completed.connect(_handle_daily_submission_response, CONNECT_ONE_SHOT)
-	BluffClient.instance.make_request(DAILY_GAME_ENDPOINT, HTTPClient.METHOD_POST, JSON.stringify(data_to_send))
+	var path_data = %DailyPath.get_full_path_json()
+	api_client.submit_daily(path_data)
 
 func _update_changing(type: CHANGE_TYPES) -> void:
 	last_change = type
@@ -113,68 +117,6 @@ func _update_changing(type: CHANGE_TYPES) -> void:
 	else:
 		%FinishingPair.set_highlight(highlight_type)
 	
-func _handle_daily_response(result, _response_code, _headers, body):
-	print("Got Daily Response")
-	if result != OK:
-		print("Non-Zero Status in Request Response: %d", result)
-		# TODO: Show an error popup to the user
-		return
-	
-	var json_result = JSON.parse_string(body.get_string_from_utf8())
-	if json_result == null:
-		print("Failed to parse daily status JSON.")
-		# TODO: Show an error message to the user
-		return
-
-	# User has not submitted, set up the game board.
-	var startingPair:Pairing = Pairing.parse_pairing_from_json(json_result["starting_pair"])
-	var finishingPair:Pairing = Pairing.parse_pairing_from_json(json_result["finishing_pair"])
-	%StartingPair.set_pairing(startingPair)
-	%FinishingPair.set_pairing(finishingPair)
-	%DailyPath.init_daily_path(startingPair, finishingPair)
-	print("Initialized, transitioning to PLAYING state")
-	set_state(State.PLAYING)
-
-func _handle_daily_status_response(result, _response_code, _headers, body):
-	print("Got Daily Status Response")
-	if result != OK:
-		print("Non-Zero Status in Request Response: %d", result)
-		# TODO: Show an error popup to the user
-		return
-	
-	var json_result = JSON.parse_string(body.get_string_from_utf8())
-	if json_result == null:
-		print("Failed to parse daily status JSON.")
-		# TODO: Show an error message to the user
-		return
-		
-	if json_result.get("submitted", false): # Default to false if not found
-		print("Already submitted for today. Fetching results.")
-		# User has already submitted, make the call to get the results.
-		BluffClient.instance.http_request.request_completed.connect(_handle_daily_results_response, CONNECT_ONE_SHOT)
-		BluffClient.instance.make_request(DAILY_GAME_ENDPOINT)
-	else:
-		print("Not submitted yet. Fetching game setup.")
-		# User has not submitted, make the call to get the game setup data.
-		BluffClient.instance.http_request.request_completed.connect(_handle_daily_response, CONNECT_ONE_SHOT)
-		BluffClient.instance.make_request(DAILY_GAME_ENDPOINT)
-
-func _handle_daily_results_response(result, _response_code, _headers, body):
-	print("Got Daily Results Response")
-	if result != OK:
-		print("Non-Zero Status in Request Response: %d", result)
-		# TODO: Show an error popup to the user
-		return
-	
-	var json_result = JSON.parse_string(body.get_string_from_utf8())
-	if json_result == null:
-		print("Failed to parse daily results JSON.")
-		# TODO: Show an error message to the user
-		return
-
-	var results = json_result.get("results", [])
-	_show_daily_results(results)
-
 func _show_daily_results(results: Array) -> void:
 	# Hide the main game UI elements
 	%GameboardHBoxContainer.hide()
@@ -183,56 +125,69 @@ func _show_daily_results(results: Array) -> void:
 	# Repurpose the completion popup to show results
 	%GameCompletionPopupPanel.title = "Daily Results"
 	%DailySubmissionButton.hide() # Hide the submission button
+	print("Populate chart with results:")
+	print(results)
+	# Hide the old label and show/populate the bar chart
+	%GameCompletionLabel.hide()
+	bar_chart.show()
+	bar_chart.populate_chart(results)
 	
-	# TODO: Replace this with the bar chart visualization
-	var results_text = "You've already completed the daily for today!\n\n"
-	results_text += "Here's how everyone did:\n"
-	for item in results:
-		results_text += "  %s steps: %s players\n" % [item.steps, item.count]
-	
-	%GameCompletionLabel.text = results_text
 	%GameCompletionPopupPanel.popup_centered()
 
-func _handle_daily_submission_response(result, response_code, headers, body):
-	if result == 0:
-		var json = JSON.parse_string(body.get_string_from_utf8())
-		print("Submissing results")
+# --- Data Transformation ---
+
+func _transform_results_map_to_array(results_map: Dictionary) -> Array:
+	var results_array: Array = []
+	for steps_str in results_map.keys():
+		var steps_int = int(steps_str)
+		var count = results_map[steps_str]
+		results_array.append({"steps": steps_int, "count": count})
+	return results_array
+
+
+# --- API Signal Handlers ---
+
+func _on_api_status_received(status_data: Dictionary):
+	if status_data.get("submitted", false):
+		print("Already submitted for today. Showing results.")
+		var results_map = status_data.get("results_map", {})
+		var results = _transform_results_map_to_array(results_map)
+		_show_daily_results(results)
 	else:
-		print("Non-Zero Status in Request Response: %d", result)
+		print("Not submitted yet. Fetching game setup data.")
+		api_client.fetch_game_data()
 
-func _get_credits_for_movie(movie_id: int, pair: Pairing):
-	BluffClient.instance.http_request.request_completed.connect(_handle_credits_for_movie_response.bind(pair), CONNECT_ONE_SHOT)
-	BluffClient.instance.make_request(MOVIE_CREDITS_API_ENDPOINT % movie_id)
+func _on_api_game_setup_received(start_pair: Pairing, end_pair: Pairing):
+	%StartingPair.set_pairing(start_pair)
+	%FinishingPair.set_pairing(end_pair)
+	%DailyPath.init_daily_path(start_pair, end_pair)
+	print("Initialized, transitioning to PLAYING state")
+	set_state(State.PLAYING)
 
-func _handle_credits_for_movie_response(result, _response_code, _headers, body, next_pair):
-	print("Got Credits for Movie Response")
-	if result == 0:
-		var json = JSON.parse_string(body.get_string_from_utf8())
-		if current_direction == FINISH_TO_START:
-			next_pair.movie_credits = json["cast"]
-			%FinishingPair.update_movie_pairing(next_pair)
-		else:
-			next_pair.movie_credits = json["cast"]
-			%StartingPair.update_movie_pairing(next_pair)
+func _on_api_submission_succeeded(results_data: Dictionary):
+	print("Submission successful. Results: ", results_data)
+	var results_map = results_data.get("results_map", {})
+	_show_daily_results(_transform_results_map_to_array(results_map))
+
+func _on_api_credits_for_movie_received(credits: Array, next_pair: Pairing):
+	next_pair.movie_credits = credits
+	if current_direction == FINISH_TO_START:
+		%FinishingPair.update_movie_pairing(next_pair)
 	else:
-		print("Non-Zero Status in Request Response: %d", result)
+		%StartingPair.update_movie_pairing(next_pair)
 
-func _get_credits_for_person(person_id:int, pair: Pairing):
-	BluffClient.instance.http_request.request_completed.connect(_handle_credits_for_person_response.bind(pair), CONNECT_ONE_SHOT)
-	BluffClient.instance.make_request(PERSON_CREDITS_API_ENDPOINT % person_id)
-
-func _handle_credits_for_person_response(result, _response_code, _headers, body, next_pair):
-	print("Got Credits for Person Response")
-	if result == 0:
-		var json = JSON.parse_string(body.get_string_from_utf8())
-		if current_direction == FINISH_TO_START:
-			next_pair.person_credits = json["cast"]
-			%FinishingPair.update_person_pairing(next_pair)
-		else:
-			next_pair.person_credits = json["cast"]
-			%StartingPair.update_person_pairing(next_pair)
+func _on_api_credits_for_person_received(credits: Array, next_pair: Pairing):
+	next_pair.person_credits = credits
+	if current_direction == FINISH_TO_START:
+		%FinishingPair.update_person_pairing(next_pair)
 	else:
-		print("Non-Zero Status in Request Response: %d", result)
+		%StartingPair.update_person_pairing(next_pair)
+
+func _on_api_request_failed(message: String):
+	# TODO: Implement a user-facing error popup
+	print("API Error: ", message)
+
+# --- UI Event Handlers ---
 
 func _movie_has_submission(input):
 	# TODO Better search comparisons and fuzzy logic
@@ -256,8 +211,8 @@ func _process_movie_change_submission():
 		var credit = current_pairing.person_credits[credit_index]
 		next_pairing.movie_id = credit.id
 		next_pairing.movie_name = credit.title
-		next_pairing.movie_poster_url = credit.poster_path
-		_get_credits_for_movie(credit.id, next_pairing)
+		next_pairing.movie_poster_url = credit.poster_path if credit.poster_path else ""
+		api_client.fetch_credits_for_movie(credit.id, next_pairing)
 		_update_changing(CHANGE_TYPES.MOVIE)
 		_push_pair_to_path(next_pairing)
 		%SubmissionInput.clear()
@@ -272,8 +227,8 @@ func _process_person_change_submission():
 		var credit = current_pairing.movie_credits[credit_index]
 		next_pairing.person_id = credit.id
 		next_pairing.person_name = credit.name
-		next_pairing.person_profile_url = credit.profile_path
-		_get_credits_for_person(credit.id, next_pairing)
+		next_pairing.person_profile_url = credit.profile_path if credit.profile_path else ""
+		api_client.fetch_credits_for_person(credit.id, next_pairing)
 		_update_changing(CHANGE_TYPES.PERSON)
 		_push_pair_to_path(next_pairing)
 		%SubmissionInput.clear()

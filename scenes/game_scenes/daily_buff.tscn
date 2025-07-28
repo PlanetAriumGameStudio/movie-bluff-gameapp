@@ -1,8 +1,10 @@
-[gd_scene load_steps=6 format=3 uid="uid://7qt1dp4hjbjs"]
+[gd_scene load_steps=8 format=3 uid="uid://7qt1dp4hjbjs"]
 
 [ext_resource type="Script" uid="uid://b7t0shptpvpcv" path="res://scripts/game_scenes/daily_buff.gd" id="1_5e3v5"]
 [ext_resource type="PackedScene" uid="uid://dtjpcnacdl0pk" path="res://scenes/game_scenes/movie_person_pair.tscn" id="1_bcfbp"]
 [ext_resource type="PackedScene" uid="uid://gou6m2qym2gd" path="res://scenes/game_scenes/daily_path.tscn" id="2_mh4ei"]
+[ext_resource type="Script" uid="uid://dfkc2smll3b1g" path="res://scripts/game_scenes/daily_buff_api.gd" id="4_mh4ei"]
+[ext_resource type="PackedScene" uid="uid://bo8gaqlalrqy4" path="res://scenes/menus/daily_submission_popup/bar_chart.tscn" id="5_2sjiv"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_2sjiv"]
 bg_color = Color(0.85, 0.0935, 0.106108, 1)
@@ -130,7 +132,9 @@ unique_name_in_owner = true
 layout_mode = 2
 text = "Add "
 
-[node name="HTTPRequest" type="HTTPRequest" parent="."]
+[node name="DailyBuffAPI" type="Node" parent="."]
+unique_name_in_owner = true
+script = ExtResource("4_mh4ei")
 
 [node name="GameCompletionPopupPanel" type="PopupPanel" parent="."]
 unique_name_in_owner = true
@@ -151,15 +155,22 @@ offset_right = 375.0
 offset_bottom = 248.0
 grow_horizontal = 2
 grow_vertical = 2
-theme_override_constants/separation = 65
-alignment = 2
+theme_override_constants/separation = 15
+alignment = 1
 
 [node name="GameCompletionLabel" type="Label" parent="GameCompletionPopupPanel/VBoxContainer"]
 unique_name_in_owner = true
 layout_mode = 2
+size_flags_vertical = 3
 text = "Great Job! You got it in X jumps!
 Want to see how you compare to others?"
 horizontal_alignment = 1
+
+[node name="BarChart" parent="GameCompletionPopupPanel/VBoxContainer" instance=ExtResource("5_2sjiv")]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+size_flags_vertical = 3
 
 [node name="DailySubmissionButton" type="Button" parent="GameCompletionPopupPanel/VBoxContainer"]
 unique_name_in_owner = true
