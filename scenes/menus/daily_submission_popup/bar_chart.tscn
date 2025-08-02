@@ -1,20 +1,33 @@
 [gd_scene load_steps=3 format=3 uid="uid://bo8gaqlalrqy4"]
 
 [ext_resource type="Script" uid="uid://byqonoueacvyk" path="res://scenes/menus/daily_submission_popup/bar_chart.gd" id="1_74ifq"]
-[ext_resource type="PackedScene" uid="uid://cuivxlku4xxs7" path="res://scenes/menus/daily_submission_popup/bar.tscn" id="2_dwaiw"]
+[ext_resource type="PackedScene" uid="uid://dqu38syxr3foc" path="res://scenes/menus/daily_submission_popup/bar_wrapper.tscn" id="2_apjee"]
 
 [node name="BarChart" type="Control"]
 layout_mode = 3
-anchors_preset = 0
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
 script = ExtResource("1_74ifq")
-bar_scene = ExtResource("2_dwaiw")
+bar_scene = ExtResource("2_apjee")
+use_placeholder_data = true
 
-[node name="BarsContainer" type="HBoxContainer" parent="."]
-unique_name_in_owner = true
+[node name="MarginContainer" type="MarginContainer" parent="."]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+theme_override_constants/margin_left = 0
+theme_override_constants/margin_top = 20
+theme_override_constants/margin_bottom = 20
+
+[node name="BarsContainer" type="HBoxContainer" parent="MarginContainer"]
+unique_name_in_owner = true
+layout_mode = 2
 alignment = 1

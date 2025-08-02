@@ -26,7 +26,7 @@ func fetch_game_data():
 	BluffClient.instance.http_request.request_completed.connect(_handle_daily_response, CONNECT_ONE_SHOT)
 	BluffClient.instance.make_request(DAILY_GAME_ENDPOINT)
 
-func submit_daily(path_json: Dictionary):
+func submit_daily(path_json: Array):
 	# TODO: The player_id should come from a central user session manager, not be hardcoded.
 	var data_to_send = { "player_id": 1, "steps": path_json }
 	BluffClient.instance.http_request.request_completed.connect(_handle_daily_submission_response, CONNECT_ONE_SHOT)

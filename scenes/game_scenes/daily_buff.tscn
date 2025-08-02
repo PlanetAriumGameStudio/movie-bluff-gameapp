@@ -151,8 +151,8 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 offset_left = 8.0
 offset_top = 8.0
-offset_right = 375.0
-offset_bottom = 248.0
+offset_right = -8.0
+offset_bottom = -8.0
 grow_horizontal = 2
 grow_vertical = 2
 theme_override_constants/separation = 15
@@ -170,7 +170,6 @@ horizontal_alignment = 1
 unique_name_in_owner = true
 visible = false
 layout_mode = 2
-size_flags_vertical = 3
 
 [node name="DailySubmissionButton" type="Button" parent="GameCompletionPopupPanel/VBoxContainer"]
 unique_name_in_owner = true
