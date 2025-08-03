@@ -130,8 +130,6 @@ func _poll_for_status():
 
 	print("Polling for status with state: %s" % _google_login_state)
 	var url = "%s/auth/poll/%s" % [SERVER_BASE_URL, _google_login_state]
-	print(SERVER_BASE_URL)
-	print(url)
 	_google_poll_request.request(url)
 
 # --- Signal Handlers for HTTPRequest ---

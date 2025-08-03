@@ -37,22 +37,15 @@ func push_to_finish(pair:Pairing):
 	
 func get_full_path_json() -> Array:
 	var full_path_json = []
-	print(len(_path_from_start))
-	print(len(_path_from_finish))
-	if len(_path_from_start) >= 2:
-		print(_path_from_start[0])
-		print(_path_from_start[1])
 
 	print("Handle Path From Start")
 	for path_node in _path_from_start:
 		var packed_node = path_node.pack()
-		print(packed_node)
 		full_path_json.append(packed_node)
 
 	print("Handle Path From Finish")
 	for path_node in _path_from_finish:
 		var packed_node = path_node.pack()
-		print(packed_node)
 		full_path_json.append(packed_node)
 	
 	print("FullPathComplete")
@@ -89,21 +82,13 @@ func _check_path_completeness() -> bool:
 		else:
 			path_exists = false
 	
-	if path_exists:
-		print("yay")
-	else:
-		print("nay")
 	return path_exists
 
 func _on_submission_button_button_down() -> void:
 	if _check_path_completeness():
 		game_completed.emit()
-	else:
-		print("Nay")
 
 
-func _on_submission_input_text_submitted(new_text: String) -> void:
+func _on_submission_input_text_submitted(_new_text: String) -> void:
 	if _check_path_completeness():
 		game_completed.emit()
-	else:
-		print("Nay")

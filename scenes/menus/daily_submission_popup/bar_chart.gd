@@ -27,26 +27,16 @@ func _ready() -> void:
 # The data should be an array of dictionaries, each with "steps" and "count".
 # e.g., [{"steps": 5, "count": 12}, {"steps": 6, "count": 25}]
 func populate_chart(results_data: Array) -> void:
-	if not Engine.is_editor_hint():
-		return
-	
 	clear_bars()
 	
 	if results_data.is_empty():
 		# TODO: Optionally show a "No data available" message.
 		return
-	
 	# Find the highest player count to scale the other bars against.
 	var max_count = 0
 	for item in results_data:
 		if item.count > max_count:
 			max_count = item.count
-	
-	var owner_node = get_tree().edited_scene_root
-	if owner_node == null:
-		# This can happen if the script is not attached to a scene root
-		# Or if the scene isn't saved yet
-		return
 	
 	# Create and add a bar for each data point.
 	for item in results_data:
@@ -54,7 +44,6 @@ func populate_chart(results_data: Array) -> void:
 		var label_text = "%d Steps" % item.steps
 		bar.name = "Bar_" + str(item.steps)
 		bars_container.add_child(bar)
-		bar.owner = owner_node
 		if bar is Control:
 			bar.set_data(item.count, max_count, label_text)
 

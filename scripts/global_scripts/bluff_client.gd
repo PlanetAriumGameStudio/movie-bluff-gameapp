@@ -46,5 +46,4 @@ func fetch_config(_token = ""): # The token from the signal isn't needed here, b
 
 func _on_config_received(result, response_code, headers, body):
 	var json = JSON.parse_string(body.get_string_from_utf8())
-	print(json)
 	Globals.set_image_base_url(json["images"]["base_url"])
