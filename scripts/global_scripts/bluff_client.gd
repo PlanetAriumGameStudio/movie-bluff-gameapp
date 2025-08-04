@@ -31,6 +31,7 @@ func make_request(endpoint: String, method: int = HTTPClient.METHOD_GET, body: S
 
 	# Get the standard "Authorization: Bearer <token>" header from our login manager.
 	var headers = LoginManager.get_auth_header()
+	headers.append("X-API-Key: %s" % Globals.API_SECRET_KEY)
 	# Add Content-Type for requests that have a body.
 	if method == HTTPClient.METHOD_POST or method == HTTPClient.METHOD_PUT:
 		headers.append("Content-Type: application/json")
@@ -46,4 +47,6 @@ func fetch_config(_token = ""): # The token from the signal isn't needed here, b
 
 func _on_config_received(result, response_code, headers, body):
 	var json = JSON.parse_string(body.get_string_from_utf8())
+	Globals.set_movie_poster_sizes(json["images"]["poster_sizes"])
+	Globals.set_person_profile_sizes(json["images"]["profile_sizes"])
 	Globals.set_image_base_url(json["images"]["base_url"])

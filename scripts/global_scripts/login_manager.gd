@@ -95,14 +95,16 @@ func get_jwt() -> String:
 # --- Public API ---
 
 func login(email, password):
-	var headers = ["Content-Type: application/json"]
+	var headers = _get_api_key_header()
+	headers.append("Content-Type: application/json")
 	var body = JSON.stringify({"email": email, "password": password})
 	var error = _login_request.request(SERVER_BASE_URL + "/auth/login", headers, HTTPClient.METHOD_POST, body)
 	if error != OK:
 		emit_signal("login_failed", "An error occurred while trying to connect.")
 
 func register(email, password, display_name):
-	var headers = ["Content-Type: application/json"]
+	var headers = _get_api_key_header()
+	headers.append("Content-Type: application/json")
 	var body = JSON.stringify({"email": email, "password": password, "displayName": display_name})
 	var error = _register_request.request(SERVER_BASE_URL + "/auth/register", headers, HTTPClient.METHOD_POST, body)
 	if error != OK:
@@ -119,7 +121,8 @@ func start_google_login():
 	# While not strictly necessary for this endpoint, it's good practice.
 	# TODO: Double check the need for this
 	_google_url_request.max_redirects = 0
-	var error = _google_url_request.request(SERVER_BASE_URL + "/auth/google/url")
+	var headers = _get_api_key_header()
+	var error = _google_url_request.request(SERVER_BASE_URL + "/auth/google/url", headers)
 	if error != OK:
 		print("Error initiating login request: %s" % error)
 		emit_signal("google_login_failed", "Could not connect to the server.")
@@ -130,7 +133,8 @@ func _poll_for_status():
 
 	print("Polling for status with state: %s" % _google_login_state)
 	var url = "%s/auth/poll/%s" % [SERVER_BASE_URL, _google_login_state]
-	_google_poll_request.request(url)
+	var headers = _get_api_key_header()
+	_google_poll_request.request(url, headers)
 
 # --- Signal Handlers for HTTPRequest ---
 func _on_login_request_completed(result, response_code, headers, body):
@@ -244,6 +248,7 @@ func load_token():
 			# Verify the token is still valid with the server by making a call
 			# to a protected endpoint like /api/me.
 			var headers = get_auth_header()
+			headers.append_array(_get_api_key_header())
 			_verify_token_request.request(SERVER_BASE_URL + "/me", headers, HTTPClient.METHOD_GET)
 		else:
 			auth_status = AuthStatus.NOT_LOGGED_IN
@@ -263,34 +268,6 @@ func logout():
 	auth_status = AuthStatus.NOT_LOGGED_IN
 	_clear_saved_token()
 	prints("Logged out and session cleared.")
-	
-# --- Making Authenticated Requests ---
-
-# TODO: move this somewhere?
-# A helper to make authenticated API calls.
-# Returns the HTTPRequest node so the caller can connect to its 'request_completed' signal.
-#func make_authenticated_request(endpoint: String, method: int = HTTPClient.METHOD_GET, body: String = "") -> HTTPRequest:
-	#var request = HTTPRequest.new()
-	#add_child(request) # The node must be in the scene tree to work
-#
-	#if not is_logged_in():
-		#printerr("Cannot make authenticated request: not logged in.")
-		## The caller should check the return value and handle this case.
-		#return null
-#
-	#var url = SERVER_BASE_URL + endpoint
-	#var headers = [
-		#"Authorization: Bearer " + _jwt_token,
-		#"Content-Type: application/json"
-	#]
-	#
-	## The request node will be freed once the request is completed.
-	#request.request_completed.connect(func(result, response_code, headers, body):
-		#request.queue_free()
-	#)
-#
-	#request.request(url, headers, method, body)
-	#return request
 
 func _on_polling_timeout():
 	if _is_polling:
@@ -307,6 +284,9 @@ func _stop_polling():
 		_polling_timer.stop()
 		_timeout_timer.stop()
 		_google_login_state = ""
+
+func _get_api_key_header() -> PackedStringArray:
+	return ["X-API-Key: %s" % Globals.API_SECRET_KEY]
 
 func get_auth_header() -> PackedStringArray:
 	if _jwt_token.is_empty():
