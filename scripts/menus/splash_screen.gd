@@ -49,7 +49,7 @@ func _transition_to_main_menu():
 	if main_menu_path.is_empty():
 		printerr("SplashScreen: main_menu_scene_path is not set on the LoginPopup node! Cannot transition automatically.")
 		return
-	TransitionManager.change_scene.call_deferred(main_menu_path, 1)
+	TransitionManager.change_scene.call_deferred(main_menu_path, 2)
 
 func _on_show_login_button_pressed():
 	login_popup.show_popup()

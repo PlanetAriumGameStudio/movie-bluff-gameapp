@@ -23,7 +23,7 @@ func _enable_focus():
 
 func _load_scene(scene_path: String):
 	_scene_tree.paused = false
-	TransitionManager.change_scene(scene_path, 1)
+	TransitionManager.change_scene(scene_path, 3)
 
 func open_options_menu():
 	var options_scene = options_packed_scene.instantiate()

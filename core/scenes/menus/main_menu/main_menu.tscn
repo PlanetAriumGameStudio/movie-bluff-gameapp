@@ -1,7 +1,17 @@
-[gd_scene load_steps=3 format=3 uid="uid://bmtakdh44464q"]
+[gd_scene load_steps=5 format=3 uid="uid://bmtakdh44464q"]
 
 [ext_resource type="Script" uid="uid://bewqmk2vp00d8" path="res://core/scenes/menus/main_menu/main_menu.gd" id="1_ftgb1"]
 [ext_resource type="PackedScene" uid="uid://07neici30ixg" path="res://core/scenes/menus/options_menu/master_options_menu_with_tabs.tscn" id="2_1fxwi"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_np8jp"]
+bg_color = Color(0.639216, 0, 0, 1)
+corner_radius_bottom_right = 16
+corner_radius_bottom_left = 16
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_rrst8"]
+bg_color = Color(0.639216, 0, 0, 1)
+corner_radius_top_left = 16
+corner_radius_top_right = 16
 
 [node name="MainMenu" type="Control"]
 layout_mode = 3
@@ -14,14 +24,6 @@ script = ExtResource("1_ftgb1")
 game_scene_path = "res://scenes/asteroids_game.tscn"
 options_packed_scene = ExtResource("2_1fxwi")
 
-[node name="BackgroundTextureRect" type="TextureRect" parent="."]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-
 [node name="MenuContainer" type="MarginContainer" parent="."]
 unique_name_in_owner = true
 layout_mode = 1
@@ -31,15 +33,21 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="TitleMargin" type="MarginContainer" parent="MenuContainer"]
+[node name="PanelContainer" type="PanelContainer" parent="MenuContainer"]
+custom_minimum_size = Vector2(0, 240)
+layout_mode = 2
+size_flags_vertical = 0
+theme_override_styles/panel = SubResource("StyleBoxFlat_np8jp")
+
+[node name="TitleMargin" type="MarginContainer" parent="MenuContainer/PanelContainer"]
 layout_mode = 2
 theme_override_constants/margin_top = 40
 
-[node name="TitleContainer" type="Control" parent="MenuContainer/TitleMargin"]
+[node name="TitleContainer" type="Control" parent="MenuContainer/PanelContainer/TitleMargin"]
 layout_mode = 2
 mouse_filter = 2
 
-[node name="TitleLabel" type="Label" parent="MenuContainer/TitleMargin/TitleContainer"]
+[node name="TitleLabel" type="Label" parent="MenuContainer/PanelContainer/TitleMargin/TitleContainer"]
 layout_mode = 1
 anchors_preset = 5
 anchor_left = 0.5
@@ -51,15 +59,15 @@ grow_horizontal = 2
 theme_override_font_sizes/font_size = 48
 text = "Title"
 
-[node name="SubTitleMargin" type="MarginContainer" parent="MenuContainer"]
+[node name="SubTitleMargin" type="MarginContainer" parent="MenuContainer/PanelContainer"]
 layout_mode = 2
 theme_override_constants/margin_top = 128
 
-[node name="SubTitleContainer" type="Control" parent="MenuContainer/SubTitleMargin"]
+[node name="SubTitleContainer" type="Control" parent="MenuContainer/PanelContainer/SubTitleMargin"]
 layout_mode = 2
 mouse_filter = 2
 
-[node name="SubTitleLabel" type="Label" parent="MenuContainer/SubTitleMargin/SubTitleContainer"]
+[node name="SubTitleLabel" type="Label" parent="MenuContainer/PanelContainer/SubTitleMargin/SubTitleContainer"]
 layout_mode = 1
 anchors_preset = 5
 anchor_left = 0.5
@@ -151,16 +159,18 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
-theme_override_constants/margin_left = 16
-theme_override_constants/margin_top = 16
-theme_override_constants/margin_right = 16
-theme_override_constants/margin_bottom = 16
 
-[node name="FlowControl" type="Control" parent="FlowControlContainer"]
+[node name="PanelContainer" type="PanelContainer" parent="FlowControlContainer"]
+custom_minimum_size = Vector2(0, 240)
+layout_mode = 2
+size_flags_vertical = 8
+theme_override_styles/panel = SubResource("StyleBoxFlat_rrst8")
+
+[node name="FlowControl" type="Control" parent="FlowControlContainer/PanelContainer"]
 layout_mode = 2
 mouse_filter = 2
 
-[node name="BackButton" type="Button" parent="FlowControlContainer/FlowControl"]
+[node name="BackButton" type="Button" parent="FlowControlContainer/PanelContainer/FlowControl"]
 unique_name_in_owner = true
 layout_mode = 1
 anchors_preset = 2
@@ -175,4 +185,4 @@ text = "Back"
 [connection signal="pressed" from="MenuContainer/MenuButtonsMargin/MenuButtonsContainer/MenuButtonsBoxContainer/OptionsButton" to="." method="_on_options_button_pressed"]
 [connection signal="pressed" from="MenuContainer/MenuButtonsMargin/MenuButtonsContainer/MenuButtonsBoxContainer/CreditsButton" to="." method="_on_credits_button_pressed"]
 [connection signal="pressed" from="MenuContainer/MenuButtonsMargin/MenuButtonsContainer/MenuButtonsBoxContainer/ExitButton" to="." method="_on_exit_button_pressed"]
-[connection signal="pressed" from="FlowControlContainer/FlowControl/BackButton" to="." method="_on_back_button_pressed"]
+[connection signal="pressed" from="FlowControlContainer/PanelContainer/FlowControl/BackButton" to="." method="_on_back_button_pressed"]

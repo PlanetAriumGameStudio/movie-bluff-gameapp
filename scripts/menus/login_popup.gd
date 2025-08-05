@@ -62,7 +62,7 @@ func _on_google_login_button_pressed():
 
 func _on_auth_succeeded(token: String):
 	print("Authentication successful! You can now proceed.")
-	TransitionManager.change_scene(main_menu_scene_path, 1)
+	TransitionManager.change_scene(main_menu_scene_path, 3)
 	hide() # Hide the login popup on success
 
 func _on_auth_failed(error_message: String):

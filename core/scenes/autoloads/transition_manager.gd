@@ -1,7 +1,6 @@
 extends Node
 
 # This class is running via project auto-load (At startup)
-# Inspired by ThinkWithGames(https://www.youtube.com/@ThinkWithGames)
 const transition_node_name = "transition_node"
 var is_showing_transition = false
 
