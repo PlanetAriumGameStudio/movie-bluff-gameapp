@@ -2,29 +2,6 @@
 
 Short list of things to work on for the game template.
 
-### Todo (Template)
-
-The template will encompass a basic project structure, some bootstrapped Global
-management singletons, and basic menu system.
-
-- [ ] Make menu system nicer for panel transitions
-- [ ] Handle UI focus / non-mouse navigation
-- [ ] Make dropdown directory selection for "Game Scenes" / Templates (Asteroids should be one of these)
-- [ ] Make secondary "Game Scene"
-- [ ] Fix mini menu options overlay visuals
-
-
-### Todo (Asteroid)
-
-Asteroids is an example of a game that could exist within godot framework.
-It is meant to be a playable example of a contained scene/game environment.
-
-- [ ] add level difficulty / increase with progression
-- [ ] bug where player state is stuck in "moving" while respawning
-- [ ] Make and hook up Credits panel
-
-### In Progress
-
 
 
 ### Done ✓
