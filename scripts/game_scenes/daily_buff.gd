@@ -15,7 +15,6 @@ var current_pairing:Pairing
 # Tracks game completion state. will be updated once per submission.
 var path_complete:bool
 
-@onready var api_client = %DailyBuffAPI
 @onready var bar_chart = %BarChart
 
 # Call API daily endpoint to populate start and finish pairs
@@ -61,16 +60,16 @@ func _enter_init():
 	_update_toggle_button_text()
 	%SubmissionInput.grab_focus()
 
-	# Connect to all signals from our API client
-	api_client.status_received.connect(_on_api_status_received)
-	api_client.game_setup_received.connect(_on_api_game_setup_received)
-	api_client.submission_succeeded.connect(_on_api_submission_succeeded)
-	api_client.credits_for_movie_received.connect(_on_api_credits_for_movie_received)
-	api_client.credits_for_person_received.connect(_on_api_credits_for_person_received)
-	api_client.request_failed.connect(_on_api_request_failed)
+	# Connect to all signals from our global ApiClient
+	ApiClient.daily_status_received.connect(_on_api_status_received)
+	ApiClient.daily_game_setup_received.connect(_on_api_game_setup_received)
+	ApiClient.daily_submission_succeeded.connect(_on_api_submission_succeeded)
+	ApiClient.movie_credits_received.connect(_on_api_credits_for_movie_received)
+	ApiClient.person_credits_received.connect(_on_api_credits_for_person_received)
+	ApiClient.request_failed.connect(_on_api_request_failed)
 
 	print("Fetch Status")
-	api_client.fetch_status()
+	ApiClient.fetch_daily_status()
 
 func _enter_playing():
 	print("Entering PLAYING state")
@@ -91,7 +90,7 @@ func daily_submission():
 	print("Submitting daily...")
 	#TODO: Actual player ID/account hookup
 	var path_data = %DailyPath.get_full_path_json()
-	api_client.submit_daily(path_data)
+	ApiClient.submit_daily_path(path_data)
 
 func _update_changing(type: CHANGE_TYPES) -> void:
 	last_change = type
@@ -155,7 +154,7 @@ func _on_api_status_received(status_data: Dictionary):
 		_show_daily_results(results)
 	else:
 		print("Not submitted yet. Fetching game setup data.")
-		api_client.fetch_game_data()
+		ApiClient.fetch_daily_game_data()
 
 func _on_api_game_setup_received(start_pair: Pairing, end_pair: Pairing):
 	%StartingPair.set_pairing(start_pair)
@@ -212,7 +211,7 @@ func _process_movie_change_submission():
 		next_pairing.movie_id = credit.id
 		next_pairing.movie_name = credit.title
 		next_pairing.movie_poster_url = credit.poster_path if credit.poster_path else ""
-		api_client.fetch_credits_for_movie(credit.id, next_pairing)
+		ApiClient.fetch_credits_for_movie(credit.id, next_pairing)
 		_update_changing(CHANGE_TYPES.MOVIE)
 		_push_pair_to_path(next_pairing)
 		%SubmissionInput.clear()
@@ -228,7 +227,7 @@ func _process_person_change_submission():
 		next_pairing.person_id = credit.id
 		next_pairing.person_name = credit.name
 		next_pairing.person_profile_url = credit.profile_path if credit.profile_path else ""
-		api_client.fetch_credits_for_person(credit.id, next_pairing)
+		ApiClient.fetch_credits_for_person(credit.id, next_pairing)
 		_update_changing(CHANGE_TYPES.PERSON)
 		_push_pair_to_path(next_pairing)
 		%SubmissionInput.clear()

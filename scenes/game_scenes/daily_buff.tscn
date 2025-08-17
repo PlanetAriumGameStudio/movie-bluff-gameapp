@@ -1,9 +1,8 @@
-[gd_scene load_steps=11 format=3 uid="uid://7qt1dp4hjbjs"]
+[gd_scene load_steps=10 format=3 uid="uid://7qt1dp4hjbjs"]
 
 [ext_resource type="Script" uid="uid://b7t0shptpvpcv" path="res://scripts/game_scenes/daily_buff.gd" id="1_5e3v5"]
 [ext_resource type="PackedScene" uid="uid://dtjpcnacdl0pk" path="res://scenes/game_scenes/movie_person_pair.tscn" id="1_bcfbp"]
 [ext_resource type="PackedScene" uid="uid://gou6m2qym2gd" path="res://scenes/game_scenes/daily_path.tscn" id="2_mh4ei"]
-[ext_resource type="Script" uid="uid://dfkc2smll3b1g" path="res://scripts/game_scenes/daily_buff_api.gd" id="4_mh4ei"]
 [ext_resource type="PackedScene" uid="uid://bo8gaqlalrqy4" path="res://scenes/menus/daily_submission_popup/bar_chart.tscn" id="5_2sjiv"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_2sjiv"]
@@ -144,10 +143,6 @@ keep_editing_on_text_submit = true
 unique_name_in_owner = true
 layout_mode = 2
 text = "Add "
-
-[node name="DailyBuffAPI" type="Node" parent="."]
-unique_name_in_owner = true
-script = ExtResource("4_mh4ei")
 
 [node name="GameCompletionPopupPanel" type="PopupPanel" parent="."]
 unique_name_in_owner = true

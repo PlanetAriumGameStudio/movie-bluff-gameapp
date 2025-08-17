@@ -7,22 +7,15 @@ extends Node
 static var instance: ApiClient
 
 # --- Signals ---
-# Configuration Signals
 signal config_received()
-
-# Daily Challenge Signals
 signal daily_status_received(status_data: Dictionary)
 signal daily_game_setup_received(start_pair: Pairing, end_pair: Pairing)
 signal daily_submission_succeeded(results_data: Dictionary)
 signal movie_credits_received(credits: Array, original_pair: Pairing)
 signal person_credits_received(credits: Array, original_pair: Pairing)
-
-# Competitive Mode Signals
 signal competitive_game_list_received(games: Array)
 signal competitive_game_state_received(game_state: Dictionary)
 signal competitive_new_game_created(game_state: Dictionary)
-
-# Generic Failure Signal
 signal request_failed(message: String)
 
 # --- Constants ---
@@ -30,7 +23,6 @@ const SERVER_BASE_URL = "http://127.0.0.1:8080" # Change to your production URL
 
 # --- Private Variables ---
 var _http_request: HTTPRequest
-var _pending_requests = {}
 
 # --- Godot Engine Methods ---
 func _ready() -> void:
@@ -41,44 +33,45 @@ func _ready() -> void:
 	
 	_http_request = HTTPRequest.new()
 	add_child(_http_request)
-	_http_request.request_completed.connect(_on_request_completed)
 	
 	LoginManager.login_succeeded.connect(fetch_config)
 	LoginManager.google_login_succeeded.connect(fetch_config)
 
-# --- Public Methods: Configuration ---
-func fetch_config(_token = "") -> void:
-	_make_request("/api/config", "GET_CONFIG")
+# --- Public Methods ---
 
-# --- Public Methods: Daily Challenge ---
+func fetch_config(_token = "") -> void:
+	_make_request("/api/config", _on_config_received)
+
 func fetch_daily_status() -> void:
-	_make_request("/api/games/daily/status", "GET_DAILY_STATUS")
+	_make_request("/api/games/daily/status", _on_daily_status_response)
 
 func fetch_daily_game_data() -> void:
-	_make_request("/api/games/daily", "GET_DAILY_GAME_DATA")
+	_make_request("/api/games/daily", _on_daily_game_data_response)
 
 func submit_daily_path(path_json: Array) -> void:
 	var body = { "player_id": 1, "steps": path_json } # TODO: Get player_id from LoginManager
-	_make_request("/api/games/daily", "SUBMIT_DAILY_PATH", HTTPClient.METHOD_POST, JSON.stringify(body))
+	_make_request("/api/games/daily", _on_daily_submission_response, HTTPClient.METHOD_POST, JSON.stringify(body))
 
 func fetch_credits_for_movie(movie_id: int, pair: Pairing) -> void:
-	_make_request("/api/movie/%d/cast" % movie_id, "GET_MOVIE_CREDITS", HTTPClient.METHOD_GET, "", {"pair": pair})
+	var bound_callback = _on_movie_credits_response.bind(pair)
+	_make_request("/api/movie/%d/cast" % movie_id, bound_callback)
 
 func fetch_credits_for_person(person_id: int, pair: Pairing) -> void:
-	_make_request("/api/person/%d/credits" % person_id, "GET_PERSON_CREDITS", HTTPClient.METHOD_GET, "", {"pair": pair})
+	var bound_callback = _on_person_credits_response.bind(pair)
+	_make_request("/api/person/%d/credits" % person_id, bound_callback)
 
-# --- Public Methods: Competitive Mode ---
 func fetch_competitive_game_list() -> void:
-	_make_request("/api/competitive/games", "GET_COMPETITIVE_GAMES")
+	_make_request("/api/competitive/games", _on_competitive_game_list_response)
 
 func create_new_competitive_game() -> void:
-	_make_request("/api/competitive/games/new", "CREATE_COMPETITIVE_GAME", HTTPClient.METHOD_POST)
+	_make_request("/api/competitive/games/new", _on_competitive_new_game_response, HTTPClient.METHOD_POST)
 
 func fetch_competitive_game_state(game_id: String) -> void:
-	_make_request("/api/competitive/games/%s" % game_id, "GET_COMPETITIVE_GAME_STATE")
+	_make_request("/api/competitive/games/%s" % game_id, _on_competitive_game_state_response)
 
 # --- Private Core Logic ---
-func _make_request(endpoint: String, request_type: String, method: int = HTTPClient.METHOD_GET, body: String = "", meta: Dictionary = {}) -> void:
+
+func _make_request(endpoint: String, callback: Callable, method: int = HTTPClient.METHOD_GET, body: String = "") -> void:
 	if not LoginManager.is_logged_in():
 		printerr("ApiClient: Cannot make request, user is not logged in.")
 		emit_signal("request_failed", "Not logged in")
@@ -90,60 +83,78 @@ func _make_request(endpoint: String, request_type: String, method: int = HTTPCli
 		headers.append("Content-Type: application/json")
 
 	var url = SERVER_BASE_URL + endpoint
+	_http_request.request_completed.connect(callback, CONNECT_ONE_SHOT)
 	var error = _http_request.request(url, headers, method, body)
 
 	if error != OK:
 		printerr("HTTPRequest failed immediately with error: ", error)
 		emit_signal("request_failed", "Initial request error.")
-	else:
-		# Store request type to handle response correctly
-		var request_id = _http_request.get_http_client_status() # This is a way to identify the request
-		_pending_requests[request_id] = {"type": request_type, "meta": meta}
 
-func _on_request_completed(result: int, response_code: int, _headers: PackedStringArray, body: PackedByteArray) -> void:
-	var request_id = result # The result is the ID of the completed request
-	var request_info = _pending_requests.pop(request_id, {"type": "UNKNOWN", "meta": {}})
-	var request_type = request_info.type
-	var meta = request_info.meta
+func _parse_response(result: int, response_code: int, body: PackedByteArray, request_name: String) -> Variant:
+	if result != HTTPRequest.RESULT_SUCCESS:
+		emit_signal("request_failed", "Request failed for %s: %s" % [request_name, result])
+		return null
+	
+	if response_code >= 400:
+		emit_signal("request_failed", "Request failed for %s with code: %s" % [request_name, response_code])
+		return null
 
 	var json = JSON.new()
 	var parse_error = json.parse(body.get_string_from_utf8())
-	
 	if parse_error != OK:
-		emit_signal("request_failed", "Invalid JSON response")
-		return
+		emit_signal("request_failed", "JSON parse error for %s" % request_name)
+		return null
+	
+	return json.get_data()
 
-	var response_data = json.get_data()
+# --- Private Response Handlers ---
 
-	if response_code >= 400:
-		var error_message = response_data.get("error", "An unknown error occurred.")
-		emit_signal("request_failed", error_message)
-		return
+func _on_config_received(result, response_code, _headers, body):
+	var data = _parse_response(result, response_code, body, "Config")
+	if data == null: return
+	Globals.set_movie_poster_sizes(data["images"]["poster_sizes"])
+	Globals.set_person_profile_sizes(data["images"]["profile_sizes"])
+	Globals.set_image_base_url(data["images"]["base_url"])
+	emit_signal("config_received")
 
-	# --- Response Routing ---
-	match request_type:
-		"GET_CONFIG":
-			Globals.set_movie_poster_sizes(response_data["images"]["poster_sizes"])
-			Globals.set_person_profile_sizes(response_data["images"]["profile_sizes"])
-			Globals.set_image_base_url(response_data["images"]["base_url"])
-			emit_signal("config_received")
-		"GET_DAILY_STATUS":
-			emit_signal("daily_status_received", response_data)
-		"GET_DAILY_GAME_DATA":
-			var start = Pairing.parse_pairing_from_json(response_data["starting_pair"])
-			var end = Pairing.parse_pairing_from_json(response_data["finishing_pair"])
-			emit_signal("daily_game_setup_received", start, end)
-		"SUBMIT_DAILY_PATH":
-			emit_signal("daily_submission_succeeded", response_data)
-		"GET_MOVIE_CREDITS":
-			emit_signal("movie_credits_received", response_data["cast"], meta.pair)
-		"GET_PERSON_CREDITS":
-			emit_signal("person_credits_received", response_data["cast"], meta.pair)
-		"GET_COMPETITIVE_GAMES":
-			emit_signal("competitive_game_list_received", response_data.get("games", []))
-		"GET_COMPETITIVE_GAME_STATE":
-			emit_signal("competitive_game_state_received", response_data)
-		"CREATE_COMPETITIVE_GAME":
-			emit_signal("competitive_new_game_created", response_data)
-		_:
-			print("Unhandled API response type: ", request_type)
+func _on_daily_status_response(result, response_code, _headers, body):
+	var data = _parse_response(result, response_code, body, "Daily Status")
+	if data == null: return
+	emit_signal("daily_status_received", data)
+
+func _on_daily_game_data_response(result, response_code, _headers, body):
+	var data = _parse_response(result, response_code, body, "Daily Game Data")
+	if data == null: return
+	var start = Pairing.parse_pairing_from_json(data["starting_pair"])
+	var end = Pairing.parse_pairing_from_json(data["finishing_pair"])
+	emit_signal("daily_game_setup_received", start, end)
+
+func _on_daily_submission_response(result, response_code, _headers, body):
+	var data = _parse_response(result, response_code, body, "Daily Submission")
+	if data == null: return
+	emit_signal("daily_submission_succeeded", data)
+
+func _on_movie_credits_response(result, response_code, _headers, body, pair):
+	var data = _parse_response(result, response_code, body, "Movie Credits")
+	if data == null: return
+	emit_signal("movie_credits_received", data["cast"], pair)
+
+func _on_person_credits_response(result, response_code, _headers, body, pair):
+	var data = _parse_response(result, response_code, body, "Person Credits")
+	if data == null: return
+	emit_signal("person_credits_received", data["cast"], pair)
+
+func _on_competitive_game_list_response(result, response_code, _headers, body):
+	var data = _parse_response(result, response_code, body, "Competitive Game List")
+	if data == null: return
+	emit_signal("competitive_game_list_received", data.get("games", []))
+
+func _on_competitive_new_game_response(result, response_code, _headers, body):
+	var data = _parse_response(result, response_code, body, "New Competitive Game")
+	if data == null: return
+	emit_signal("competitive_new_game_created", data)
+
+func _on_competitive_game_state_response(result, response_code, _headers, body):
+	var data = _parse_response(result, response_code, body, "Competitive Game State")
+	if data == null: return
+	emit_signal("competitive_game_state_received", data)
