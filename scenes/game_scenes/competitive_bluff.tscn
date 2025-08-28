@@ -1,6 +1,8 @@
 [gd_scene load_steps=2 format=3 uid="uid://dy15byoe1kkoh"]
 
-[ext_resource type="Script" path="res://scripts/game_scenes/competitive_bluff.gd" id="1_0o6kb"]
+[ext_resource type="Script" uid="uid://bn41qgiysoxa3" path="res://scripts/game_scenes/competitive_bluff.gd" id="1_0o6kb"]
 
-[node name="CompetitiveBluff" type="Node2D"]
+[node name="CompetitiveBluff" type="Control"]
+layout_mode = 3
+anchors_preset = 0
 script = ExtResource("1_0o6kb")

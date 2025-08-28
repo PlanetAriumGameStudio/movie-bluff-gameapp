@@ -13,16 +13,18 @@ signal daily_game_setup_received(start_pair: Pairing, end_pair: Pairing)
 signal daily_submission_succeeded(results_data: Dictionary)
 signal movie_credits_received(credits: Array, original_pair: Pairing)
 signal person_credits_received(credits: Array, original_pair: Pairing)
-signal competitive_game_list_received(games: Array)
+signal active_game_list_received(games: Array)
+signal completed_game_list_received(games: Array)
 signal competitive_game_state_received(game_state: Dictionary)
-signal competitive_new_game_created(game_state: Dictionary)
+signal competitive_new_game_created(game_id: int)
 signal request_failed(message: String)
 
 # --- Constants ---
 const SERVER_BASE_URL = "http://127.0.0.1:8080" # Change to your production URL
 
 # --- Private Variables ---
-var _http_request: HTTPRequest
+# Note: We don't keep a persistent HTTPRequest node anymore.
+# Instead, a new one is created for each request to allow for concurrent requests.
 
 # --- Godot Engine Methods ---
 func _ready() -> void:
@@ -30,9 +32,6 @@ func _ready() -> void:
 		queue_free()
 		return
 	instance = self
-	
-	_http_request = HTTPRequest.new()
-	add_child(_http_request)
 	
 	LoginManager.login_succeeded.connect(fetch_config)
 	LoginManager.google_login_succeeded.connect(fetch_config)
@@ -60,11 +59,14 @@ func fetch_credits_for_person(person_id: int, pair: Pairing) -> void:
 	var bound_callback = _on_person_credits_response.bind(pair)
 	_make_request("/api/person/%d/credits" % person_id, bound_callback)
 
-func fetch_competitive_game_list() -> void:
-	_make_request("/api/competitive/games", _on_competitive_game_list_response)
+func fetch_active_game_list() -> void:
+	_make_request("/api/pvp/games/active", _on_active_game_list_response)
+
+func fetch_completed_game_list() -> void:
+	_make_request("/api/pvp/games/completed", _on_completed_game_list_response)
 
 func create_new_competitive_game() -> void:
-	_make_request("/api/competitive/games/new", _on_competitive_new_game_response, HTTPClient.METHOD_POST)
+	_make_request("/api/pvp/random", _on_competitive_new_game_response, HTTPClient.METHOD_POST)
 
 func fetch_competitive_game_state(game_id: String) -> void:
 	_make_request("/api/competitive/games/%s" % game_id, _on_competitive_game_state_response)
@@ -77,18 +79,28 @@ func _make_request(endpoint: String, callback: Callable, method: int = HTTPClien
 		emit_signal("request_failed", "Not logged in")
 		return
 
+	var http_request = HTTPRequest.new()
+	add_child(http_request)
+	
+	# Connect the callback and make sure the node cleans itself up when done
+	var final_callback = func(result, response_code, headers, response_body):
+		callback.call(result, response_code, headers, response_body)
+		http_request.queue_free()
+
+	http_request.request_completed.connect(final_callback)
+
 	var headers = LoginManager.get_auth_header()
 	headers.append("X-API-Key: %s" % Globals.API_SECRET_KEY)
 	if method in [HTTPClient.METHOD_POST, HTTPClient.METHOD_PUT]:
 		headers.append("Content-Type: application/json")
 
 	var url = SERVER_BASE_URL + endpoint
-	_http_request.request_completed.connect(callback, CONNECT_ONE_SHOT)
-	var error = _http_request.request(url, headers, method, body)
+	var error = http_request.request(url, headers, method, body)
 
 	if error != OK:
 		printerr("HTTPRequest failed immediately with error: ", error)
 		emit_signal("request_failed", "Initial request error.")
+		http_request.queue_free() # Clean up on immediate failure
 
 func _parse_response(result: int, response_code: int, body: PackedByteArray, request_name: String) -> Variant:
 	if result != HTTPRequest.RESULT_SUCCESS:
@@ -144,15 +156,24 @@ func _on_person_credits_response(result, response_code, _headers, body, pair):
 	if data == null: return
 	emit_signal("person_credits_received", data["cast"], pair)
 
-func _on_competitive_game_list_response(result, response_code, _headers, body):
-	var data = _parse_response(result, response_code, body, "Competitive Game List")
+func _on_active_game_list_response(result, response_code, _headers, body):
+	var data = _parse_response(result, response_code, body, "Active Game List")
 	if data == null: return
-	emit_signal("competitive_game_list_received", data.get("games", []))
+	emit_signal("active_game_list_received", data)
+
+func _on_completed_game_list_response(result, response_code, _headers, body):
+	var data = _parse_response(result, response_code, body, "Completed Game List")
+	if data == null: return
+	emit_signal("completed_game_list_received", data)
 
 func _on_competitive_new_game_response(result, response_code, _headers, body):
 	var data = _parse_response(result, response_code, body, "New Competitive Game")
 	if data == null: return
-	emit_signal("competitive_new_game_created", data)
+	var game_id = data.get("gameId", -1)
+	if game_id == -1:
+		emit_signal("request_failed", "New game created but no gameId was returned.")
+		return
+	emit_signal("competitive_new_game_created", game_id)
 
 func _on_competitive_game_state_response(result, response_code, _headers, body):
 	var data = _parse_response(result, response_code, body, "Competitive Game State")

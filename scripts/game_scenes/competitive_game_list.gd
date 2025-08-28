@@ -1,63 +1,83 @@
 extends Control
 
-# This script will manage the list of ongoing competitive games for the player.
+# This script will manage the list of ongoing and completed competitive games.
 
 const GameListEntry = preload("res://scenes/game_scenes/game_list_entry.tscn")
-@onready var game_list_vbox = %GameListVBox
+
+@onready var active_games_list = %ActiveGamesList
+@onready var completed_games_list = %CompletedGamesList
 
 func _ready() -> void:
 	print("Competitive Game List Ready")
 	# Connect to API signals
-	ApiClient.competitive_game_list_received.connect(_on_api_game_list_received)
+	ApiClient.active_game_list_received.connect(_on_active_game_list_received)
+	ApiClient.completed_game_list_received.connect(_on_completed_game_list_received)
+	ApiClient.competitive_new_game_created.connect(_on_new_game_created)
 	ApiClient.request_failed.connect(_on_api_request_failed)
 
-	# Fetch the list of games when the scene loads
-	_fetch_game_list()
+	# Fetch the lists of games when the scene loads
+	_fetch_game_lists()
 
-func _fetch_game_list() -> void:
-	print("Fetching competitive game list...")
-	# Clear any existing entries while we wait for the new list
-	for child in game_list_vbox.get_children():
-		child.queue_free()
-	
+func _fetch_game_lists() -> void:
 	# TODO: Show a loading indicator
-	
-	ApiClient.fetch_competitive_game_list()
+	ApiClient.fetch_active_game_list()
+	ApiClient.fetch_completed_game_list()
 
 # --- API Signal Handlers ---
 
-func _on_api_game_list_received(games: Array) -> void:
-	print("Received game list: ", games)
+func _on_active_game_list_received(games: Array) -> void:
+	print("Received active game list: ", games)
 	# TODO: Hide loading indicator
+	_populate_game_list(active_games_list, games, true)
 
-	# Clear the list again just in case
-	for child in game_list_vbox.get_children():
-		child.queue_free()
-	
-	# Populate the list with the games from the server
-	for game_data in games:
-		var entry = GameListEntry.instantiate()
-		
-		# NOTE: This path depends on the structure of your game_list_entry.tscn
-		# You will likely need to adjust the keys ("opponent_name", "turn_status") to match your actual API response.
-		entry.get_node("MarginContainer/HBoxContainer/GameInfoVBox/OpponentLabel").text = "vs. " + game_data.get("opponent_name", "Unknown Player")
-		entry.get_node("MarginContainer/HBoxContainer/GameInfoVBox/TurnStatusLabel").text = game_data.get("turn_status", "Unknown Status")
-		
-		# Connect the button to a function, passing the game_id
-		var options_button = entry.get_node("MarginContainer/HBoxContainer/OptionsButton")
-		options_button.pressed.connect(_on_game_selected.bind(game_data.get("id", "")))
-		
-		game_list_vbox.add_child(entry)
+func _on_completed_game_list_received(games: Array) -> void:
+	print("Received completed game list: ", games)
+	# TODO: Hide loading indicator
+	_populate_game_list(completed_games_list, games, false)
+
+func _on_new_game_created(game_id: int) -> void:
+	print("New game created with ID: ", game_id)
+	# TODO: Hide loading indicator
+	_on_game_selected(game_id)
 
 func _on_api_request_failed(message: String) -> void:
 	print("API Error: ", message)
 	# TODO: Hide loading indicator
-	# TODO: Show a user-facing error message (e.g., a popup or a label)
+	# TODO: Show a user-facing error message
+
+# --- UI Population ---
+
+func _populate_game_list(list_node: VBoxContainer, games: Array, is_active_list: bool) -> void:
+	# Clear any existing entries
+	for child in list_node.get_children():
+		child.queue_free()
+
+	# Populate the list with the games from the server
+	for game_data in games:
+		var entry = GameListEntry.instantiate()
+		
+		var opponent_name = game_data.get("opponentUsername", "Unknown Player")
+		entry.get_node("MarginContainer/HBoxContainer/GameInfoVBox/OpponentLabel").text = "vs. " + opponent_name
+
+		var turn_status_label = entry.get_node("MarginContainer/HBoxContainer/GameInfoVBox/TurnStatusLabel")
+		if is_active_list:
+			var is_your_turn = game_data.get("isYourTurn", false)
+			turn_status_label.text = "Your Turn" if is_your_turn else "Opponent's Turn"
+		else:
+			# You might want to show the winner or final score here
+			turn_status_label.text = "Game Over"
+
+		var game_id = game_data.get("gameId", -1)
+		if game_id != -1:
+			var options_button = entry.get_node("MarginContainer/HBoxContainer/OptionsButton")
+			options_button.pressed.connect(_on_game_selected.bind(game_id))
+		
+		list_node.add_child(entry)
 
 # --- UI Event Handlers ---
 
-func _on_game_selected(game_id: String) -> void:
-	if game_id.is_empty():
+func _on_game_selected(game_id: int) -> void:
+	if game_id == -1:
 		print("Error: Invalid game ID for selection.")
 		return
 
@@ -68,10 +88,8 @@ func _on_game_selected(game_id: String) -> void:
 
 func _on_new_game_button_pressed() -> void:
 	print("Starting new game...")
-	# This now calls our unified API client
+	# TODO: Show a loading indicator
 	ApiClient.create_new_competitive_game()
-	# We should probably show a loading indicator here and wait for the 
-	# competitive_new_game_created signal before transitioning.
 
 func _on_back_button_pressed() -> void:
 	TransitionManager.change_scene("res://scenes/menus/main_menu/main_menu.tscn", 1)

@@ -48,8 +48,6 @@ func get_full_path_json() -> Array:
 		var packed_node = path_node.pack()
 		full_path_json.append(packed_node)
 	
-	print("FullPathComplete")
-	print(full_path_json)
 	return full_path_json
 
 # Check after each submission to see if win condition met

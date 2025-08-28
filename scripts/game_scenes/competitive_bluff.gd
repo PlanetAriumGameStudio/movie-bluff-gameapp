@@ -144,4 +144,3 @@ func _on_back_button_pressed() -> void:
 	# TODO: Add logic to safely leave the game
 	# You might want to confirm with the user if they want to forfeit
 	TransitionManager.change_scene("res://scenes/menus/main_menu/main_menu.tscn", 1)
-

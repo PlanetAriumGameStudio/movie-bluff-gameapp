@@ -26,18 +26,33 @@ theme_override_constants/margin_bottom = 10
 [node name="MainVBox" type="VBoxContainer" parent="MarginContainer"]
 layout_mode = 2
 
-[node name="Header" type="HBoxContainer" parent="MarginContainer/MainVBox"]
+[node name="TabContainer" type="TabContainer" parent="MarginContainer/MainVBox"]
 layout_mode = 2
+size_flags_vertical = 3
+current_tab = 0
 
-[node name="TitleLabel" type="Label" parent="MarginContainer/MainVBox/Header"]
+[node name="Active" type="VBoxContainer" parent="MarginContainer/MainVBox/TabContainer"]
 layout_mode = 2
-text = "Competitive Games"
+metadata/_tab_index = 0
 
-[node name="GameListScrollContainer" type="ScrollContainer" parent="MarginContainer/MainVBox"]
+[node name="ActiveGameListScrollContainer" type="ScrollContainer" parent="MarginContainer/MainVBox/TabContainer/Active"]
 layout_mode = 2
 size_flags_vertical = 3
 
-[node name="GameListVBox" type="VBoxContainer" parent="MarginContainer/MainVBox/GameListScrollContainer"]
+[node name="ActiveGamesList" type="VBoxContainer" parent="MarginContainer/MainVBox/TabContainer/Active/ActiveGameListScrollContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="Completed" type="VBoxContainer" parent="MarginContainer/MainVBox/TabContainer"]
+visible = false
+layout_mode = 2
+metadata/_tab_index = 1
+
+[node name="CompletedGameListScrollContainer" type="ScrollContainer" parent="MarginContainer/MainVBox/TabContainer/Completed"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="CompletedGamesList" type="VBoxContainer" parent="MarginContainer/MainVBox/TabContainer/Completed/CompletedGameListScrollContainer"]
 unique_name_in_owner = true
 layout_mode = 2
 
@@ -51,3 +66,6 @@ text = "Back"
 [node name="NewGameButton" type="Button" parent="MarginContainer/MainVBox/Footer"]
 layout_mode = 2
 text = "New Game"
+
+[connection signal="pressed" from="MarginContainer/MainVBox/Footer/BackButton" to="." method="_on_back_button_pressed"]
+[connection signal="pressed" from="MarginContainer/MainVBox/Footer/NewGameButton" to="." method="_on_new_game_button_pressed"]
