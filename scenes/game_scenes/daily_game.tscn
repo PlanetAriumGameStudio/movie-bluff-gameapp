@@ -1,9 +1,9 @@
 [gd_scene load_steps=10 format=3 uid="uid://7qt1dp4hjbjs"]
 
-[ext_resource type="Script" uid="uid://b7t0shptpvpcv" path="res://scripts/game_scenes/daily_buff.gd" id="1_5e3v5"]
-[ext_resource type="PackedScene" uid="uid://dtjpcnacdl0pk" path="res://scenes/game_scenes/movie_person_pair.tscn" id="1_bcfbp"]
-[ext_resource type="PackedScene" uid="uid://gou6m2qym2gd" path="res://scenes/game_scenes/daily_path.tscn" id="2_mh4ei"]
-[ext_resource type="PackedScene" uid="uid://bo8gaqlalrqy4" path="res://scenes/menus/daily_submission_popup/bar_chart.tscn" id="5_2sjiv"]
+[ext_resource type="Script" uid="uid://b7t0shptpvpcv" path="res://scripts/game_scenes/daily_game.gd" id="1_8tb7p"]
+[ext_resource type="PackedScene" uid="uid://gou6m2qym2gd" path="res://scenes/game_scenes/daily_path.tscn" id="2_heer1"]
+[ext_resource type="PackedScene" uid="uid://dtjpcnacdl0pk" path="res://scenes/game_scenes/movie_person_pair.tscn" id="3_xakyb"]
+[ext_resource type="PackedScene" uid="uid://bo8gaqlalrqy4" path="res://scenes/menus/daily_submission_popup/bar_chart.tscn" id="4_6rhka"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_2sjiv"]
 bg_color = Color(0.79, 0.76788, 0.6794, 1)
@@ -33,7 +33,7 @@ corner_radius_top_right = 10
 corner_radius_bottom_right = 10
 corner_radius_bottom_left = 10
 
-[node name="DailyBuff" type="Control"]
+[node name="DailyGame" type="Control"]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -42,7 +42,7 @@ grow_horizontal = 2
 grow_vertical = 2
 size_flags_horizontal = 4
 size_flags_vertical = 4
-script = ExtResource("1_5e3v5")
+script = ExtResource("1_8tb7p")
 
 [node name="PanelContainer" type="PanelContainer" parent="."]
 layout_mode = 1
@@ -79,7 +79,7 @@ layout_mode = 2
 text = "Options
 "
 
-[node name="DailyPath" parent="PanelContainer/ScreenVBoxContainer/HeaderContainer/VBoxContainer" instance=ExtResource("2_mh4ei")]
+[node name="DailyPath" parent="PanelContainer/ScreenVBoxContainer/HeaderContainer/VBoxContainer" instance=ExtResource("2_heer1")]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 1
@@ -92,12 +92,12 @@ size_flags_vertical = 3
 dragging_enabled = false
 dragger_visibility = 1
 
-[node name="StartingPair" parent="PanelContainer/ScreenVBoxContainer/GameboardHBoxContainer" instance=ExtResource("1_bcfbp")]
+[node name="StartingPair" parent="PanelContainer/ScreenVBoxContainer/GameboardHBoxContainer" instance=ExtResource("3_xakyb")]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_vertical = 1
 
-[node name="FinishingPair" parent="PanelContainer/ScreenVBoxContainer/GameboardHBoxContainer" instance=ExtResource("1_bcfbp")]
+[node name="FinishingPair" parent="PanelContainer/ScreenVBoxContainer/GameboardHBoxContainer" instance=ExtResource("3_xakyb")]
 unique_name_in_owner = true
 layout_mode = 2
 
@@ -174,7 +174,7 @@ text = "Great Job! You got it in X jumps!
 Want to see how you compare to others?"
 horizontal_alignment = 1
 
-[node name="BarChart" parent="GameCompletionPopupPanel/VBoxContainer" instance=ExtResource("5_2sjiv")]
+[node name="BarChart" parent="GameCompletionPopupPanel/VBoxContainer" instance=ExtResource("4_6rhka")]
 unique_name_in_owner = true
 visible = false
 layout_mode = 2

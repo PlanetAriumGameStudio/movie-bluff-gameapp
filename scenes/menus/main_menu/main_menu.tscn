@@ -29,4 +29,10 @@ custom_minimum_size = Vector2(1200, 40)
 layout_mode = 2
 text = "Versus Buff"
 
+[node name="RefactorButton" type="Button" parent="MenuContainer/MenuButtonsMargin/MenuButtonsContainer/MenuButtonsBoxContainer" index="5"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Recfactor Test"
+
 [connection signal="pressed" from="MenuContainer/MenuButtonsMargin/MenuButtonsContainer/MenuButtonsBoxContainer/CompetitiveButton" to="." method="_on_competitive_button_pressed"]
+[connection signal="pressed" from="MenuContainer/MenuButtonsMargin/MenuButtonsContainer/MenuButtonsBoxContainer/RefactorButton" to="." method="_on_refactor_button_pressed"]

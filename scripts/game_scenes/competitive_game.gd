@@ -8,11 +8,11 @@ var current_state: State
 var player_is_active: bool = false
 
 # Placeholder for the API client for competitive mode
-# We will likely need a new one, e.g., "CompetitiveBluffAPI"
-# @onready var api_client = %CompetitiveBluffAPI
+# We will likely need a new one, e.g., "CompetitiveGameAPI"
+# @onready var api_client = %CompetitiveGameAPI
 
 func _ready() -> void:
-	print("Competitive Bluff Ready")
+	print("Competitive Game Ready")
 	set_state(State.INIT)
 
 # --- State Machine ---

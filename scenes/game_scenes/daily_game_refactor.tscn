@@ -1,0 +1,7 @@
+[gd_scene load_steps=3 format=3 uid="uid://culaofmj5uy0w"]
+
+[ext_resource type="PackedScene" uid="uid://lx8q2ejyh8fo" path="res://scenes/game_scenes/base_game.tscn" id="1_abcde"]
+[ext_resource type="Script" uid="uid://c5pebfev7b8he" path="res://scripts/game_scenes/daily_game_refactor.gd" id="2_fghij"]
+
+[node name="DailyGame" instance=ExtResource("1_abcde")]
+script = ExtResource("2_fghij")

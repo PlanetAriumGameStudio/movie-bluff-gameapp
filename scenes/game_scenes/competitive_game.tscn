@@ -1,0 +1,8 @@
+[gd_scene load_steps=2 format=3 uid="uid://dy15byoe1kkoh"]
+
+[ext_resource type="Script" uid="uid://bn41qgiysoxa3" path="res://scripts/game_scenes/competitive_game.gd" id="1_d18pq"]
+
+[node name="CompetitiveGame" type="Control"]
+layout_mode = 3
+anchors_preset = 0
+script = ExtResource("1_d18pq")

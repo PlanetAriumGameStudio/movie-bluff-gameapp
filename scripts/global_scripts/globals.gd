@@ -2,8 +2,8 @@ extends Node2D
 
 @onready var SCREEN_SIZE:Vector2 = get_viewport_rect().size
 @onready var RNG:RandomNumberGenerator = RandomNumberGenerator.new()
-@onready var BLUFF_API_BASE_ADDRESS:String = "http://127.0.0.1"
-@onready var BLUFF_API_PORT:int = 8080
+@onready var API_BASE_ADDRESS:String = "http://127.0.0.1"
+@onready var API_PORT:int = 8080
 @onready var API_SECRET_KEY = "another-very-secret-key-for-local-dev-that-is-long-enough"
 
 @onready var IMAGE_BASE_URL = ""

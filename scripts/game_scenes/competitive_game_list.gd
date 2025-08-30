@@ -84,7 +84,7 @@ func _on_game_selected(game_id: int) -> void:
 	print("Selected game: ", game_id)
 	# TODO: Store the selected game ID globally or pass it to the scene
 	# For example: GlobalState.selected_competitive_game_id = game_id
-	TransitionManager.change_scene("res://scenes/game_scenes/competitive_bluff.tscn", 1)
+	TransitionManager.change_scene("res://scenes/game_scenes/competitive_game.tscn", 1)
 
 func _on_new_game_button_pressed() -> void:
 	print("Starting new game...")
