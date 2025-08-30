@@ -8,7 +8,7 @@ bg_color = Color(0.97, 0.964827, 0.8924, 1)
 
 [node name="MainMenu" instance=ExtResource("1_kx65a")]
 script = ExtResource("2_flk2s")
-game_scene_path = "uid://nirrc311lvac"
+game_scene_path = "uid://dojmsk7pc523a"
 options_packed_scene = null
 
 [node name="BackgroundColour" type="Panel" parent="." index="0"]
