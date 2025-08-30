@@ -1,7 +1,7 @@
-[gd_scene load_steps=6 format=3 uid="uid://culaofmj5uy0w"]
+[gd_scene load_steps=6 format=3 uid="uid://dojmsk7pc523a"]
 
 [ext_resource type="PackedScene" uid="uid://lx8q2ejyh8fo" path="res://scenes/game_scenes/base_game.tscn" id="1_abcde"]
-[ext_resource type="Script" uid="uid://c5pebfev7b8he" path="res://scripts/game_scenes/daily_game_refactor.gd" id="2_fghij"]
+[ext_resource type="Script" path="res://scripts/game_scenes/daily_game_refactor.gd" id="2_fghij"]
 [ext_resource type="PackedScene" uid="uid://dtjpcnacdl0pk" path="res://scenes/game_scenes/movie_person_pair.tscn" id="3_htbu1"]
 [ext_resource type="PackedScene" uid="uid://gou6m2qym2gd" path="res://scenes/game_scenes/daily_path.tscn" id="4_5nn11"]
 [ext_resource type="PackedScene" uid="uid://bo8gaqlalrqy4" path="res://scenes/menus/daily_submission_popup/bar_chart.tscn" id="5_y6n6x"]

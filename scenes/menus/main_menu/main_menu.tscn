@@ -8,7 +8,7 @@ bg_color = Color(0.97, 0.964827, 0.8924, 1)
 
 [node name="MainMenu" instance=ExtResource("1_kx65a")]
 script = ExtResource("2_flk2s")
-game_scene_path = "uid://7qt1dp4hjbjs"
+game_scene_path = "uid://nirrc311lvac"
 options_packed_scene = null
 
 [node name="BackgroundColour" type="Panel" parent="." index="0"]
@@ -29,10 +29,4 @@ custom_minimum_size = Vector2(1200, 40)
 layout_mode = 2
 text = "Versus Buff"
 
-[node name="RefactorButton" type="Button" parent="MenuContainer/MenuButtonsMargin/MenuButtonsContainer/MenuButtonsBoxContainer" index="5"]
-unique_name_in_owner = true
-layout_mode = 2
-text = "Recfactor Test"
-
 [connection signal="pressed" from="MenuContainer/MenuButtonsMargin/MenuButtonsContainer/MenuButtonsBoxContainer/CompetitiveButton" to="." method="_on_competitive_button_pressed"]
-[connection signal="pressed" from="MenuContainer/MenuButtonsMargin/MenuButtonsContainer/MenuButtonsBoxContainer/RefactorButton" to="." method="_on_refactor_button_pressed"]
