@@ -4,8 +4,16 @@ class_name BaseGame
 # This script will manage the common UI elements and provide a common interface
 # for the specific game mode scripts.
 
+### [STATE TRACKING]
+enum State {INIT, PLAYING, COMPLETED}
+var current_state: State
+
+enum ChangeTypes {NONE, MOVIE, PERSON}
+var last_change:ChangeTypes
+
 # --- Signals ---
 signal back_button_pressed
+# TODO: Make settings pop up menu at some point to hook up here
 signal settings_button_pressed
 
 # --- UI Nodes ---
@@ -13,25 +21,23 @@ signal settings_button_pressed
 @onready var body: MarginContainer = %Body
 @onready var footer: PanelContainer = %Footer
 
-@onready var back_button: Button = %BackButton
+# --- Heading / Navigation
+@onready var header_back_button: Button = %HeaderBackButton
 @onready var title_label: Label = %TitleLabel
 
-@onready var starting_pair: Control = %StartingPair
-@onready var finishing_pair: Control = %FinishingPair
-
-@onready var path_container: HBoxContainer = %PathContainer
+# --- Footer / Controls
 @onready var submission_input: LineEdit = %SubmissionInput
 @onready var submit_button: Button = %SubmitButton
 @onready var change_type_toggle_button: Button = %ChangeTypeToggleButton
 @onready var change_direction_button: Button = %ChangeDirectionButton
+
+# --- Popup 
 @onready var game_completion_popup: PopupPanel = %GameCompletionPopup
-@onready var daily_path: Control = %DailyPath
-
-
-
+@onready var completion_back_button: Button = %CompletionBackButton
 
 func _ready() -> void:
-	back_button.pressed.connect(_on_back_button_pressed)
+	header_back_button.pressed.connect(_on_back_button_pressed)
+	completion_back_button.pressed.connect(_on_back_button_pressed)
 	# The specific game modes will be responsible for connecting to the other buttons
 	# and implementing their own logic.
 	
@@ -58,10 +64,63 @@ func hide_loading_spinner() -> void:
 	# TODO: Implement a loading spinner
 	pass
 
+# --- State Machine ---
+
+func set_state(new_state: State) -> void:
+	if current_state == new_state and current_state != State.INIT:
+		return
+
+	# Exit logic for the current state
+	match current_state:
+		State.PLAYING:
+			_exit_playing()
+		State.COMPLETED:
+			_exit_completed()
+	current_state = new_state
+
+	# Enter logic for the new state
+	match current_state:
+		State.INIT:
+			_enter_init()
+		State.PLAYING:
+			_enter_playing()
+		State.COMPLETED:
+			_enter_completed()
+
+# --- State Enter/Exit Logic ---
+# These methods should be overridden by the specific game mode scripts
+# to handle state.
+
+func _enter_init():
+	print("Entering INIT state")
+	# This method should be overridden by the specific game mode scripts
+	# to handle state.
+	pass
+
+func _enter_playing():
+	print("Entering PLAYING state")
+	# This method should be overridden by the specific game mode scripts
+	# to handle state.
+	pass
+
+func _exit_playing():
+	print("Exiting PLAYING state")
+	# This method should be overridden by the specific game mode scripts
+	# to handle state.
+	pass
+
+func _enter_completed():
+	print("Entering COMPLETED state")
+	game_completion_popup.popup()
+
+func _exit_completed():
+	print("Exiting COMPLETED state")
+	# This method should be overridden by the specific game mode scripts
+	# to handle state.
+	pass
+
 # --- UI Event Handlers ---
 
 func _on_back_button_pressed() -> void:
 	emit_signal("back_button_pressed")
-	# Default behavior is to go to the main menu.
-	# This can be overridden in the child scenes if needed.
 	TransitionManager.change_scene("res://scenes/menus/main_menu/main_menu.tscn", 1)

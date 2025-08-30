@@ -1,58 +1,30 @@
 extends BaseGame
 
-### [STATE TRACKING]
-enum State {INIT, PLAYING, COMPLETED}
-var current_state: State
-
 enum {START_TO_FINISH, FINISH_TO_START}
+
 var current_direction = START_TO_FINISH
-
-enum CHANGE_TYPES {NONE, MOVIE, PERSON}
-var last_change:CHANGE_TYPES
-
 var current_pairing:Pairing
 
-# Tracks game completion state. will be updated once per submission.
-var path_complete:bool
-
 @onready var bar_chart = %BarChart
+@onready var daily_path: Control = %DailyPath
+@onready var starting_pair: Control = %StartingPair
+@onready var finishing_pair: Control = %FinishingPair
+@onready var daily_submission_button: Control = %DailySubmissionButton
 
 # --- Virtual Method Override ---
 
 func _initialize_game() -> void:
 	print("Daily Game Initializing")
-	set_title("Daily Bluff")
+	set_title("Daily Buff")
 	
-	submit_button.pressed.connect(_on_submission_button_button_down)
-	submission_input.text_submitted.connect(_on_submission_input_text_submitted)
+	submit_button.pressed.connect(_on_submission)
+	submission_input.text_submitted.connect(_on_submission)
+	daily_submission_button.pressed.connect(_on_daily_submission_button_down)
 	change_type_toggle_button.pressed.connect(_on_change_type_toggle_button_button_down)
 	change_direction_button.pressed.connect(_on_change_direction_button_button_down)
 	daily_path.game_completed.connect(_on_daily_path_game_completed)
 	
 	set_state(State.INIT)
-
-# --- State Machine ---
-
-func set_state(new_state: State) -> void:
-	if current_state == new_state and current_state != State.INIT:
-		return
-
-	# Exit logic for the current state
-	match current_state:
-		State.PLAYING:
-			_exit_playing()
-		State.COMPLETED:
-			_exit_completed()
-	current_state = new_state
-
-	# Enter logic for the new state
-	match current_state:
-		State.INIT:
-			_enter_init()
-		State.PLAYING:
-			_enter_playing()
-		State.COMPLETED:
-			_enter_completed()
 
 # --- State Enter/Exit Logic ---
 
@@ -61,10 +33,9 @@ func _enter_init():
 	# Reset all game variables to their defaults
 	current_pairing = Pairing.new()
 	current_direction = START_TO_FINISH
-	path_complete = false
 	# Set initial UI state to match game state
 	%GameboardHBoxContainer.split_offset = 200
-	_update_changing(CHANGE_TYPES.PERSON) # Default to changing the Movie
+	_update_changing(ChangeTypes.PERSON) # Default to changing the Movie
 	_update_toggle_button_text()
 	%SubmissionInput.grab_focus()
 
@@ -87,27 +58,19 @@ func _exit_playing():
 	print("Exiting PLAYING state")
 	# TODO: Disable UI to prevent input during state transitions or in other states
 
-func _enter_completed():
-	print("Entering COMPLETED state")
-	game_completion_popup.popup()
-
-func _exit_completed():
-	print("Exiting COMPLETED state")
-
 func daily_submission():
 	print("Submitting daily...")
-	#TODO: Actual player ID/account hookup
 	var path_data = daily_path.get_full_path_json()
 	ApiClient.submit_daily_path(path_data)
 
-func _update_changing(type: CHANGE_TYPES) -> void:
+func _update_changing(type: ChangeTypes) -> void:
 	last_change = type
 	_update_toggle_button_text()
 	var highlight_type: int # MoviePersonPair.Highlight
 	match type:
-		CHANGE_TYPES.MOVIE:
+		ChangeTypes.MOVIE:
 			highlight_type = 2 # MoviePersonPair.Highlight.PERSON
-		CHANGE_TYPES.PERSON:
+		ChangeTypes.PERSON:
 			highlight_type = 1 # MoviePersonPair.Highlight.MOVIE
 		_:
 			highlight_type = 0 # MoviePersonPair.Highlight.NONE
@@ -195,11 +158,11 @@ func _on_api_request_failed(message: String):
 
 func _movie_has_submission(input):
 	# TODO Better search comparisons and fuzzy logic
-	return input["title"] == submission_input.text
+	return input["title"].to_lower() == submission_input.text.to_lower()
 	
 func _person_has_submission(input):
 	# TODO Better search comparisons and fuzzy logic
-	return input["name"] == submission_input.text
+	return input["name"].to_lower() == submission_input.text.to_lower()
 
 func _push_pair_to_path(pair:Pairing):
 	if current_direction == START_TO_FINISH:
@@ -216,8 +179,8 @@ func _process_movie_change_submission():
 		next_pairing.movie_id = credit.id
 		next_pairing.movie_name = credit.title
 		next_pairing.movie_poster_url = credit.poster_path if credit.poster_path else ""
-		ApiClient.fetch_credits_for_movie(credit.id, next_pairing)
-		_update_changing(CHANGE_TYPES.MOVIE)
+		ApiClient.fetch_credits_for_movie(next_pairing)
+		_update_changing(ChangeTypes.MOVIE)
 		_push_pair_to_path(next_pairing)
 		submission_input.clear()
 		submission_input.grab_focus()
@@ -232,42 +195,39 @@ func _process_person_change_submission():
 		next_pairing.person_id = credit.id
 		next_pairing.person_name = credit.name
 		next_pairing.person_profile_url = credit.profile_path if credit.profile_path else ""
-		ApiClient.fetch_credits_for_person(credit.id, next_pairing)
-		_update_changing(CHANGE_TYPES.PERSON)
+		ApiClient.fetch_credits_for_person(next_pairing)
+		_update_changing(ChangeTypes.PERSON)
 		_push_pair_to_path(next_pairing)
 		submission_input.clear()
 		submission_input.grab_focus()
 	else:
 		print("Submission Error: Person not found in movie's credits.")
 
-func _on_submission_button_button_down() -> void:
+# NOTE: input to satisfy text input event "text_submitted"
+func _on_submission(_input) -> void:
 	if current_state != State.PLAYING:
 		return
 	current_pairing = starting_pair.get_pair() if current_direction == START_TO_FINISH else finishing_pair.get_pair()
 	match last_change:
-		CHANGE_TYPES.PERSON: # User is submitting a movie to change from a person
+		ChangeTypes.PERSON: # User is submitting a movie to change from a person
 			_process_movie_change_submission()
-		CHANGE_TYPES.MOVIE: # User is submitting a person to change from a movie
+		ChangeTypes.MOVIE: # User is submitting a person to change from a movie
 			_process_person_change_submission()
 		_:
 			print("Submission Error: No change type selected.")
-
-func _on_submission_input_text_submitted(_new_text: String):
-	# Trigger the same logic as clicking the submission button.
-	_on_submission_button_button_down()
 	
 func _on_change_type_toggle_button_button_down() -> void:
 	if current_state != State.PLAYING:
 		return
 		
-	if last_change == CHANGE_TYPES.PERSON:
-		_update_changing(CHANGE_TYPES.MOVIE)
+	if last_change == ChangeTypes.PERSON:
+		_update_changing(ChangeTypes.MOVIE)
 	else:
-		_update_changing(CHANGE_TYPES.PERSON)
+		_update_changing(ChangeTypes.PERSON)
 	submission_input.grab_focus()
 
 func _update_toggle_button_text():
-	change_type_toggle_button.text = "Change to Person" if last_change == CHANGE_TYPES.PERSON else "Change to Movie"
+	change_type_toggle_button.text = "Change to Person" if last_change == ChangeTypes.PERSON else "Change to Movie"
 
 func _on_change_direction_button_button_down() -> void:
 	if current_state != State.PLAYING:
@@ -289,7 +249,7 @@ func _on_change_direction_button_button_down() -> void:
 	_update_changing(last_change)
 	submission_input.grab_focus()
 
-func _on_submit_button_button_down() -> void:
+func _on_daily_submission_button_down() -> void:
 	daily_submission()
 
 func _on_daily_path_game_completed() -> void:

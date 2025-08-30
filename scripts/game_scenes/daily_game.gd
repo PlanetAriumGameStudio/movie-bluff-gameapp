@@ -211,7 +211,7 @@ func _process_movie_change_submission():
 		next_pairing.movie_id = credit.id
 		next_pairing.movie_name = credit.title
 		next_pairing.movie_poster_url = credit.poster_path if credit.poster_path else ""
-		ApiClient.fetch_credits_for_movie(credit.id, next_pairing)
+		ApiClient.fetch_credits_for_movie(next_pairing)
 		_update_changing(CHANGE_TYPES.MOVIE)
 		_push_pair_to_path(next_pairing)
 		%SubmissionInput.clear()
@@ -227,7 +227,7 @@ func _process_person_change_submission():
 		next_pairing.person_id = credit.id
 		next_pairing.person_name = credit.name
 		next_pairing.person_profile_url = credit.profile_path if credit.profile_path else ""
-		ApiClient.fetch_credits_for_person(credit.id, next_pairing)
+		ApiClient.fetch_credits_for_person(next_pairing)
 		_update_changing(CHANGE_TYPES.PERSON)
 		_push_pair_to_path(next_pairing)
 		%SubmissionInput.clear()

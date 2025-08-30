@@ -1,8 +1,6 @@
-[gd_scene load_steps=4 format=3 uid="uid://lx8q2ejyh8fo"]
+[gd_scene load_steps=2 format=3 uid="uid://lx8q2ejyh8fo"]
 
 [ext_resource type="Script" uid="uid://cb1bkkxb28cw4" path="res://scenes/game_scenes/base_game.gd" id="1_abcde"]
-[ext_resource type="PackedScene" uid="uid://dtjpcnacdl0pk" path="res://scenes/game_scenes/movie_person_pair.tscn" id="2_fghij"]
-[ext_resource type="PackedScene" uid="uid://gou6m2qym2gd" path="res://scenes/game_scenes/daily_path.tscn" id="3_klmno"]
 
 [node name="BaseGame" type="Control"]
 layout_mode = 3
@@ -29,7 +27,7 @@ layout_mode = 2
 layout_mode = 2
 alignment = 1
 
-[node name="BackButton" type="Button" parent="MainVBoxContainer/Header/HeaderHBox"]
+[node name="HeaderBackButton" type="Button" parent="MainVBoxContainer/Header/HeaderHBox"]
 unique_name_in_owner = true
 layout_mode = 2
 text = "Back"
@@ -62,32 +60,11 @@ unique_name_in_owner = true
 layout_mode = 2
 size_flags_vertical = 3
 
-[node name="GameboardHBoxContainer" type="HSplitContainer" parent="MainVBoxContainer/Body"]
-unique_name_in_owner = true
-layout_mode = 2
-split_offset = 200
-
-[node name="StartingPair" parent="MainVBoxContainer/Body/GameboardHBoxContainer" instance=ExtResource("2_fghij")]
-unique_name_in_owner = true
-layout_mode = 2
-
-[node name="FinishingPair" parent="MainVBoxContainer/Body/GameboardHBoxContainer" instance=ExtResource("2_fghij")]
-unique_name_in_owner = true
-layout_mode = 2
-
 [node name="Footer" type="PanelContainer" parent="MainVBoxContainer"]
 unique_name_in_owner = true
 layout_mode = 2
 
 [node name="FooterVBox" type="VBoxContainer" parent="MainVBoxContainer/Footer"]
-layout_mode = 2
-
-[node name="PathContainer" type="HBoxContainer" parent="MainVBoxContainer/Footer/FooterVBox"]
-unique_name_in_owner = true
-layout_mode = 2
-
-[node name="DailyPath" parent="MainVBoxContainer/Footer/FooterVBox/PathContainer" instance=ExtResource("3_klmno")]
-unique_name_in_owner = true
 layout_mode = 2
 
 [node name="UserInputHBox" type="HBoxContainer" parent="MainVBoxContainer/Footer/FooterVBox"]
@@ -99,6 +76,7 @@ unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
 placeholder_text = "Enter your guess..."
+keep_editing_on_text_submit = true
 
 [node name="SubmitButton" type="Button" parent="MainVBoxContainer/Footer/FooterVBox/UserInputHBox"]
 unique_name_in_owner = true
@@ -120,11 +98,12 @@ layout_mode = 2
 text = "Change Direction"
 
 [node name="GameCompletionPopup" type="PopupPanel" parent="."]
+unique_name_in_owner = true
 
 [node name="VBoxContainer" type="VBoxContainer" parent="GameCompletionPopup"]
 offset_left = 4.0
 offset_top = 4.0
-offset_right = 96.0
+offset_right = 143.0
 offset_bottom = 96.0
 
 [node name="CompletionLabel" type="Label" parent="GameCompletionPopup/VBoxContainer"]
@@ -136,6 +115,10 @@ text = "Game Completed!"
 unique_name_in_owner = true
 layout_mode = 2
 
-[node name="BackButton" type="Button" parent="GameCompletionPopup/VBoxContainer"]
+[node name="HBoxContainer" type="HBoxContainer" parent="GameCompletionPopup/VBoxContainer"]
+layout_mode = 2
+
+[node name="CompletionBackButton" type="Button" parent="GameCompletionPopup/VBoxContainer/HBoxContainer"]
+unique_name_in_owner = true
 layout_mode = 2
 text = "Back to Menu"

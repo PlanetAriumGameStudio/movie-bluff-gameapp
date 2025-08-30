@@ -51,13 +51,13 @@ func submit_daily_path(path_json: Array) -> void:
 	var body = { "player_id": 1, "steps": path_json } # TODO: Get player_id from LoginManager
 	_make_request("/api/games/daily", _on_daily_submission_response, HTTPClient.METHOD_POST, JSON.stringify(body))
 
-func fetch_credits_for_movie(movie_id: int, pair: Pairing) -> void:
+func fetch_credits_for_movie(pair: Pairing) -> void:
 	var bound_callback = _on_movie_credits_response.bind(pair)
-	_make_request("/api/movie/%d/cast" % movie_id, bound_callback)
+	_make_request("/api/movie/%d/cast" % pair.movie_id, bound_callback)
 
-func fetch_credits_for_person(person_id: int, pair: Pairing) -> void:
+func fetch_credits_for_person(pair: Pairing) -> void:
 	var bound_callback = _on_person_credits_response.bind(pair)
-	_make_request("/api/person/%d/credits" % person_id, bound_callback)
+	_make_request("/api/person/%d/credits" % pair.person_id, bound_callback)
 
 func fetch_active_game_list() -> void:
 	_make_request("/api/pvp/games/active", _on_active_game_list_response)

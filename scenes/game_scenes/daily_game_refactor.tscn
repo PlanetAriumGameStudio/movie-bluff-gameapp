@@ -1,7 +1,39 @@
-[gd_scene load_steps=3 format=3 uid="uid://culaofmj5uy0w"]
+[gd_scene load_steps=6 format=3 uid="uid://culaofmj5uy0w"]
 
 [ext_resource type="PackedScene" uid="uid://lx8q2ejyh8fo" path="res://scenes/game_scenes/base_game.tscn" id="1_abcde"]
 [ext_resource type="Script" uid="uid://c5pebfev7b8he" path="res://scripts/game_scenes/daily_game_refactor.gd" id="2_fghij"]
+[ext_resource type="PackedScene" uid="uid://dtjpcnacdl0pk" path="res://scenes/game_scenes/movie_person_pair.tscn" id="3_htbu1"]
+[ext_resource type="PackedScene" uid="uid://gou6m2qym2gd" path="res://scenes/game_scenes/daily_path.tscn" id="4_5nn11"]
+[ext_resource type="PackedScene" uid="uid://bo8gaqlalrqy4" path="res://scenes/menus/daily_submission_popup/bar_chart.tscn" id="5_y6n6x"]
 
 [node name="DailyGame" instance=ExtResource("1_abcde")]
 script = ExtResource("2_fghij")
+
+[node name="GameboardHBoxContainer" type="HSplitContainer" parent="MainVBoxContainer/Body" index="0"]
+unique_name_in_owner = true
+layout_mode = 2
+split_offset = 200
+
+[node name="StartingPair" parent="MainVBoxContainer/Body/GameboardHBoxContainer" index="0" instance=ExtResource("3_htbu1")]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="FinishingPair" parent="MainVBoxContainer/Body/GameboardHBoxContainer" index="1" instance=ExtResource("3_htbu1")]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="DailyPath" parent="MainVBoxContainer/Footer/FooterVBox" index="0" instance=ExtResource("4_5nn11")]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="VBoxContainer" parent="GameCompletionPopup" index="1"]
+offset_right = 96.0
+
+[node name="BarChart" parent="GameCompletionPopup/VBoxContainer/ResultsContainer" index="0" instance=ExtResource("5_y6n6x")]
+unique_name_in_owner = true
+layout_mode = 1
+
+[node name="DailySubmissionButton" type="Button" parent="GameCompletionPopup/VBoxContainer/HBoxContainer" index="1"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Submit"
