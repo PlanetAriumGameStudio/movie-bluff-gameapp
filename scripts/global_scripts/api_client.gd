@@ -13,11 +13,17 @@ signal daily_game_setup_received(start_pair: Pairing, end_pair: Pairing)
 signal daily_submission_succeeded(results_data: Dictionary)
 signal movie_credits_received(credits: Array, original_pair: Pairing)
 signal person_credits_received(credits: Array, original_pair: Pairing)
-signal active_game_list_received(games: Array)
-signal completed_game_list_received(games: Array)
-signal competitive_game_state_received(game_state: Dictionary)
-signal competitive_new_game_created(game_id: int)
 signal request_failed(message: String)
+
+# --- PVP API Signals ---
+signal active_game_list_received(games: Array) # GET /api/pvp/games/active
+signal completed_game_list_received(games: Array) # GET /api/pvp/games/completed
+signal competitive_new_game_created(game_id: int) # POST /pvp/random
+signal competitive_game_state(game_id: int) # GET /api/pvp/{game_id}
+signal competitive_submission_succeeded(game_id: int, move: Dictionary) # POST /api/pvp/{game_id}/turn
+signal competitive_game_bluff(game_id: int, move: Dictionary) # POST /api/pvp/{game_id}/bluff
+signal competitive_game_concede(game_id: int) # POST /api/pvp/{game_id}/concede
+
 
 # --- Constants ---
 const SERVER_BASE_URL = "http://127.0.0.1:8080" # Change to your production URL
@@ -60,16 +66,26 @@ func fetch_credits_for_person(pair: Pairing) -> void:
 	_make_request("/api/person/%d/credits" % pair.person_id, bound_callback)
 
 func fetch_active_game_list() -> void:
-	_make_request("/api/pvp/games/active", _on_active_game_list_response)
+	_make_request("/api/pvp/active", _on_active_game_list_response)
 
 func fetch_completed_game_list() -> void:
-	_make_request("/api/pvp/games/completed", _on_completed_game_list_response)
+	_make_request("/api/pvp/completed", _on_completed_game_list_response)
 
 func create_new_competitive_game() -> void:
 	_make_request("/api/pvp/random", _on_competitive_new_game_response, HTTPClient.METHOD_POST)
 
-func fetch_competitive_game_state(game_id: String) -> void:
-	_make_request("/api/competitive/games/%s" % game_id, _on_competitive_game_state_response)
+func fetch_competitive_game_state(game_id: int) -> void:
+	_make_request("/api/pvp/%d" % game_id, _on_competitive_game_state_response)
+
+func submit_pvp_turn(game_id: int, move: Dictionary) -> void:
+	var body = { "type": move.type, "id": move.id, "name": move.name }
+	_make_request("/api/pvp/%d/turn" % game_id, _on_competitive_submission_response, HTTPClient.METHOD_POST, JSON.stringify(body))
+
+func competitive_call_bluff(game_id: int) -> void:
+	_make_request("/api/pvp/%d/bluff" % game_id, _on_competitive_game_bluff_response, HTTPClient.METHOD_POST)
+
+func competitive_concede_game(game_id: int) -> void:
+	_make_request("/api/pvp/%d/concede" % game_id, _on_competitive_game_concede_response, HTTPClient.METHOD_POST)
 
 # --- Private Core Logic ---
 
@@ -178,4 +194,19 @@ func _on_competitive_new_game_response(result, response_code, _headers, body):
 func _on_competitive_game_state_response(result, response_code, _headers, body):
 	var data = _parse_response(result, response_code, body, "Competitive Game State")
 	if data == null: return
-	emit_signal("competitive_game_state_received", data)
+	emit_signal("competitive_game_state", data)
+
+func _on_competitive_submission_response(result, response_code, _headers, body):
+	var data = _parse_response(result, response_code, body, "Competitive Submission")
+	if data == null: return
+	emit_signal("competitive_game_submit_turn", data)
+
+func _on_competitive_game_bluff_response(result, response_code, _headers, body):
+	var data = _parse_response(result, response_code, body, "Competitive Bluff")
+	if data == null: return
+	emit_signal("competitive_game_bluff", data)
+
+func _on_competitive_game_concede_response(result, response_code, _headers, body):
+	var data = _parse_response(result, response_code, body, "Competitive Concede")
+	if data == null: return
+	emit_signal("competitive_game_concede", data)
