@@ -1,8 +1,92 @@
-[gd_scene load_steps=2 format=3 uid="uid://dy15byoe1kkoh"]
+[gd_scene load_steps=5 format=3 uid="uid://dy15byoe1kkoh"]
 
 [ext_resource type="Script" uid="uid://bn41qgiysoxa3" path="res://scripts/game_scenes/competitive_game.gd" id="1_d18pq"]
+[ext_resource type="PackedScene" uid="uid://lx8q2ejyh8fo" path="res://scenes/game_scenes/base_game.tscn" id="1_gcvb3"]
+[ext_resource type="PackedScene" uid="uid://dtjpcnacdl0pk" path="res://scenes/game_scenes/movie_person_pair.tscn" id="3_ws1kx"]
 
-[node name="CompetitiveGame" type="Control"]
-layout_mode = 3
-anchors_preset = 0
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ws1kx"]
+bg_color = Color(0.2, 0.176, 0.176, 0.392157)
+
+[node name="CompetitiveGame" instance=ExtResource("1_gcvb3")]
 script = ExtResource("1_d18pq")
+
+[node name="CenterContainer" type="CenterContainer" parent="MainVBoxContainer/Body" index="0"]
+layout_mode = 2
+
+[node name="CurrentPair" parent="MainVBoxContainer/Body/CenterContainer" index="0" instance=ExtResource("3_ws1kx")]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(480, 300)
+layout_mode = 2
+
+[node name="HistoryButton" type="Button" parent="MainVBoxContainer/Footer/FooterVBox/ToggleControlsHBox" index="2"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "History"
+
+[node name="CallBluffButton" type="Button" parent="MainVBoxContainer/Footer/FooterVBox/ToggleControlsHBox" index="3"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Call Bluff"
+
+[node name="ConcedeButton" type="Button" parent="MainVBoxContainer/Footer/FooterVBox/ToggleControlsHBox" index="4"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Concede"
+
+[node name="VBoxContainer" parent="GameCompletionPopup" index="1"]
+offset_right = 96.0
+
+[node name="WaitingOverlay" type="PanelContainer" parent="." index="2"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_ws1kx")
+
+[node name="CenterContainer" type="CenterContainer" parent="WaitingOverlay" index="0"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="WaitingOverlay/CenterContainer" index="0"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 32
+text = "Waiting for Opponent..."
+
+[node name="HistoryPanel" type="PanelContainer" parent="." index="3"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.7
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 0
+grow_vertical = 2
+
+[node name="TabContainer" type="TabContainer" parent="HistoryPanel" index="0"]
+layout_mode = 2
+current_tab = 0
+
+[node name="Movies" type="VBoxContainer" parent="HistoryPanel/TabContainer" index="1"]
+layout_mode = 2
+metadata/_tab_index = 0
+
+[node name="ScrollContainer" type="ScrollContainer" parent="HistoryPanel/TabContainer/Movies" index="0"]
+layout_mode = 2
+
+[node name="MovieList" type="VBoxContainer" parent="HistoryPanel/TabContainer/Movies/ScrollContainer" index="0"]
+layout_mode = 2
+
+[node name="People" type="VBoxContainer" parent="HistoryPanel/TabContainer" index="2"]
+visible = false
+layout_mode = 2
+metadata/_tab_index = 1
+
+[node name="ScrollContainer" type="ScrollContainer" parent="HistoryPanel/TabContainer/People" index="0"]
+layout_mode = 2
+
+[node name="PeopleList" type="VBoxContainer" parent="HistoryPanel/TabContainer/People/ScrollContainer" index="0"]
+layout_mode = 2

@@ -1,51 +1,18 @@
-extends Control
+extends BaseGame
 
-### [STATE TRACKING]
-enum State {INIT, WAITING_FOR_OPPONENT, PLAYING, SUBMITTING, COMPLETED}
-var current_state: State
-
-# This will be important for an async game
 var player_is_active: bool = false
 
-# Placeholder for the API client for competitive mode
-# We will likely need a new one, e.g., "CompetitiveGameAPI"
-# @onready var api_client = %CompetitiveGameAPI
+# --- Virtual Method Override ---
 
-func _ready() -> void:
-	print("Competitive Game Ready")
+func _initialize_game() -> void:
+	print("Competitive Game Initializing")
+	set_title("Versus X")
+	
+	submit_button.pressed.connect(_on_submission)
+	submission_input.text_submitted.connect(_on_submission)
+	change_type_toggle_button.pressed.connect(_on_change_type_toggle_button_button_down)
+	
 	set_state(State.INIT)
-
-# --- State Machine ---
-
-func set_state(new_state: State) -> void:
-	if current_state == new_state and current_state != State.INIT:
-		return
-
-	# Exit logic for the current state
-	match current_state:
-		State.WAITING_FOR_OPPONENT:
-			_exit_waiting_for_opponent()
-		State.PLAYING:
-			_exit_playing()
-		State.SUBMITTING:
-			_exit_submitting()
-		State.COMPLETED:
-			_exit_completed()
-			
-	current_state = new_state
-
-	# Enter logic for the new state
-	match current_state:
-		State.INIT:
-			_enter_init()
-		State.WAITING_FOR_OPPONENT:
-			_enter_waiting_for_opponent()
-		State.PLAYING:
-			_enter_playing()
-		State.SUBMITTING:
-			_enter_submitting()
-		State.COMPLETED:
-			_enter_completed()
 
 # --- State Enter/Exit Logic ---
 
@@ -126,7 +93,7 @@ func _exit_completed():
 
 # --- UI Event Handlers ---
 
-func _on_submit_button_pressed() -> void:
+func _on_submission() -> void:
 	if current_state != State.PLAYING:
 		return
 	
@@ -140,7 +107,8 @@ func _on_submit_button_pressed() -> void:
 	# TODO: Call the API to submit the move
 	# api_client.submit_move(move_data)
 
-func _on_back_button_pressed() -> void:
-	# TODO: Add logic to safely leave the game
-	# You might want to confirm with the user if they want to forfeit
-	TransitionManager.change_scene("res://scenes/menus/main_menu/main_menu.tscn", 1)
+func _on_change_type_toggle_button_button_down() -> void:
+	if current_state != State.PLAYING:
+		return
+		
+	submission_input.grab_focus()

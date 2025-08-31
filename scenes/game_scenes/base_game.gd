@@ -5,7 +5,7 @@ class_name BaseGame
 # for the specific game mode scripts.
 
 ### [STATE TRACKING]
-enum State {INIT, PLAYING, COMPLETED}
+enum State {INIT, WAITING_FOR_OPPONENT, PLAYING, SUBMITTING, COMPLETED}
 var current_state: State
 
 enum ChangeTypes {NONE, MOVIE, PERSON}
@@ -72,8 +72,12 @@ func set_state(new_state: State) -> void:
 
 	# Exit logic for the current state
 	match current_state:
+		State.WAITING_FOR_OPPONENT:
+			_exit_waiting_for_opponent()
 		State.PLAYING:
 			_exit_playing()
+		State.SUBMITTING:
+			_exit_submitting()
 		State.COMPLETED:
 			_exit_completed()
 	current_state = new_state
@@ -82,8 +86,12 @@ func set_state(new_state: State) -> void:
 	match current_state:
 		State.INIT:
 			_enter_init()
+		State.WAITING_FOR_OPPONENT:
+			_enter_waiting_for_opponent()
 		State.PLAYING:
 			_enter_playing()
+		State.SUBMITTING:
+			_enter_submitting()
 		State.COMPLETED:
 			_enter_completed()
 
@@ -97,6 +105,13 @@ func _enter_init():
 	# to handle state.
 	pass
 
+func _enter_waiting_for_opponent():
+	print("Entering WAITING_FOR_OPPONENT state")
+	pass
+
+func _exit_waiting_for_opponent():
+	print("Exiting WAITING_FOR_OPPONENT state")
+
 func _enter_playing():
 	print("Entering PLAYING state")
 	# This method should be overridden by the specific game mode scripts
@@ -108,6 +123,17 @@ func _exit_playing():
 	# This method should be overridden by the specific game mode scripts
 	# to handle state.
 	pass
+
+func _enter_submitting():
+	print("Entering SUBMITTING state")
+	show_loading_spinner()
+	pass
+
+func _exit_submitting():
+	print("Exiting SUBMITTING state")
+	hide_loading_spinner()
+	pass
+
 
 func _enter_completed():
 	print("Entering COMPLETED state")
