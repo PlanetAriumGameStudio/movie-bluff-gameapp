@@ -10,6 +10,7 @@ var current_pairing:Pairing
 @onready var starting_pair: Control = %StartingPair
 @onready var finishing_pair: Control = %FinishingPair
 @onready var daily_submission_button: Control = %DailySubmissionButton
+@onready var change_direction_button: Button = %ChangeDirectionButton
 
 # --- Virtual Method Override ---
 

@@ -28,7 +28,6 @@ signal settings_button_pressed
 @onready var submission_input: LineEdit = %SubmissionInput
 @onready var submit_button: Button = %SubmitButton
 @onready var change_type_toggle: ChangeTypeToggle = %ChangeTypeToggle
-@onready var change_direction_button: Button = %ChangeDirectionButton
 
 # --- Popup 
 @onready var game_completion_popup: PopupPanel = %GameCompletionPopup
