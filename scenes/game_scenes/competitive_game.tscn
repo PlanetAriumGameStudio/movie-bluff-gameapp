@@ -33,9 +33,6 @@ unique_name_in_owner = true
 layout_mode = 2
 text = "Concede"
 
-[node name="VBoxContainer" parent="GameCompletionPopup" index="1"]
-offset_right = 96.0
-
 [node name="WaitingOverlay" type="PanelContainer" parent="." index="2"]
 unique_name_in_owner = true
 visible = false

@@ -1,6 +1,7 @@
-[gd_scene load_steps=2 format=3 uid="uid://lx8q2ejyh8fo"]
+[gd_scene load_steps=3 format=3 uid="uid://lx8q2ejyh8fo"]
 
 [ext_resource type="Script" uid="uid://cb1bkkxb28cw4" path="res://scenes/game_scenes/base_game.gd" id="1_abcde"]
+[ext_resource type="PackedScene" uid="uid://dviltiwhwrhha" path="res://core/scenes/ui/change_type_toggle/change_type_toggle.tscn" id="2_1loxt"]
 
 [node name="BaseGame" type="Control"]
 layout_mode = 3
@@ -87,10 +88,9 @@ text = "Submit"
 layout_mode = 2
 alignment = 1
 
-[node name="ChangeTypeToggleButton" type="Button" parent="MainVBoxContainer/Footer/FooterVBox/ToggleControlsHBox"]
+[node name="ChangeTypeToggle" parent="MainVBoxContainer/Footer/FooterVBox/ToggleControlsHBox" instance=ExtResource("2_1loxt")]
 unique_name_in_owner = true
 layout_mode = 2
-text = "Change Type"
 
 [node name="ChangeDirectionButton" type="Button" parent="MainVBoxContainer/Footer/FooterVBox/ToggleControlsHBox"]
 unique_name_in_owner = true

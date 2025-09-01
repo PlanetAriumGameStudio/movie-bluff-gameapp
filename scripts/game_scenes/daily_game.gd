@@ -20,10 +20,11 @@ func _initialize_game() -> void:
 	submit_button.pressed.connect(_on_submission)
 	submission_input.text_submitted.connect(_on_submission)
 	daily_submission_button.pressed.connect(_on_daily_submission_button_down)
-	change_type_toggle_button.pressed.connect(_on_change_type_toggle_button_button_down)
-	change_direction_button.pressed.connect(_on_change_direction_button_button_down)
+	change_direction_button.pressed.connect(_on_change_direction_button_down)
 	daily_path.game_completed.connect(_on_daily_path_game_completed)
-	
+	change_type_toggle.change_type_changed.connect(_update_changing)
+	_update_changing(change_type_toggle.get_current_change_type())
+
 	set_state(State.INIT)
 
 # --- State Enter/Exit Logic ---
@@ -33,10 +34,9 @@ func _enter_init():
 	# Reset all game variables to their defaults
 	current_pairing = Pairing.new()
 	current_direction = START_TO_FINISH
+	
 	# Set initial UI state to match game state
 	%GameboardHBoxContainer.split_offset = 200
-	_update_changing(ChangeTypes.PERSON) # Default to changing the Movie
-	_update_toggle_button_text()
 	%SubmissionInput.grab_focus()
 
 	# Connect to all signals from our global ApiClient
@@ -63,14 +63,12 @@ func daily_submission():
 	var path_data = daily_path.get_full_path_json()
 	ApiClient.submit_daily_path(path_data)
 
-func _update_changing(type: ChangeTypes) -> void:
-	last_change = type
-	_update_toggle_button_text()
+func _update_changing(type: ChangeTypeToggle.ChangeType) -> void:
 	var highlight_type: int # MoviePersonPair.Highlight
 	match type:
-		ChangeTypes.MOVIE:
+		ChangeTypeToggle.ChangeType.PERSON:
 			highlight_type = 2 # MoviePersonPair.Highlight.PERSON
-		ChangeTypes.PERSON:
+		ChangeTypeToggle.ChangeType.MOVIE:
 			highlight_type = 1 # MoviePersonPair.Highlight.MOVIE
 		_:
 			highlight_type = 0 # MoviePersonPair.Highlight.NONE
@@ -180,7 +178,8 @@ func _process_movie_change_submission():
 		next_pairing.movie_name = credit.title
 		next_pairing.movie_poster_url = credit.poster_path if credit.poster_path else ""
 		ApiClient.fetch_credits_for_movie(next_pairing)
-		_update_changing(ChangeTypes.MOVIE)
+		last_change = change_type_toggle.current_type 
+		change_type_toggle.current_type = ChangeTypeToggle.ChangeType.PERSON
 		_push_pair_to_path(next_pairing)
 		submission_input.clear()
 		submission_input.grab_focus()
@@ -196,7 +195,8 @@ func _process_person_change_submission():
 		next_pairing.person_name = credit.name
 		next_pairing.person_profile_url = credit.profile_path if credit.profile_path else ""
 		ApiClient.fetch_credits_for_person(next_pairing)
-		_update_changing(ChangeTypes.PERSON)
+		last_change = change_type_toggle.current_type
+		change_type_toggle.current_type = ChangeTypeToggle.ChangeType.MOVIE
 		_push_pair_to_path(next_pairing)
 		submission_input.clear()
 		submission_input.grab_focus()
@@ -208,28 +208,17 @@ func _on_submission(_input) -> void:
 	if current_state != State.PLAYING:
 		return
 	current_pairing = starting_pair.get_pair() if current_direction == START_TO_FINISH else finishing_pair.get_pair()
+
+	print ("Lat changeL:", last_change)
 	match last_change:
-		ChangeTypes.PERSON: # User is submitting a movie to change from a person
+		ChangeTypeToggle.ChangeType.PERSON: # User is submitting a movie to change from a person
 			_process_movie_change_submission()
-		ChangeTypes.MOVIE: # User is submitting a person to change from a movie
+		ChangeTypeToggle.ChangeType.MOVIE: # User is submitting a person to change from a movie
 			_process_person_change_submission()
 		_:
 			print("Submission Error: No change type selected.")
 	
-func _on_change_type_toggle_button_button_down() -> void:
-	if current_state != State.PLAYING:
-		return
-		
-	if last_change == ChangeTypes.PERSON:
-		_update_changing(ChangeTypes.MOVIE)
-	else:
-		_update_changing(ChangeTypes.PERSON)
-	submission_input.grab_focus()
-
-func _update_toggle_button_text():
-	change_type_toggle_button.text = "Change to Person" if last_change == ChangeTypes.PERSON else "Change to Movie"
-
-func _on_change_direction_button_button_down() -> void:
+func _on_change_direction_button_down() -> void:
 	if current_state != State.PLAYING:
 		return
 	
@@ -246,7 +235,7 @@ func _on_change_direction_button_button_down() -> void:
 	tween.tween_property(%GameboardHBoxContainer, "split_offset", target_offset, 0.4)
 	
 	# Re-evaluate and apply highlights for the new direction.
-	_update_changing(last_change)
+	_update_changing(change_type_toggle.get_current_change_type())
 	submission_input.grab_focus()
 
 func _on_daily_submission_button_down() -> void:

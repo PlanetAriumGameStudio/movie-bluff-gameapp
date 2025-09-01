@@ -8,8 +8,7 @@ class_name BaseGame
 enum State {INIT, WAITING_FOR_OPPONENT, PLAYING, SUBMITTING, COMPLETED}
 var current_state: State
 
-enum ChangeTypes {NONE, MOVIE, PERSON}
-var last_change:ChangeTypes
+var last_change: ChangeTypeToggle.ChangeType
 
 # --- Signals ---
 signal back_button_pressed
@@ -28,7 +27,7 @@ signal settings_button_pressed
 # --- Footer / Controls
 @onready var submission_input: LineEdit = %SubmissionInput
 @onready var submit_button: Button = %SubmitButton
-@onready var change_type_toggle_button: Button = %ChangeTypeToggleButton
+@onready var change_type_toggle: ChangeTypeToggle = %ChangeTypeToggle
 @onready var change_direction_button: Button = %ChangeDirectionButton
 
 # --- Popup 
@@ -38,6 +37,7 @@ signal settings_button_pressed
 func _ready() -> void:
 	header_back_button.pressed.connect(_on_back_button_pressed)
 	completion_back_button.pressed.connect(_on_back_button_pressed)
+	change_type_toggle.change_type_changed.connect(_on_change_type_changed)
 	# The specific game modes will be responsible for connecting to the other buttons
 	# and implementing their own logic.
 	
@@ -49,6 +49,7 @@ func _ready() -> void:
 func _initialize_game() -> void:
 	# This method should be overridden by the specific game mode scripts
 	# to set up the game state, connect to API signals, etc.
+	last_change = ChangeTypeToggle.ChangeType.PERSON
 	pass
 
 # --- Public Methods ---
@@ -150,3 +151,12 @@ func _exit_completed():
 func _on_back_button_pressed() -> void:
 	emit_signal("back_button_pressed")
 	TransitionManager.change_scene("res://scenes/menus/main_menu/main_menu.tscn", 1)
+
+func _on_change_type_changed(type: ChangeTypeToggle.ChangeType) -> void:
+	match type:
+		ChangeTypeToggle.ChangeType.MOVIE:
+			last_change = ChangeTypeToggle.ChangeType.PERSON
+			change_type_toggle.current_type = ChangeTypeToggle.ChangeType.MOVIE
+		ChangeTypeToggle.ChangeType.PERSON:
+			last_change = ChangeTypeToggle.ChangeType.MOVIE
+			change_type_toggle.current_type = ChangeTypeToggle.ChangeType.PERSON

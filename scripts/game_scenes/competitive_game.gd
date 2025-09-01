@@ -29,7 +29,6 @@ func _initialize_game() -> void:
 	concede_button.pressed.connect(_on_concede_button_pressed)
 	submit_button.pressed.connect(_on_submission)
 	submission_input.text_submitted.connect(_on_submission)
-	change_type_toggle_button.pressed.connect(_on_change_type_toggle_button_button_down)
 
 	# Connect API signals
 	ApiClient.competitive_submission_succeeded.connect(_on_api_submission_succeeded)
@@ -232,12 +231,6 @@ func _on_submission() -> void:
 	print("Submitting move: ", turn_data)
 	set_state(State.SUBMITTING)
 	ApiClient.submit_pvp_turn(game_id, turn_data)
-
-func _on_change_type_toggle_button_button_down() -> void:
-	if current_state != State.PLAYING:
-		return
-		
-	submission_input.grab_focus()
 
 func _on_history_button_pressed() -> void:
 	_history_panel_visible = not _history_panel_visible

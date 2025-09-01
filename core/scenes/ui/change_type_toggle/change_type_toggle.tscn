@@ -1,0 +1,58 @@
+[gd_scene load_steps=5 format=3 uid="uid://dviltiwhwrhha"]
+
+[ext_resource type="Script" uid="uid://k4kutpadwj2c" path="res://core/scenes/ui/change_type_toggle/change_type_toggle.gd" id="1_6h8q3"]
+[ext_resource type="Texture2D" uid="uid://i4wwon2js0ry" path="res://sprites/ui_iconography/movie_icon.svg" id="2_3d1fr"]
+[ext_resource type="Texture2D" uid="uid://cpsor6oq3ypci" path="res://sprites/ui_iconography/person_icon.svg" id="3_3tafd"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_6h8q3"]
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
+[node name="ChangeTypeToggle" type="Control"]
+custom_minimum_size = Vector2(60, 30)
+layout_mode = 3
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+script = ExtResource("1_6h8q3")
+
+[node name="PanelContainer" type="PanelContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_6h8q3")
+
+[node name="HBoxContainer" type="HBoxContainer" parent="PanelContainer"]
+layout_mode = 2
+alignment = 1
+
+[node name="MovieButton" type="TextureButton" parent="PanelContainer/HBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 4
+texture_normal = ExtResource("2_3d1fr")
+texture_pressed = ExtResource("2_3d1fr")
+texture_hover = ExtResource("2_3d1fr")
+texture_disabled = ExtResource("2_3d1fr")
+texture_focused = ExtResource("2_3d1fr")
+
+[node name="PersonButton" type="TextureButton" parent="PanelContainer/HBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 4
+texture_normal = ExtResource("3_3tafd")
+texture_pressed = ExtResource("3_3tafd")
+texture_hover = ExtResource("3_3tafd")
+texture_disabled = ExtResource("3_3tafd")
+texture_focused = ExtResource("3_3tafd")
