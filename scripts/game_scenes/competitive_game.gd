@@ -1,16 +1,19 @@
 extends BaseGame
 
-@onready var current_pair: MoviePersonPair = %CurrentPair
-@onready var waiting_overlay: PanelContainer = %WaitingOverlay
-@onready var history_panel: PanelContainer = %HistoryPanel
-@onready var history_button: Button = %HistoryButton
-@onready var call_bluff_button: Button = %CallBluffButton
-@onready var concede_button: Button = %ConcedeButton
-
 var player_is_active: bool = false
 var game_id: int
 var game_state: Dictionary
 var _history_panel_visible = false
+
+@onready var current_pair: MoviePersonPair = %CurrentPair
+@onready var waiting_overlay: PanelContainer = %WaitingOverlay
+@onready var history_panel: PanelContainer = %HistoryPanel
+@onready var history_button: Button = %HistoryButton
+@onready var MovieList: VBoxContainer = %MovieList
+@onready var PeopleList: VBoxContainer = %PeopleList
+@onready var call_bluff_button: Button = %CallBluffButton
+@onready var concede_button: Button = %ConcedeButton
+
 
 # --- Public Methods ---
 
@@ -29,27 +32,35 @@ func _initialize_game() -> void:
 	concede_button.pressed.connect(_on_concede_button_pressed)
 	submit_button.pressed.connect(_on_submission)
 	submission_input.text_submitted.connect(_on_submission)
+	change_type_toggle.change_type_changed.connect(_update_changing)
+	_update_changing(change_type_toggle.get_current_change_type())
 
-	# Connect API signals
-	ApiClient.competitive_submission_succeeded.connect(_on_api_submission_succeeded)
-	ApiClient.competitive_game_state.connect(_on_api_game_state_received)
-	ApiClient.request_failed.connect(_on_api_request_failed)
-	
 	set_state(State.INIT)
 
 # --- State Enter/Exit Logic ---
 
 func _enter_init():
 	print("Entering INIT state")
+
 	# Position the history panel off-screen initially and hide it
 	history_panel.position.x = get_viewport_rect().size.x
 	history_panel.hide()
 	
 	# Reset game variables to their defaults
 	game_state = {}
+
+	# Connect API signals
+	ApiClient.competitive_submission_succeeded.connect(_on_api_submission_succeeded)
+	ApiClient.competitive_game_state.connect(_on_api_game_state_received)
+	ApiClient.request_failed.connect(_on_api_request_failed)
 	
 	# Initial fetch of the game state from the server
-	_fetch_game_state()
+	if not game_id:
+		print_debug("Game ID not set. Cannot fetch game state.")
+		# TODO: Handle this error gracefully, maybe return to main menu
+		return
+	print("Fetch Status")
+	ApiClient.fetch_competitive_game_state(game_id)
 
 
 func _enter_waiting_for_opponent():
@@ -135,22 +146,11 @@ func _exit_completed():
 
 # --- Private Methods ---
 
-func _fetch_game_state() -> void:
-	if not game_id:
-		print_debug("Game ID not set. Cannot fetch game state.")
-		# TODO: Handle this error gracefully, maybe return to main menu
-		return
-	ApiClient.fetch_competitive_game_state(game_id)
-
-
 func _update_history_lists(p_game_state: Dictionary) -> void:
-	var movie_list = %HistoryPanel.get_node("TabContainer/UsedMovies/ScrollContainer/MovieList")
-	var people_list = %HistoryPanel.get_node("TabContainer/UsedPeople/ScrollContainer/PeopleList")
-
 	# Clear existing history
-	for child in movie_list.get_children():
+	for child in %MovieList.get_children():
 		child.queue_free()
-	for child in people_list.get_children():
+	for child in %PeopleList.get_children():
 		child.queue_free()
 
 	# Populate movie history
@@ -158,21 +158,22 @@ func _update_history_lists(p_game_state: Dictionary) -> void:
 		for movie in p_game_state.usedMovies:
 			var label = Label.new()
 			label.text = movie.title
-			movie_list.add_child(label)
+			%MovieList.add_child(label)
 
 	# Populate people history
 	if p_game_state.has("usedPeople"):
 		for person in p_game_state.usedPeople:
 			var label = Label.new()
 			label.text = person.name
-			people_list.add_child(label)
-
+			%PeopleList.add_child(label)
 
 # --- API Signal Handlers ---
 
 func _on_api_game_state_received(p_game_state: Dictionary) -> void:
 	game_state = p_game_state
 	
+	print("Game State Received: ", game_state)
+
 	# The API returns a 'pairing' object nested in the game state
 	if game_state.has("pairing"):
 		var new_pairing = Pairing.parse_pairing_from_json(game_state.pairing)
@@ -189,8 +190,10 @@ func _on_api_game_state_received(p_game_state: Dictionary) -> void:
 
 
 func _on_api_submission_succeeded(response: Dictionary):
+	print("Submission Response: ", response)
 	# The server has confirmed our move, now we just need to fetch the new state
-	_fetch_game_state()
+	# _fetch_game_state()
+	pass
 
 
 func _on_api_request_failed(message: String):
@@ -267,3 +270,15 @@ func _on_concede_button_pressed() -> void:
 	print("Conceding game...")
 	set_state(State.SUBMITTING)
 	ApiClient.competitive_concede_game(game_id)
+
+func _update_changing(type: ChangeTypeToggle.ChangeType) -> void:
+	var highlight_type: int # MoviePersonPair.Highlight
+	match type:
+		ChangeTypeToggle.ChangeType.PERSON:
+			highlight_type = 2 # MoviePersonPair.Highlight.PERSON
+		ChangeTypeToggle.ChangeType.MOVIE:
+			highlight_type = 1 # MoviePersonPair.Highlight.MOVIE
+		_:
+			highlight_type = 0 # MoviePersonPair.Highlight.NONE
+	
+	current_pair.set_highlight(highlight_type)

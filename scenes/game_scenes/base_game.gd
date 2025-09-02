@@ -4,9 +4,11 @@ class_name BaseGame
 # This script will manage the common UI elements and provide a common interface
 # for the specific game mode scripts.
 
+@export var debug: bool = false
+
 ### [STATE TRACKING]
-enum State {INIT, WAITING_FOR_OPPONENT, PLAYING, SUBMITTING, COMPLETED}
-var current_state: State
+enum State {NONE, INIT, WAITING_FOR_OPPONENT, PLAYING, SUBMITTING, COMPLETED}
+var current_state: State = State.NONE
 
 var last_change: ChangeTypeToggle.ChangeType
 
@@ -32,6 +34,9 @@ signal settings_button_pressed
 # --- Popup 
 @onready var game_completion_popup: PopupPanel = %GameCompletionPopup
 @onready var completion_back_button: Button = %CompletionBackButton
+
+# --- Debug
+@onready var debug_label: Label = %DebugLabel
 
 func _ready() -> void:
 	header_back_button.pressed.connect(_on_back_button_pressed)
@@ -69,6 +74,9 @@ func hide_loading_spinner() -> void:
 func set_state(new_state: State) -> void:
 	if current_state == new_state and current_state != State.INIT:
 		return
+
+	if debug:
+		debug_label.text = "[DEBUG]: Setting State -> %d" % new_state
 
 	# Exit logic for the current state
 	match current_state:

@@ -18,7 +18,7 @@ Before suggesting third-party solutions or complex workarounds, first verify if 
 
 All GDScript code you write or suggest must adhere to the official Godot Engine style guide. This ensures consistency and readability across the entire project.
 
-* **Follow the GDScript style guide:** Refer to the [GDScript style guide](https://docs.godotengine.org/en/stable/tutorials/scripting/gdscript/style_guide.html) for rules on naming conventions, formatting, comments, and code organization.
+* **Follow the GDScript style guide:** Refer to the [GDScript style guide](https://docs.godotengine.org/en/4.4/tutorials/scripting/gdscript/gdscript_styleguide.html) for rules on naming conventions, formatting, comments, and code organization.
 * **Static Typing:** Use static typing (`var my_variable: Type = value`) wherever possible to improve code clarity, reduce errors, and leverage better autocompletion.
 * **Signal Connections:** Prefer connecting signals via code (`SignalBus.connect(my_function)`) rather than through the editor's Node dock to make connections more explicit and easier to track.
 

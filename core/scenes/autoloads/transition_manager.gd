@@ -5,6 +5,7 @@ const transition_node_name = "transition_node"
 var is_showing_transition = false
 
 var function_to_call: Callable
+var _data_for_next_scene: Variant
 
 enum TransitionType {
 	ZoomOut = 1,
@@ -26,18 +27,26 @@ func setup_sprite():
 
 # new_scene_location: Will be the path to the scene we want to load
 # transition_type: for picking between transition effects
-func change_scene(new_scene_location: String, transition_type: int):
+# data: optional data to pass to the new scene's 'start_game' method
+func change_scene(new_scene_location: String, transition_type: int, data: Variant = null):
 	if is_showing_transition: 
 		return
 	is_showing_transition = true
+	_data_for_next_scene = data
 	var transition_sprite = setup_sprite()
 	get_tree().change_scene_to_file(new_scene_location)
 	function_to_call = show_transition.bind(transition_sprite, transition_type)
 	get_tree().node_added.connect(function_to_call)
 	
-func show_transition(_new_node, transition_sprite: Sprite2D, type: int):
+func show_transition(new_node, transition_sprite: Sprite2D, type: int):
 	if get_tree().root.get_node_or_null(transition_node_name) != null:
 		return
+	
+	# If we have data to pass, check if the new scene's root node can accept it.
+	if _data_for_next_scene != null and new_node.has_method("start_game"):
+		new_node.start_game(_data_for_next_scene)
+	_data_for_next_scene = null # Clear the data after passing it
+
 	get_tree().root.add_child(transition_sprite)
 	var transition_tween = create_tween().set_parallel()
 	if type == TransitionType.ZoomOut:

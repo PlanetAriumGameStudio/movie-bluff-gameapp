@@ -31,6 +31,9 @@ unique_name_in_owner = true
 layout_mode = 2
 text = "Change Direction"
 
+[node name="VBoxContainer" parent="GameCompletionPopup" index="1"]
+offset_right = 185.0
+
 [node name="BarChart" parent="GameCompletionPopup/VBoxContainer/ResultsContainer" index="0" instance=ExtResource("4_6rhka")]
 unique_name_in_owner = true
 layout_mode = 1
